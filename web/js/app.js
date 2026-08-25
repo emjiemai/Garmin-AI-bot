@@ -184,8 +184,6 @@ class GarminApp {
       this.closeStory();
       if (story.actionTarget === 'openQuiz') {
         document.getElementById('quizSection')?.scrollIntoView({ behavior: 'smooth' });
-      } else if (story.actionTarget === 'openGarminPay') {
-        this.openGarminPayModal();
       } else if (story.actionTarget === 'openBranches') {
         document.getElementById('showroomsSection')?.scrollIntoView({ behavior: 'smooth' });
       } else if (story.actionTarget === 'contactTelegram') {
@@ -540,14 +538,6 @@ class GarminApp {
     });
   }
 
-  openGarminPayModal() {
-    const modal = document.getElementById('garminPayModal');
-    if (modal) {
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-  }
-
   setupModals() {
     document.querySelectorAll('.modal-backdrop').forEach(modal => {
       modal.addEventListener('click', (e) => {
@@ -557,13 +547,6 @@ class GarminApp {
         }
       });
     });
-
-    const closePayBtn = document.getElementById('closeGarminPayBtn');
-    if (closePayBtn) {
-      closePayBtn.addEventListener('click', () => {
-        document.getElementById('garminPayModal')?.classList.add('hidden');
-      });
-    }
   }
 
   setupQuickLinks() {

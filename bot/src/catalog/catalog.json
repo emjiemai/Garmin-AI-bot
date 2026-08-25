@@ -2036,16 +2036,6 @@
     },
     {
       "q": {
-        "ru": "Работает ли бесконтактная оплата Garmin Pay в Узбекистане?",
-        "uz": "Garmin Pay O'zbekistonda ishlaydimi?"
-      },
-      "a": {
-        "ru": "Да. Garmin Pay стабильно работает с банковскими картами Visa и Mastercard большинства ведущих банков Узбекистана (Kapitalbank, NBU, Ipak Yoli, SQB, Octobank и др.). Оплата работает автономно, без телефона и интернета.",
-        "uz": "Ha. Garmin Pay O'zbekiston banklarining Visa va Mastercard kartalari bilan kontaktsiz to'lovni to'liq qo'llab-quvvatlaydi. Telefon va internetsiz ishlaydi."
-      }
-    },
-    {
-      "q": {
         "ru": "Условия гарантии и сервиса",
         "uz": "Kafolat va servis shartlari"
       },

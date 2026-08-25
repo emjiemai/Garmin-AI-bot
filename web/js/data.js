@@ -86,16 +86,6 @@ export const STORIES = [
     "actionTarget": "openQuiz"
   },
   {
-    "id": "garmin-pay",
-    "title": "Garmin Pay",
-    "badge": "Оплата",
-    "thumb": "https://www.garmin.com.uz/assets/venu-3-BPMJ-l-a.png",
-    "storyTitle": "Бесконтактная оплата Garmin Pay",
-    "storySubtitle": "Оплата часами без телефона и кошелька. Поддерживаются банковские карты Visa и Mastercard в Узбекистане.",
-    "actionText": "Список банков",
-    "actionTarget": "openGarminPay"
-  },
-  {
     "id": "showrooms",
     "title": "Шоурумы",
     "badge": "Ташкент",
@@ -2197,14 +2187,6 @@ export const FAQ_DATA = [
     "a_ru": "Нажмите кнопку «Заказать в Telegram» на карточке нужного товара. Менеджер ответит в чате с готовой информацией по наличию, срокам и доставке.",
     "a_uz": "«Telegram orqali buyurtma» tugmasini bosing. Menejerimiz buyurtmangizni qabul qilib, yetkazib berish bo'yicha ma'lumot beradi.",
     "a_en": "Click \"Order via Telegram\" on any product card. Our specialist will respond with availability, details, and delivery arrangement."
-  },
-  {
-    "q_ru": "Работает ли бесконтактная оплата Garmin Pay в Узбекистане?",
-    "q_uz": "Garmin Pay O'zbekistonda ishlaydimi?",
-    "q_en": "Does Garmin Pay contactless payment work in Uzbekistan?",
-    "a_ru": "Да. Garmin Pay стабильно работает с банковскими картами Visa и Mastercard большинства ведущих банков Узбекистана (Kapitalbank, NBU, Ipak Yoli, SQB, Octobank и др.). Оплата работает автономно, без телефона и интернета.",
-    "a_uz": "Ha. Garmin Pay O'zbekiston banklarining Visa va Mastercard kartalari bilan kontaktsiz to'lovni to'liq qo'llab-quvvatlaydi. Telefon va internetsiz ishlaydi.",
-    "a_en": "Yes. Garmin Pay works reliably with Visa and Mastercard from major Uzbek banks without requiring your phone or an internet connection."
   },
   {
     "q_ru": "Условия гарантии и сервиса",

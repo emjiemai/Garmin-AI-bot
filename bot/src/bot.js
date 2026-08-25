@@ -53,11 +53,12 @@ async function safeSend(ctx, text, extra = {}) {
 
 function mainKeyboard(lang) {
   return new Keyboard()
-    .text(t(lang, 'btnCatalog'))
+    // Opens as a Telegram Mini App (in-app WebView), not an external browser.
+    .webApp(t(lang, 'btnCatalog'), config.business.webAppUrl)
     .text(t(lang, 'btnShowrooms'))
     .row()
     .requestContact(t(lang, 'btnSharePhone'))
-    .text(t(lang, 'btnManager'))
+    .text(t(lang, 'btnContact'))
     .resized()
     .persistent();
 }
@@ -228,17 +229,12 @@ bot.on('message:text', async (ctx) => {
   session.lastMessageAt = now;
 
   // Reply-keyboard buttons are ordinary text; map them to intents first.
+  // btnContact is a soft "I have a question" nudge — it does NOT alert the
+  // manager. Only real purchase intent (via the AI's notify_manager tool) or
+  // an explicit /manager should page a human.
   const lang = session.lang;
-  if (text === t(lang, 'btnManager')) {
-    return callManager(ctx, session, 'Клиент нажал кнопку «Менеджер» в боте.');
-  }
-  if (text === t(lang, 'btnCatalog')) {
-    return safeSend(
-      ctx,
-      lang === 'uz'
-        ? `🛍 To'liq katalog: ${config.business.webAppUrl}\n\nYoki menga qanday soat kerakligini yozing — men tanlab beraman.`
-        : `🛍 Полный каталог: ${config.business.webAppUrl}\n\nИли напишите, какие часы нужны — подберу под вашу задачу.`
-    );
+  if (text === t(lang, 'btnContact')) {
+    return safeSend(ctx, t(lang, 'contactPrompt'));
   }
   if (text === t(lang, 'btnShowrooms')) {
     const body = catalog.branches
