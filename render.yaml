@@ -21,11 +21,13 @@ services:
     buildCommand: npm ci && npm run build
     startCommand: npm start
     healthCheckPath: /healthz
-    autoDeploy: true
+    # Replaces the deprecated `autoDeploy: true`.
+    autoDeployTrigger: commit
 
     envVars:
+      # Major only, so Render picks the current patch of the LTS line.
       - key: NODE_VERSION
-        value: "22.20.0"
+        value: "24"
 
       # --- Telegram ---------------------------------------------------------
       # Bot token from @BotFather.

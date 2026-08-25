@@ -5,7 +5,7 @@
   "description": "AI sales assistant for Garmin Uzbekistan on Telegram (RU/UZ)",
   "type": "module",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "build": "node scripts/build-catalog.mjs",
