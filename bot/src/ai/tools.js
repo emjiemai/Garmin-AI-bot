@@ -3,7 +3,7 @@
  *  Executors return plain objects; the caller JSON-stringifies them back into
  *  the conversation as `role: "tool"` messages. */
 
-import { catalog, formatPrice, getProduct, searchProducts } from '../catalog/catalog.js';
+import { catalog, formatPrice, getProduct, productName, searchProducts } from '../catalog/catalog.js';
 import { alertManager } from '../leads/notify.js';
 import { config } from '../config.js';
 import { searchChannelCatalog } from '../channelCatalog.js';
@@ -50,6 +50,24 @@ export const TOOL_SCHEMAS = [
         type: 'object',
         properties: {
           product_id: { type: 'string', description: 'id модели, например "fenix-8-47-amoled".' }
+        },
+        required: ['product_id']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'send_product_photo',
+      description:
+        'Отправить клиенту реальное фото конкретной модели из каталога часов. ' +
+        'ВСЕГДА вызывай, когда клиент просит фото/показать как выглядит ("фото", ' +
+        '"есть фотки?", "покажи", "rasm bormi", "surat"), а не отправляй ссылку ' +
+        'на сайт вместо этого — у нас есть настоящее фото прямо здесь.',
+      parameters: {
+        type: 'object',
+        properties: {
+          product_id: { type: 'string', description: 'id модели, чьё фото нужно отправить.' }
         },
         required: ['product_id']
       }
@@ -257,6 +275,29 @@ export async function executeTool({ name, args }, { bot, session, user }) {
         };
       }
       return publicProduct(p, lang);
+    }
+
+    case 'send_product_photo': {
+      const p = getProduct(args.product_id);
+      if (!p) {
+        return {
+          error: 'not_found',
+          note: `Модели с id "${args.product_id}" нет в каталоге. Вызови search_catalog, чтобы найти правильный id.`
+        };
+      }
+      if (!p.image) {
+        return { sent: false, error: 'no_image', note: 'Для этой модели нет фото в базе. Извинись и предложи каталог на сайте.' };
+      }
+
+      try {
+        await bot.api.sendPhoto(session.chatId, p.image, {
+          caption: `${productName(p, lang)} — ${formatPrice(p.price, lang)}`
+        });
+        return { sent: true, note: 'Фото уже отправлено клиенту. Не присылай ссылку на сайт — она не нужна.' };
+      } catch (err) {
+        console.error('[tools] send_product_photo failed:', err.message);
+        return { sent: false, error: 'send_failed', note: 'Не удалось отправить фото. Извинись и предложи каталог на сайте.' };
+      }
     }
 
     case 'compare_products': {

@@ -157,13 +157,18 @@ if (aiProblem) {
   console.log('\n  Skipping the conversation scenarios.');
 }
 
-/** Stand-in for the grammY Bot: records manager alerts instead of sending them. */
+/** Stand-in for the grammY Bot: records outbound calls instead of sending them. */
 const alerts = [];
+const photos = [];
 const fakeBot = {
   api: {
     async sendMessage(chatId, text) {
       alerts.push({ chatId, text });
       return { message_id: alerts.length };
+    },
+    async sendPhoto(chatId, photo, other) {
+      photos.push({ chatId, photo, caption: other?.caption });
+      return { message_id: photos.length };
     }
   }
 };
@@ -183,6 +188,13 @@ const SCENARIOS = [
     text: 'Salom! Yugurish uchun 6 million so\'mgacha qanday soat tavsiya qilasiz?',
     expectTool: true,
     expectAlert: false
+  },
+  {
+    label: 'RU • photo request must send the actual photo, not a link',
+    lang: 'ru',
+    text: 'А есть фотки fenix 8? Хочу посмотреть как выглядит',
+    expectTool: true,
+    expectPhoto: true
   },
   {
     label: 'RU • ready-to-buy should escalate to the manager',
@@ -237,6 +249,11 @@ for (const s of aiProblem ? [] : SCENARIOS) {
       check('alerted manager', alerts.length > before);
       const last = alerts.at(-1);
       check('alert is hot', last && /ГОРЯЧИЙ/.test(last.text), last?.text.split('\n')[0]);
+    }
+    if (s.expectPhoto) {
+      check('used send_product_photo', toolsUsed.includes('send_product_photo'), toolsUsed.join(', '));
+      check('sendPhoto was actually called', photos.length > 0);
+      check('did not just point to the website instead', !/garmin\.com\.uz|\u043D\u0430\u0436\u043C\u0438\u0442\u0435 \u043A\u043D\u043E\u043F\u043A\u0443/i.test(text), text.slice(0, 120));
     }
     if (s.lang === 'uz') {
       check('answered in latin script', !/[\u0400-\u04FF]{6,}/.test(text));
