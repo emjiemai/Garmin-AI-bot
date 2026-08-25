@@ -55,13 +55,38 @@ The AI has a `notify_manager` tool with two urgency levels:
 - **`next` → 🟡 warm lead.** Concrete interest but still deciding. Silent
   notification for follow-up during working hours.
 
-`/manager` and the "👤 Менеджер" button always fire a hot alert without involving
-the AI. Sharing a phone number via the keyboard button also creates a lead.
-The bot will not re-alert for the same intent twice.
+`/manager` always fires a hot alert without involving the AI. The "💬 Написать
+нам" button does **not** — it's a soft nudge plus direct call/Telegram links,
+so a casual tap doesn't page a human on a 5-minute SLA. Sharing a phone number
+via the keyboard button also creates a lead. The bot will not re-alert for the
+same intent twice.
 
 Leads are appended to `bot/data/leads.jsonl` **and** sent to the manager chat.
 Render's free instance has no persistent disk, so treat the Telegram alert as the
 durable record until a database is wired up.
+
+## Extended catalog (non-watch products)
+
+Garmin sells more than watches — marine electronics, cycling computers,
+fishfinders, aviation gear, dog trackers, and so on. Rather than hand-writing a
+structured data entry for each one, that catalog lives as ordinary photo+caption
+posts in a Telegram channel (currently `t.me/cataloggarmintest`).
+
+**Setup**: add `@garminofficialuzbot` as an **admin** of that channel. That's
+the only way Telegram delivers `channel_post` updates to a bot at all — without
+it, posts are invisible to the bot and nothing gets indexed.
+
+From then on, every photo you post with a Cyrillic caption is indexed
+automatically ([bot/src/channelCatalog.js](bot/src/channelCatalog.js)). When a
+customer asks about something in that range, the AI calls
+`search_channel_catalog` to find the matching post, then `forward_channel_product`
+to send the real photo and full description via `copyMessage` — the customer
+sees your actual post, not the AI's paraphrase of it.
+
+Like leads, the index is a JSONL file on Render's ephemeral disk — a redeploy
+wipes it, and it rebuilds from whatever the bot observes going forward. Move it
+to a database (e.g. the Supabase project the web app already has) if losing the
+index on redeploy becomes a real problem.
 
 ## Bot commands
 

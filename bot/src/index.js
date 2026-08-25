@@ -94,7 +94,7 @@ async function main() {
     await bot.api.setWebhook(url, {
       secret_token: config.telegram.webhookSecret || undefined,
       drop_pending_updates: true,
-      allowed_updates: ['message', 'callback_query']
+      allowed_updates: ['message', 'callback_query', 'channel_post']
     });
     console.log(`[bot] webhook set: ${url}`);
 
@@ -107,7 +107,7 @@ async function main() {
     await bot.api.deleteWebhook({ drop_pending_updates: true });
     console.log('[bot] starting long polling');
     bot.start({
-      allowed_updates: ['message', 'callback_query'],
+      allowed_updates: ['message', 'callback_query', 'channel_post'],
       onStart: (me) => console.log(`[bot] polling as @${me.username}`)
     });
   }

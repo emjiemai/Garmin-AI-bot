@@ -96,7 +96,23 @@ export const config = {
 
   /** Where lead JSONL is appended. Ephemeral on Render free — Telegram alerts
    *  to the manager are the durable record until a database is wired up. */
-  leadsFile: optional('LEADS_FILE', './data/leads.jsonl')
+  leadsFile: optional('LEADS_FILE', './data/leads.jsonl'),
+
+  /**
+   * The extended product catalog beyond watches (navigators, marine, cycling
+   * computers, etc.) lives as photo+caption posts in this Telegram channel
+   * rather than in the structured JSON catalog. The bot indexes posts made
+   * there and can forward the matching one when a customer asks about that
+   * product. Requires the bot to be added as an admin of the channel — that's
+   * how Telegram delivers channel_post updates to it at all.
+   */
+  channelCatalog: {
+    /** @username (with or without the leading @) or numeric chat id. */
+    id: optional('CHANNEL_CATALOG_ID', '@cataloggarmintest'),
+    /** Ephemeral on Render free, same caveat as leadsFile — rebuilds from
+     *  whatever the bot is running to observe from this point forward. */
+    file: optional('CHANNEL_CATALOG_FILE', './data/channel-catalog.jsonl')
+  }
 };
 
 export const DEEP_LINK_BASE = `https://t.me/${config.telegram.username}`;

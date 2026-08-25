@@ -116,7 +116,32 @@ console.log('\n5. Webhook secret sanitising');
   check('config value is legal or empty', !config.telegram.webhookSecret || LEGAL.test(config.telegram.webhookSecret));
 }
 
-console.log(`\n6. DeepSeek (${config.ai.model} @ ${config.ai.baseUrl})`);
+console.log('\n6. Channel catalog (extended products beyond watches)');
+{
+  const { indexChannelPost, searchChannelCatalog, channelCatalogSize } = await import(
+    '../src/channelCatalog.js'
+  );
+  const before = channelCatalogSize();
+
+  const entry = indexChannelPost({
+    messageId: 900001,
+    caption: 'Garmin GPSMAP 943xsv — картплоттер с сонаром, 9 дюймов.',
+    hasPhoto: true
+  });
+  check('indexes a captioned post', entry?.messageId === 900001);
+  check('size grew by one', channelCatalogSize() === before + 1);
+
+  const hit = searchChannelCatalog('картплоттер сонар');
+  check('cyrillic keyword search finds it', hit[0]?.messageId === 900001, JSON.stringify(hit));
+
+  const miss = searchChannelCatalog('холодильник самсунг');
+  check('unrelated query finds nothing', miss.length === 0);
+
+  const skipped = indexChannelPost({ messageId: 900002, caption: '', hasPhoto: true });
+  check('caption-less post is not indexed (nothing to search on)', skipped === null);
+}
+
+console.log(`\n7. DeepSeek (${config.ai.model} @ ${config.ai.baseUrl})`);
 
 const aiProblem = await checkAiHealth();
 if (aiProblem) {

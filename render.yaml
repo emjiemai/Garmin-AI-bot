@@ -130,3 +130,10 @@ services:
         sync: false
       - key: HUMAN_TELEGRAM_URL
         value: https://t.me/garmin_uz
+
+      # --- Extended catalog (non-watch products) -----------------------------
+      # Photos + Cyrillic descriptions posted here get indexed and forwarded to
+      # customers by the AI. The bot must be added as an ADMIN of this channel —
+      # that's the only way Telegram delivers channel posts to it at all.
+      - key: CHANNEL_CATALOG_ID
+        value: '@cataloggarmintest'

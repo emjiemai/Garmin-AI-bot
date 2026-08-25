@@ -8,6 +8,7 @@ import { getSession, resetHistory, sessionCount } from './session.js';
 import { classifyAiError, respond } from './ai/agent.js';
 import { alertManager } from './leads/notify.js';
 import { leadStats, recentLeads } from './leads/store.js';
+import { indexChannelPost, channelCatalogSize } from './channelCatalog.js';
 
 export const bot = new Bot(config.telegram.token);
 
@@ -92,6 +93,15 @@ function phoneRequestExtra(session) {
 
 function isManager(ctx) {
   return String(ctx.chat?.id) === String(config.telegram.managerChatId);
+}
+
+/** Matches a chat against CHANNEL_CATALOG_ID, by numeric id or @username
+ *  (leading @ optional on either side, comparison case-insensitive). */
+function isChannelCatalogChat(chat) {
+  const configured = config.channelCatalog.id.replace(/^@/, '').toLowerCase();
+  if (String(chat?.id) === configured) return true;
+  const username = chat?.username?.toLowerCase();
+  return Boolean(username) && username === configured;
 }
 
 /* ----------------------------------------------------------------- commands */
@@ -180,8 +190,31 @@ bot.command('stats', async (ctx) => {
     const who = l.username ? `@${l.username}` : l.name || l.chatId;
     lines.push(`• ${l.urgency === 'now' ? '🔥' : '🟡'} ${who} — ${l.productName ?? 'без товара'}`);
   }
+  lines.push('', `🗂 Каталог из канала: <b>${channelCatalogSize()}</b> товаров`);
   await ctx.reply(lines.join('\n'), { parse_mode: 'HTML' });
 });
+
+/* ------------------------------------------------------------- channel catalog */
+
+/** Indexes a product post from CHANNEL_CATALOG_ID for later search+forward.
+ *  Requires the bot to be an admin of that channel. */
+function ingestChannelPost(ctx) {
+  const post = ctx.channelPost ?? ctx.editedChannelPost;
+  if (!post || !isChannelCatalogChat(post.chat)) return;
+
+  const caption = post.caption ?? post.text;
+  const entry = indexChannelPost({
+    messageId: post.message_id,
+    caption,
+    hasPhoto: Boolean(post.photo?.length)
+  });
+
+  if (entry) console.log(`[channel-catalog] indexed message ${post.message_id}: ${entry.caption.slice(0, 60)}…`);
+  else console.warn(`[channel-catalog] message ${post.message_id} has no caption/text — skipped (nothing to search on)`);
+}
+
+bot.on('channel_post', ingestChannelPost);
+bot.on('edited_channel_post', ingestChannelPost);
 
 /* ------------------------------------------------------------------ buttons */
 

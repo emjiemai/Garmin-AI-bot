@@ -6,6 +6,7 @@
 import { catalog, formatPrice, getProduct, searchProducts } from '../catalog/catalog.js';
 import { alertManager } from '../leads/notify.js';
 import { config } from '../config.js';
+import { searchChannelCatalog } from '../channelCatalog.js';
 
 export const TOOL_SCHEMAS = [
   {
@@ -138,6 +139,50 @@ export const TOOL_SCHEMAS = [
         required: ['urgency', 'summary']
       }
     }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'search_channel_catalog',
+      description:
+        'Найти товар в РАСШИРЕННОМ каталоге Garmin — это ВСЁ, что продаёт Garmin ' +
+        'кроме часов: морские навигаторы и картплоттеры, велокомпьютеры, ' +
+        'фишфайндеры, авиационное оборудование, GPS-трекеры для собак и т.д. ' +
+        'Эти товары НЕ в структурированном каталоге (search_catalog не найдёт их) — ' +
+        'они хранятся как посты с фото в отдельном Telegram-канале. Вызывай эту ' +
+        'функцию, когда клиент спрашивает о чём-то, чего нет среди часов.',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: {
+            type: 'string',
+            description: 'Название модели или что ищет клиент, своими словами.'
+          }
+        },
+        required: ['query']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'forward_channel_product',
+      description:
+        'Переслать клиенту реальное фото и полное описание товара из канала — ' +
+        'ВСЕГДА вызывай сразу после того, как search_channel_catalog нашёл нужный ' +
+        'товар (используй message_id из её результата). Не пересказывай описание ' +
+        'сам — просто перешли пост, клиент увидит фото и полный текст.',
+      parameters: {
+        type: 'object',
+        properties: {
+          message_id: {
+            type: 'number',
+            description: 'message_id из результата search_channel_catalog.'
+          }
+        },
+        required: ['message_id']
+      }
+    }
   }
 ];
 
@@ -268,6 +313,35 @@ export async function executeTool({ name, args }, { bot, session, user }) {
             : 'Менеджер уведомлён. Скажи клиенту, что с ним свяжутся, и продолжи помогать.'
           : 'Алерт не доставлен. Дай клиенту прямой телефон ' + catalog.store.phone
       };
+    }
+
+    case 'search_channel_catalog': {
+      const matches = searchChannelCatalog(args.query ?? '', 5);
+      return {
+        found: matches.length,
+        products: matches.map((m) => ({ message_id: m.messageId, snippet: m.snippet })),
+        note: matches.length
+          ? 'Вызови forward_channel_product с нужным message_id, чтобы клиент увидел фото и полное описание.'
+          : 'Не найдено в расширенном каталоге. Если это похоже на часы, попробуй search_catalog. ' +
+            'Иначе честно скажи, что уточнишь у менеджера.'
+      };
+    }
+
+    case 'forward_channel_product': {
+      const messageId = Number(args.message_id);
+      if (!messageId) return { error: 'bad_message_id' };
+
+      try {
+        await bot.api.copyMessage(session.chatId, config.channelCatalog.id, messageId);
+        return { sent: true, note: 'Фото и описание уже отправлены клиенту. Не дублируй описание в своём ответе — коротко спроси, нужна ли помощь с заказом.' };
+      } catch (err) {
+        console.error('[tools] forward_channel_product failed:', err.message);
+        return {
+          sent: false,
+          error: 'forward_failed',
+          note: 'Не удалось переслать пост. Извинись и предложи связать с менеджером за деталями.'
+        };
+      }
     }
 
     default:
