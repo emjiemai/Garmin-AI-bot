@@ -23,13 +23,36 @@ function bool(key, fallback) {
   return ['1', 'true', 'yes', 'on'].includes(value.toLowerCase());
 }
 
+/**
+ * Telegram accepts only 1-256 characters of [A-Za-z0-9_-] for `secret_token`,
+ * but Render's `generateValue: true` emits standard base64, which includes
+ * '+', '/' and '=' — setWebhook rejects it outright. Fold the value into
+ * base64url so any generated secret works without hand-editing the dashboard.
+ * The entropy is unchanged; this is a re-encoding, not a truncation.
+ */
+function webhookSecret(key) {
+  const raw = optional(key, '');
+  if (!raw) return '';
+
+  const cleaned = raw
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/[^A-Za-z0-9_-]/g, '')
+    .slice(0, 256);
+
+  if (!cleaned) {
+    console.warn(`[config] ${key} had no usable characters; webhook secret disabled`);
+  }
+  return cleaned;
+}
+
 export const config = {
   telegram: {
     token: required('BOT_TOKEN'),
     /** Public username, used to build the t.me deep links the web app points at. */
     username: optional('BOT_USERNAME', 'garminofficialuzbot'),
     /** Shared secret Telegram echoes back in X-Telegram-Bot-Api-Secret-Token. */
-    webhookSecret: optional('WEBHOOK_SECRET', ''),
+    webhookSecret: webhookSecret('WEBHOOK_SECRET'),
     managerChatId: required('MANAGER_CHAT_ID')
   },
 

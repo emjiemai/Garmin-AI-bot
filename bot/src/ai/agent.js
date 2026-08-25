@@ -16,6 +16,43 @@ const client = new OpenAI({
   maxRetries: 2
 });
 
+/**
+ * Distinguishes "the AI is broken and will stay broken" (bad key, no credit)
+ * from a transient blip. The first kind must be loud in the logs and must not
+ * be retried per-message, and it means the customer has to reach a human.
+ */
+export function classifyAiError(err) {
+  const status = err?.status ?? err?.response?.status;
+  if (status === 401 || status === 403) return 'auth';
+  if (status === 402) return 'billing';
+  if (status === 429) return 'rate_limit';
+  if (status >= 500) return 'upstream';
+  if (err?.name === 'APIConnectionTimeoutError' || /timeout/i.test(err?.message ?? '')) {
+    return 'timeout';
+  }
+  return 'unknown';
+}
+
+/** True when no amount of retrying will help — a human must take over. */
+export function isFatalAiError(err) {
+  return ['auth', 'billing'].includes(classifyAiError(err));
+}
+
+/** One-shot credential check so a bad key surfaces in the deploy log, not in
+ *  front of a customer. Returns null when healthy, else a reason string. */
+export async function checkAiHealth() {
+  try {
+    await client.chat.completions.create({
+      model: config.ai.model,
+      messages: [{ role: 'user', content: 'ping' }],
+      max_tokens: 1
+    });
+    return null;
+  } catch (err) {
+    return `${classifyAiError(err)}: ${err.message}`;
+  }
+}
+
 function parseArgs(raw) {
   if (!raw) return {};
   try {

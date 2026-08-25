@@ -12,7 +12,7 @@ import { detectLang } from '../src/i18n.js';
 import { parseStartPayload } from '../src/deeplink.js';
 import { toTelegramHtml } from '../src/format.js';
 import { getSession } from '../src/session.js';
-import { respond } from '../src/ai/agent.js';
+import { checkAiHealth, respond } from '../src/ai/agent.js';
 
 let failures = 0;
 
@@ -20,6 +20,16 @@ function check(label, condition, detail = '') {
   const ok = Boolean(condition);
   if (!ok) failures++;
   console.log(`${ok ? '  ok ' : '  FAIL'}  ${label}${detail ? ` — ${detail}` : ''}`);
+}
+
+/**
+ * Prints the tally and exits. Calling process.exit() directly trips a libuv
+ * assertion on Windows while the HTTP client still holds keep-alive sockets, so
+ * set the code and let the runtime tear down in its own time.
+ */
+function finish() {
+  console.log(`\n${failures === 0 ? '✅ all checks passed' : `❌ ${failures} check(s) failed`}\n`);
+  process.exitCode = failures === 0 ? 0 : 1;
 }
 
 console.log(`\n1. Catalog (${catalog.products.length} products)`);
@@ -81,7 +91,46 @@ console.log('\n4. Markdown -> Telegram HTML');
   check('unbalanced bold does not leak', !toTelegramHtml('**oops').includes('*'));
 }
 
-console.log(`\n5. DeepSeek (${config.ai.model} @ ${config.ai.baseUrl})`);
+console.log('\n5. Webhook secret sanitising');
+{
+  // Telegram: secret_token is 1-256 chars of A-Z a-z 0-9 _ - only.
+  const LEGAL = /^[A-Za-z0-9_-]{1,256}$/;
+
+  // Same shape as what Render's `generateValue: true` produces — 32 random
+  // bytes in standard base64, so it carries the '+' and '=' that made
+  // setWebhook fail with "secret token contains illegal characters".
+  const renderGenerated = Buffer.from('a/b+c'.repeat(8)).toString('base64');
+
+  const clean = (raw) =>
+    raw
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/[^A-Za-z0-9_-]/g, '')
+      .slice(0, 256);
+
+  check('render base64 value is rejected as-is', !LEGAL.test(renderGenerated));
+  check('sanitised value is legal', LEGAL.test(clean(renderGenerated)), clean(renderGenerated));
+  check('base64url chars survive', clean('a-b_c') === 'a-b_c');
+  check('slashes fold to underscore', clean('a/b') === 'a_b');
+  check('over-long value is truncated', clean('x'.repeat(400)).length === 256);
+  check('config value is legal or empty', !config.telegram.webhookSecret || LEGAL.test(config.telegram.webhookSecret));
+}
+
+console.log(`\n6. DeepSeek (${config.ai.model} @ ${config.ai.baseUrl})`);
+
+const aiProblem = await checkAiHealth();
+if (aiProblem) {
+  failures++;
+  console.log(`\n  FAIL  DeepSeek is unreachable — ${aiProblem}`);
+  if (aiProblem.startsWith('auth')) {
+    console.log('\n  The API key is rejected. Generate a new one at');
+    console.log('  https://platform.deepseek.com/api_keys and set DEEPSEEK_API_KEY.');
+    console.log('  Keys that have been posted publicly are revoked automatically.');
+  } else if (aiProblem.startsWith('billing')) {
+    console.log('\n  The account has no credit. Top up at platform.deepseek.com.');
+  }
+  console.log('\n  Skipping the conversation scenarios.');
+}
 
 /** Stand-in for the grammY Bot: records manager alerts instead of sending them. */
 const alerts = [];
@@ -119,7 +168,7 @@ const SCENARIOS = [
   }
 ];
 
-for (const s of SCENARIOS) {
+for (const s of aiProblem ? [] : SCENARIOS) {
   const before = alerts.length;
   const session = getSession(`smoke-${s.label}`);
   session.lang = s.lang;
@@ -154,5 +203,4 @@ for (const s of SCENARIOS) {
   }
 }
 
-console.log(`\n${failures === 0 ? '✅ all checks passed' : `❌ ${failures} check(s) failed`}\n`);
-process.exit(failures === 0 ? 0 : 1);
+finish();

@@ -23,6 +23,10 @@ const STRINGS = {
       '⚠️ Извините, произошла техническая ошибка. Попробуйте ещё раз или ' +
       'свяжитесь с менеджером: +998 (70) 120-33-33',
     rateLimited: '⏳ Слишком много сообщений подряд. Подождите пару секунд.',
+    aiDown:
+      '🙏 Извините, консультант сейчас недоступен. Я уже передал ваш вопрос ' +
+      'менеджеру — он свяжется с вами в ближайшее время.\n' +
+      'Срочно? Позвоните: +998 (70) 120-33-33',
     reset: '🔄 История диалога очищена. Начнём заново!',
     btnCatalog: '🛍 Каталог',
     btnShowrooms: '📍 Шоурумы',
@@ -61,6 +65,10 @@ const STRINGS = {
       "⚠️ Kechirasiz, texnik xatolik yuz berdi. Qayta urinib ko'ring yoki " +
       'menejer bilan bog\'laning: +998 (70) 120-33-33',
     rateLimited: "⏳ Juda ko'p xabar yuborildi. Bir necha soniya kuting.",
+    aiDown:
+      "🙏 Kechirasiz, maslahatchi hozir mavjud emas. Savolingizni menejerga " +
+      "yubordim — u tez orada siz bilan bog'lanadi.\n" +
+      "Shoshilinchmi? Qo'ng'iroq qiling: +998 (70) 120-33-33",
     reset: '🔄 Suhbat tarixi tozalandi. Qaytadan boshlaymiz!',
     btnCatalog: '🛍 Katalog',
     btnShowrooms: '📍 Showroomlar',

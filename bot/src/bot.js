@@ -5,7 +5,7 @@ import { detectLang, normalizeLang, t } from './i18n.js';
 import { toTelegramHtml } from './format.js';
 import { parseStartPayload } from './deeplink.js';
 import { getSession, resetHistory, sessionCount } from './session.js';
-import { respond } from './ai/agent.js';
+import { classifyAiError, respond } from './ai/agent.js';
 import { alertManager } from './leads/notify.js';
 import { leadStats, recentLeads } from './leads/store.js';
 
@@ -247,13 +247,32 @@ bot.on('message:text', async (ctx) => {
     else await safeSend(ctx, t(session.lang, 'error'));
   } catch (err) {
     clearInterval(typing);
-    console.error('[bot] respond failed:', err);
+    const kind = classifyAiError(err);
+    console.error(`[bot] respond failed (${kind}):`, err.message);
+
     // Roll back the unanswered user turn so it does not poison the next call.
     if (session.history.at(-1)?.role !== 'assistant') {
       const lastUser = session.history.findLastIndex((m) => m.role === 'user');
       if (lastUser >= 0) session.history = session.history.slice(0, lastUser);
     }
-    await safeSend(ctx, t(session.lang, 'error'));
+
+    // An AI outage must not cost us the customer. Hand the conversation to a
+    // human rather than showing an error and letting them walk away.
+    if (!session.lead.saved) {
+      await alertManager(bot, {
+        urgency: 'now',
+        user: ctx.from,
+        session,
+        summary:
+          `ИИ-консультант недоступен (${kind}) — клиент остался без ответа.\n` +
+          `Последнее сообщение клиента: "${text.slice(0, 300)}"`,
+        productId: session.context.productId
+      }).catch((e) => console.error('[bot] fallback alert failed:', e.message));
+      session.lead.saved = true;
+      session.lead.escalated = true;
+    }
+
+    await safeSend(ctx, t(session.lang, 'aiDown'));
   } finally {
     session.busy = false;
   }

@@ -4,11 +4,13 @@
  *  (no RENDER_EXTERNAL_URL) it falls back to long polling so you can develop
  *  without a public URL or a tunnel. */
 
+import { createHash } from 'node:crypto';
 import express from 'express';
 import { webhookCallback } from 'grammy';
 import { config } from './config.js';
 import { bot } from './bot.js';
 import { catalog } from './catalog/catalog.js';
+import { checkAiHealth } from './ai/agent.js';
 import { sessionCount } from './session.js';
 import { leadStats } from './leads/store.js';
 
@@ -16,12 +18,18 @@ const app = express();
 app.disable('x-powered-by');
 
 const startedAt = Date.now();
+/** Result of the boot-time DeepSeek credential check, reported by /healthz. */
+let aiHealthy = null;
 
-/** Render's health check and the keep-alive pinger both hit this. */
+/** Render's health check and the keep-alive pinger both hit this. Always 200:
+ *  a failing health check makes Render tear the service down, and the bot is
+ *  still useful (manager escalation, showrooms) even with the AI degraded. */
 app.get('/healthz', (_req, res) => {
   res.json({
     ok: true,
     mode: config.server.mode,
+    ai: aiHealthy === null ? 'unchecked' : aiHealthy ? 'ok' : 'degraded',
+    model: config.ai.model,
     uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
     products: catalog.products.length,
     activeChats: sessionCount(),
@@ -36,6 +44,23 @@ app.get('/', (_req, res) => {
 async function main() {
   await bot.init();
 
+  // Surface a dead API key in the deploy log rather than letting a customer
+  // discover it. Not fatal: /manager, showrooms and the escalation fallback all
+  // still work without the AI, so a bad key must not take the whole bot down.
+  const aiProblem = await checkAiHealth();
+  if (aiProblem) {
+    console.error(
+      `\n${'!'.repeat(72)}\n` +
+        `[ai] DeepSeek is NOT usable — ${aiProblem}\n` +
+        `[ai] Customers will be handed straight to a manager until this is fixed.\n` +
+        `[ai] Check DEEPSEEK_API_KEY and the account balance at platform.deepseek.com\n` +
+        `${'!'.repeat(72)}\n`
+    );
+  } else {
+    console.log(`[ai] DeepSeek reachable, model ${config.ai.model}`);
+  }
+  aiHealthy = !aiProblem;
+
   await bot.api.setMyCommands([
     { command: 'start', description: 'Начать / Boshlash' },
     { command: 'lang', description: 'Язык / Til (RU / UZ)' },
@@ -49,7 +74,9 @@ async function main() {
       throw new Error('BOT_MODE=webhook requires PUBLIC_URL (or RENDER_EXTERNAL_URL).');
     }
 
-    const path = `/webhook/${config.telegram.token.split(':')[1].slice(0, 16)}`;
+    // Unguessable but derived, not secret material: hashing means the path can
+    // appear in logs and proxy access records without leaking the bot token.
+    const path = `/webhook/${createHash('sha256').update(config.telegram.token).digest('hex').slice(0, 32)}`;
 
     app.post(
       path,
