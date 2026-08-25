@@ -66,6 +66,24 @@ function langKeyboard() {
   return new InlineKeyboard().text('🇷🇺 Русский', 'lang:ru').text("🇺🇿 O'zbekcha", 'lang:uz');
 }
 
+/** One-tap native contact share, front and center — used right after purchase
+ *  intent so the customer never has to type their number. Hides itself after
+ *  one tap (share or skip); the handlers below restore mainKeyboard. */
+function contactKeyboard(lang) {
+  return new Keyboard()
+    .requestContact(t(lang, 'btnSharePhone'))
+    .row()
+    .text(t(lang, 'btnSkipPhone'))
+    .resized()
+    .oneTime();
+}
+
+/** Prompts for a phone number only when we don't already have one. */
+async function maybeAskForPhone(ctx, session) {
+  if (session.profile.phone) return;
+  await ctx.reply(t(session.lang, 'askPhone'), { reply_markup: contactKeyboard(session.lang) });
+}
+
 function isManager(ctx) {
   return String(ctx.chat?.id) === String(config.telegram.managerChatId);
 }
@@ -127,6 +145,7 @@ async function callManager(ctx, session, reason) {
   session.lead.saved = true;
   session.lead.escalated = true;
   await safeSend(ctx, t(session.lang, 'managerCalled'));
+  await maybeAskForPhone(ctx, session);
 }
 
 bot.command('manager', async (ctx) => {
@@ -176,7 +195,9 @@ bot.on('message:contact', async (ctx) => {
     session.profile.name = [contact.first_name, contact.last_name].filter(Boolean).join(' ');
   }
 
-  await safeSend(ctx, t(session.lang, 'phoneThanks', contact.phone_number));
+  await safeSend(ctx, t(session.lang, 'phoneThanks', contact.phone_number), {
+    reply_markup: mainKeyboard(session.lang)
+  });
 
   await alertManager(bot, {
     urgency: session.lead.escalated ? 'now' : 'next',
@@ -221,6 +242,9 @@ bot.on('message:text', async (ctx) => {
       .join('\n\n');
     return safeSend(ctx, body, { link_preview_options: { is_disabled: true } });
   }
+  if (text === t(lang, 'btnSkipPhone')) {
+    return safeSend(ctx, t(lang, 'phoneSkipped'), { reply_markup: mainKeyboard(lang) });
+  }
 
   if (!session.langLocked) {
     const detected = detectLang(text, ctx.from?.language_code);
@@ -234,7 +258,7 @@ bot.on('message:text', async (ctx) => {
     await ctx.replyWithChatAction('typing');
     typing = setInterval(() => ctx.replyWithChatAction('typing').catch(() => {}), 4500);
 
-    const { text: reply } = await respond({
+    const { text: reply, toolsUsed } = await respond({
       bot,
       session,
       user: ctx.from,
@@ -245,6 +269,10 @@ bot.on('message:text', async (ctx) => {
 
     if (reply) await safeSend(ctx, reply);
     else await safeSend(ctx, t(session.lang, 'error'));
+
+    // The AI just escalated a lead — get a phone number the fast way (one tap)
+    // instead of hoping the customer types it.
+    if (toolsUsed.includes('notify_manager')) await maybeAskForPhone(ctx, session);
   } catch (err) {
     clearInterval(typing);
     const kind = classifyAiError(err);
@@ -273,6 +301,7 @@ bot.on('message:text', async (ctx) => {
     }
 
     await safeSend(ctx, t(session.lang, 'aiDown'));
+    await maybeAskForPhone(ctx, session);
   } finally {
     session.busy = false;
   }

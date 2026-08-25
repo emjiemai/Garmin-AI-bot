@@ -32,7 +32,10 @@ const STRINGS = {
     btnShowrooms: '📍 Шоурумы',
     btnManager: '👤 Менеджер',
     btnSharePhone: '📱 Оставить номер',
+    btnSkipPhone: 'Позже',
     btnLang: '🌐 Til / Язык',
+    askPhone: 'Чтобы менеджер мог сразу связаться с вами, поделитесь номером телефона 👇',
+    phoneSkipped: 'Хорошо. Менеджер напишет вам прямо в этот чат.',
     phoneThanks: (phone) =>
       `✅ Спасибо! Записал ваш номер: ${phone}\nМенеджер свяжется с вами в рабочее время (10:00–20:00).`,
     managerCalled:
@@ -74,7 +77,10 @@ const STRINGS = {
     btnShowrooms: '📍 Showroomlar',
     btnManager: '👤 Menejer',
     btnSharePhone: '📱 Raqam qoldirish',
+    btnSkipPhone: 'Keyinroq',
     btnLang: '🌐 Til / Язык',
+    askPhone: "Menejer siz bilan tezroq bog'lanishi uchun telefon raqamingizni qoldiring 👇",
+    phoneSkipped: "Yaxshi. Menejer shu chatga yozadi.",
     phoneThanks: (phone) =>
       `✅ Rahmat! Raqamingiz saqlandi: ${phone}\nMenejer ish vaqtida (10:00–20:00) siz bilan bog'lanadi.`,
     managerCalled:
