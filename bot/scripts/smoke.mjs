@@ -160,6 +160,7 @@ if (aiProblem) {
 /** Stand-in for the grammY Bot: records outbound calls instead of sending them. */
 const alerts = [];
 const photos = [];
+const copies = [];
 const fakeBot = {
   api: {
     async sendMessage(chatId, text) {
@@ -169,6 +170,10 @@ const fakeBot = {
     async sendPhoto(chatId, photo, other) {
       photos.push({ chatId, photo, caption: other?.caption });
       return { message_id: photos.length };
+    },
+    async copyMessage(chatId, fromChatId, messageId) {
+      copies.push({ chatId, fromChatId, messageId });
+      return { message_id: copies.length };
     }
   }
 };
@@ -180,7 +185,8 @@ const SCENARIOS = [
     lang: 'ru',
     text: 'Привет! Сколько держит батарея у fenix 8 и сколько он стоит?',
     expectTool: true,
-    expectAlert: false
+    expectAlert: false,
+    expectNoPhoto: true // no "photo"/"show me" in the question — must not send one unasked
   },
   {
     label: 'UZ • must answer in Uzbek',
@@ -195,6 +201,14 @@ const SCENARIOS = [
     text: 'А есть фотки fenix 8? Хочу посмотреть как выглядит',
     expectTool: true,
     expectPhoto: true
+  },
+  {
+    label: 'RU • channel-catalog question without "photo" must not auto-forward',
+    lang: 'ru',
+    // Matches the GPSMAP entry indexed in section 6 above.
+    text: 'Есть у вас картплоттер с сонаром для лодки? Сколько стоит?',
+    expectTool: true,
+    expectNoForward: true
   },
   {
     label: 'RU • ready-to-buy should escalate to the manager',
@@ -226,6 +240,8 @@ const SCENARIOS = [
 
 for (const s of aiProblem ? [] : SCENARIOS) {
   const before = alerts.length;
+  const photosBefore = photos.length;
+  const copiesBefore = copies.length;
   const session = getSession(`smoke-${s.label}`);
   session.lang = s.lang;
 
@@ -254,6 +270,13 @@ for (const s of aiProblem ? [] : SCENARIOS) {
       check('used send_product_photo', toolsUsed.includes('send_product_photo'), toolsUsed.join(', '));
       check('sendPhoto was actually called', photos.length > 0);
       check('did not just point to the website instead', !/garmin\.com\.uz|\u043D\u0430\u0436\u043C\u0438\u0442\u0435 \u043A\u043D\u043E\u043F\u043A\u0443/i.test(text), text.slice(0, 120));
+    }
+    if (s.expectNoPhoto) {
+      check('did not send an unrequested photo', !toolsUsed.includes('send_product_photo') && photos.length === photosBefore);
+    }
+    if (s.expectNoForward) {
+      check('used search_channel_catalog', toolsUsed.includes('search_channel_catalog'), toolsUsed.join(', '));
+      check('did not auto-forward without an explicit photo ask', !toolsUsed.includes('forward_channel_product') && copies.length === copiesBefore);
     }
     if (s.lang === 'uz') {
       check('answered in latin script', !/[\u0400-\u04FF]{6,}/.test(text));

@@ -107,9 +107,11 @@ export function searchChannelCatalog(query, limit = 5) {
   scored.sort((a, b) => b.score - a.score);
   return scored.slice(0, limit).map(({ entry }) => ({
     messageId: entry.messageId,
-    // Short snippet only — the AI shouldn't need to quote the full caption in
-    // its own reply, since the forwarded post carries the full text itself.
-    snippet: entry.caption.slice(0, 160)
+    // Long enough to actually answer a question from (price, specs) without
+    // forwarding — forwarding is reserved for an explicit "show me a photo"
+    // ask, not every match. Still capped so a multi-result search doesn't blow
+    // up the tool-result payload.
+    snippet: entry.caption.slice(0, 500)
   }));
 }
 
