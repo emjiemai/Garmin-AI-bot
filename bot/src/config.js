@@ -83,7 +83,15 @@ export const config = {
     webAppUrl: optional('WEBAPP_URL', 'https://garmin-insta-webpage.vercel.app'),
     siteUrl: optional('SITE_URL', 'https://www.garmin.com.uz'),
     catalogUrl: optional('CATALOG_URL', 'https://www.garmin.com.uz/catalog'),
-    phone: optional('CONTACT_PHONE', '+998701203333')
+    /** Public store number — safe to put in buttons, shown to any customer. */
+    phone: optional('CONTACT_PHONE', '+998701203333'),
+    /** The manager's own direct line — only ever spoken in text (never baked
+     *  into a button/link) and only on explicit /manager. Falls back to the
+     *  public store number until this is set. */
+    managerPhone: optional('MANAGER_PHONE', ''),
+    /** Human-run Telegram channel, separate from this AI bot — an escape
+     *  hatch for customers who want a person instead of the assistant. */
+    humanTelegramUrl: optional('HUMAN_TELEGRAM_URL', 'https://t.me/garmin_uz')
   },
 
   /** Where lead JSONL is appended. Ephemeral on Render free — Telegram alerts

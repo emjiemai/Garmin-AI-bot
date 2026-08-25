@@ -38,9 +38,11 @@ const STRINGS = {
     phoneSkipped: 'Хорошо. Менеджер напишет вам прямо в этот чат.',
     phoneThanks: (phone) =>
       `✅ Спасибо! Записал ваш номер: ${phone}\nМенеджер свяжется с вами в рабочее время (10:00–20:00).`,
-    managerCalled:
+    managerCalled: (phone) =>
       '✅ Передал ваш запрос менеджеру — он свяжется с вами в ближайшее время.\n' +
-      'Если срочно, позвоните: +998 (70) 120-33-33',
+      `Если срочно, позвоните: ${phone}`,
+    btnCallUs: '📞 Позвонить',
+    btnTelegramUs: '✉️ Telegram',
     help:
       '*Команды:*\n' +
       '/start — начать заново\n' +
@@ -83,9 +85,11 @@ const STRINGS = {
     phoneSkipped: "Yaxshi. Menejer shu chatga yozadi.",
     phoneThanks: (phone) =>
       `✅ Rahmat! Raqamingiz saqlandi: ${phone}\nMenejer ish vaqtida (10:00–20:00) siz bilan bog'lanadi.`,
-    managerCalled:
+    managerCalled: (phone) =>
       "✅ So'rovingiz menejerga yuborildi — u tez orada bog'lanadi.\n" +
-      "Shoshilinch bo'lsa qo'ng'iroq qiling: +998 (70) 120-33-33",
+      `Shoshilinch bo'lsa qo'ng'iroq qiling: ${phone}`,
+    btnCallUs: "📞 Qo'ng'iroq qilish",
+    btnTelegramUs: '✉️ Telegram',
     help:
       '*Buyruqlar:*\n' +
       '/start — qaytadan boshlash\n' +

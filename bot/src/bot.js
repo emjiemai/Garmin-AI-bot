@@ -150,7 +150,8 @@ async function callManager(ctx, session, reason) {
   });
   session.lead.saved = true;
   session.lead.escalated = true;
-  await safeSend(ctx, t(session.lang, 'managerCalled'), phoneRequestExtra(session));
+  const managerPhone = config.business.managerPhone || config.business.phone;
+  await safeSend(ctx, t(session.lang, 'managerCalled', managerPhone), phoneRequestExtra(session));
 }
 
 bot.command('manager', async (ctx) => {
@@ -234,7 +235,12 @@ bot.on('message:text', async (ctx) => {
   // an explicit /manager should page a human.
   const lang = session.lang;
   if (text === t(lang, 'btnContact')) {
-    return safeSend(ctx, t(lang, 'contactPrompt'));
+    // Two direct escape hatches to a real phone, alongside the AI itself —
+    // no backend alert fires just from tapping this.
+    const directContact = new InlineKeyboard()
+      .url(t(lang, 'btnCallUs'), `tel:${catalog.store.phoneClean}`)
+      .url(t(lang, 'btnTelegramUs'), `https://t.me/${catalog.store.phoneClean}`);
+    return safeSend(ctx, t(lang, 'contactPrompt'), { reply_markup: directContact });
   }
   if (text === t(lang, 'btnShowrooms')) {
     const body = catalog.branches

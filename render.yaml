@@ -118,5 +118,13 @@ services:
         value: https://www.garmin.com.uz
       - key: CATALOG_URL
         value: https://www.garmin.com.uz/catalog
+      # Public store number — fine to expose in buttons/links.
       - key: CONTACT_PHONE
         value: "+998701203333"
+      # Manager's direct line — spoken as text only on explicit /manager, never
+      # in a button. Set this in the dashboard once known; falls back to
+      # CONTACT_PHONE until then.
+      - key: MANAGER_PHONE
+        sync: false
+      - key: HUMAN_TELEGRAM_URL
+        value: https://t.me/garmin_uz
