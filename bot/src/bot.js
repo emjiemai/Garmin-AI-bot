@@ -238,8 +238,8 @@ bot.on('message:text', async (ctx) => {
     // Two direct escape hatches to a real phone, alongside the AI itself —
     // no backend alert fires just from tapping this.
     const directContact = new InlineKeyboard()
-      .url(t(lang, 'btnCallUs'), `tel:${catalog.store.phoneClean}`)
-      .url(t(lang, 'btnTelegramUs'), `https://t.me/${catalog.store.phoneClean}`);
+      .url(t(lang, 'btnCallUs'), `tel:${config.business.phone}`)
+      .url(t(lang, 'btnTelegramUs'), `https://t.me/${config.business.phone}`);
     return safeSend(ctx, t(lang, 'contactPrompt'), { reply_markup: directContact });
   }
   if (text === t(lang, 'btnShowrooms')) {
@@ -278,7 +278,7 @@ bot.on('message:text', async (ctx) => {
     const extra = toolsUsed.includes('notify_manager') ? phoneRequestExtra(session) : {};
 
     if (reply) await safeSend(ctx, reply, extra);
-    else await safeSend(ctx, t(session.lang, 'error'), extra);
+    else await safeSend(ctx, t(session.lang, 'error', config.business.phone), extra);
   } catch (err) {
     clearInterval(typing);
     const kind = classifyAiError(err);
@@ -306,7 +306,7 @@ bot.on('message:text', async (ctx) => {
       session.lead.escalated = true;
     }
 
-    await safeSend(ctx, t(session.lang, 'aiDown'), phoneRequestExtra(session));
+    await safeSend(ctx, t(session.lang, 'aiDown', config.business.phone), phoneRequestExtra(session));
   } finally {
     session.busy = false;
   }

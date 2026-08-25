@@ -3,7 +3,7 @@ import { APP_CONFIG, CATEGORIES, STORIES, BRANCHES, PRODUCTS, FAQ_DATA, TRANSLAT
 import { GarminQuiz } from './quiz.js';
 import { GarminComparator } from './compare.js';
 import { BatterySimulator } from './batterySimulator.js';
-import { botLink, HUMAN_TELEGRAM_URL } from './telegram.js';
+import { botLink, HUMAN_TELEGRAM_URL, openBotLink, installTelegramLinkBridge } from './telegram.js';
 
 class GarminApp {
   constructor() {
@@ -22,6 +22,10 @@ class GarminApp {
   }
 
   init() {
+    // Tells the Telegram client the Mini App is ready to display, and lets us
+    // detect (via WebApp.initData) whether we're actually inside Telegram.
+    window.Telegram?.WebApp?.ready?.();
+    installTelegramLinkBridge();
     this.initInteractiveModules();
     this.setupLanguageSwitcher();
     this.renderStories();
@@ -187,7 +191,7 @@ class GarminApp {
       } else if (story.actionTarget === 'openBranches') {
         document.getElementById('showroomsSection')?.scrollIntoView({ behavior: 'smooth' });
       } else if (story.actionTarget === 'contactTelegram') {
-        window.open(botLink('story', null, this.currentLang), '_blank');
+        openBotLink(botLink('story', null, this.currentLang));
       } else if (story.actionTarget.startsWith('product:')) {
         const pId = story.actionTarget.split(':')[1];
         const prod = PRODUCTS.find(p => p.id === pId);

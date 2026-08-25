@@ -119,8 +119,10 @@ services:
       - key: CATALOG_URL
         value: https://www.garmin.com.uz/catalog
       # Public store number — fine to expose in buttons/links.
+      # NOTE: temporarily set to a personal test number while validating the
+      # Contact-us flow; swap back to the real store line before launch.
       - key: CONTACT_PHONE
-        value: "+998701203333"
+        value: "+9982650322"
       # Manager's direct line — spoken as text only on explicit /manager, never
       # in a button. Set this in the dashboard once known; falls back to
       # CONTACT_PHONE until then.
