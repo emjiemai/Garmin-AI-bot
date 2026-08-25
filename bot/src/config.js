@@ -83,8 +83,8 @@ export const config = {
     webAppUrl: optional('WEBAPP_URL', 'https://garmin-insta-webpage.vercel.app'),
     siteUrl: optional('SITE_URL', 'https://www.garmin.com.uz'),
     catalogUrl: optional('CATALOG_URL', 'https://www.garmin.com.uz/catalog'),
-    /** Public store number — safe to put in buttons, shown to any customer. */
-    phone: optional('CONTACT_PHONE', '+9982650322'),
+    /** Public call center number — safe to put in buttons, shown to any customer. */
+    phone: optional('CONTACT_PHONE', '+998701203333'),
     /** The manager's own direct line — only ever spoken in text (never baked
      *  into a button/link) and only on explicit /manager. Falls back to the
      *  public store number until this is set. */

@@ -77,9 +77,9 @@ services:
         sync: false
       - key: BOT_USERNAME
         value: garminofficialuzbot
-      # Chat id that receives lead alerts.
+      # Chat id that receives lead alerts — the call center's account.
       - key: MANAGER_CHAT_ID
-        sync: false
+        value: "8549844118"
       # Random 256-bit value Render generates; Telegram echoes it back in
       # X-Telegram-Bot-Api-Secret-Token so forged webhook posts are rejected.
       - key: WEBHOOK_SECRET
@@ -118,11 +118,9 @@ services:
         value: https://www.garmin.com.uz
       - key: CATALOG_URL
         value: https://www.garmin.com.uz/catalog
-      # Public store number — fine to expose in buttons/links.
-      # NOTE: temporarily set to a personal test number while validating the
-      # Contact-us flow; swap back to the real store line before launch.
+      # Public call center number — fine to expose in buttons/links.
       - key: CONTACT_PHONE
-        value: "+9982650322"
+        value: "+998701203333"
       # Manager's direct line — spoken as text only on explicit /manager, never
       # in a button. Set this in the dashboard once known; falls back to
       # CONTACT_PHONE until then.

@@ -2208,7 +2208,6 @@ export const FAQ_DATA = [
 
 export const TRANSLATIONS = {
   "ru": {
-    "officialBadge": "Официальный дистрибьютор в Узбекистане",
     "storeStatus": "Шоурумы открыты до 20:00",
     "heroTagline": "Официальный дистрибьютор Garmin в Узбекистане. Смарт-часы, навигаторы и аксессуары с гарантией 1 год.",
     "findWatchQuizBtn": "Подбор модели",
@@ -2254,7 +2253,6 @@ export const TRANSLATIONS = {
     "officialGuaranteeBanner": "Официальная гарантия 1 год • Сервисный центр в Ташкенте • Доставка по Узбекистану"
   },
   "uz": {
-    "officialBadge": "O'zbekistondagi rasmiy distribyutor",
     "storeStatus": "Shourumlar 20:00 gacha ochiq",
     "heroTagline": "O'zbekistondagi rasmiy Garmin distribyutori. 1 yillik kafolat bilan aqlli soatlar, navigatorlar va aksessuarlar.",
     "findWatchQuizBtn": "Model tanlash",
@@ -2300,7 +2298,6 @@ export const TRANSLATIONS = {
     "officialGuaranteeBanner": "1 yillik rasmiy kafolat • Toshkentdagi servis markazi • Butun O'zbekiston bo'ylab yetkazish"
   },
   "en": {
-    "officialBadge": "Official Distributor in Uzbekistan",
     "storeStatus": "Showrooms open until 20:00",
     "heroTagline": "Official Garmin distributor in Uzbekistan. Premium smartwatches, GPS devices and accessories with 1-year warranty.",
     "findWatchQuizBtn": "Watch Advisor",
