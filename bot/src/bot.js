@@ -78,10 +78,15 @@ function contactKeyboard(lang) {
     .oneTime();
 }
 
-/** Prompts for a phone number only when we don't already have one. */
-async function maybeAskForPhone(ctx, session) {
-  if (session.profile.phone) return;
-  await ctx.reply(t(session.lang, 'askPhone'), { reply_markup: contactKeyboard(session.lang) });
+/**
+ * `reply_markup` extra to attach the one-tap contact button to a message we're
+ * already sending — never a separate follow-up. A second message saying
+ * "please share your number" right after the assistant just said "the manager
+ * already has everything" reads as a contradiction and trains customers to
+ * ignore it. One message, one ask.
+ */
+function phoneRequestExtra(session) {
+  return session.profile.phone ? {} : { reply_markup: contactKeyboard(session.lang) };
 }
 
 function isManager(ctx) {
@@ -144,8 +149,7 @@ async function callManager(ctx, session, reason) {
   });
   session.lead.saved = true;
   session.lead.escalated = true;
-  await safeSend(ctx, t(session.lang, 'managerCalled'));
-  await maybeAskForPhone(ctx, session);
+  await safeSend(ctx, t(session.lang, 'managerCalled'), phoneRequestExtra(session));
 }
 
 bot.command('manager', async (ctx) => {
@@ -232,8 +236,8 @@ bot.on('message:text', async (ctx) => {
     return safeSend(
       ctx,
       lang === 'uz'
-        ? `🛍 To'liq katalog: ${catalog.store.catalogUrl}\n\nYoki menga qanday soat kerakligini yozing — men tanlab beraman.`
-        : `🛍 Полный каталог: ${catalog.store.catalogUrl}\n\nИли напишите, какие часы нужны — подберу под вашу задачу.`
+        ? `🛍 To'liq katalog: ${config.business.webAppUrl}\n\nYoki menga qanday soat kerakligini yozing — men tanlab beraman.`
+        : `🛍 Полный каталог: ${config.business.webAppUrl}\n\nИли напишите, какие часы нужны — подберу под вашу задачу.`
     );
   }
   if (text === t(lang, 'btnShowrooms')) {
@@ -267,12 +271,12 @@ bot.on('message:text', async (ctx) => {
 
     clearInterval(typing);
 
-    if (reply) await safeSend(ctx, reply);
-    else await safeSend(ctx, t(session.lang, 'error'));
+    // Attach the one-tap contact button directly to this same message when the
+    // AI just escalated a lead and we don't have a number yet.
+    const extra = toolsUsed.includes('notify_manager') ? phoneRequestExtra(session) : {};
 
-    // The AI just escalated a lead — get a phone number the fast way (one tap)
-    // instead of hoping the customer types it.
-    if (toolsUsed.includes('notify_manager')) await maybeAskForPhone(ctx, session);
+    if (reply) await safeSend(ctx, reply, extra);
+    else await safeSend(ctx, t(session.lang, 'error'), extra);
   } catch (err) {
     clearInterval(typing);
     const kind = classifyAiError(err);
@@ -300,8 +304,7 @@ bot.on('message:text', async (ctx) => {
       session.lead.escalated = true;
     }
 
-    await safeSend(ctx, t(session.lang, 'aiDown'));
-    await maybeAskForPhone(ctx, session);
+    await safeSend(ctx, t(session.lang, 'aiDown'), phoneRequestExtra(session));
   } finally {
     session.busy = false;
   }

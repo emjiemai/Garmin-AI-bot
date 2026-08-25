@@ -5,6 +5,7 @@
 
 import { catalog, formatPrice, getProduct, searchProducts } from '../catalog/catalog.js';
 import { alertManager } from '../leads/notify.js';
+import { config } from '../config.js';
 
 export const TOOL_SCHEMAS = [
   {
@@ -163,7 +164,7 @@ const STORE_TOPICS = {
   contacts: () => ({
     phone: catalog.store.phone,
     website: catalog.store.website,
-    catalog: catalog.store.catalogUrl,
+    catalog: config.business.webAppUrl,
     instagram: catalog.store.instagram,
     working_hours: catalog.store.workingHours
   }),

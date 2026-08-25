@@ -9,12 +9,12 @@ const STRINGS = {
   ru: {
     langName: 'Русский',
     welcome:
-      '👋 Здравствуйте! Я — ИИ-консультант *Garmin Uzbekistan*.\n\n' +
+      '👋 Здравствуйте! Это поддержка *Garmin Uzbekistan*.\n\n' +
       'Помогу подобрать часы, сравнить модели, расскажу про цены, гарантию и доставку.\n\n' +
       'Просто напишите, что вас интересует.',
     welcomeProduct: (name, price) =>
       `👋 Здравствуйте! Вы смотрели *${name}* — ${price}.\n\n` +
-      'Я — ИИ-консультант Garmin Uzbekistan. Расскажу про эту модель, сравню с другими ' +
+      'Это поддержка Garmin Uzbekistan. Расскажу про эту модель, сравню с другими ' +
       'или оформлю заказ. Что интересует?',
     chooseLang: 'Выберите язык / Tilni tanlang:',
     langSet: '✅ Язык переключён на русский.',
@@ -34,7 +34,6 @@ const STRINGS = {
     btnSharePhone: '📱 Оставить номер',
     btnSkipPhone: 'Позже',
     btnLang: '🌐 Til / Язык',
-    askPhone: 'Чтобы менеджер мог сразу связаться с вами, поделитесь номером телефона 👇',
     phoneSkipped: 'Хорошо. Менеджер напишет вам прямо в этот чат.',
     phoneThanks: (phone) =>
       `✅ Спасибо! Записал ваш номер: ${phone}\nМенеджер свяжется с вами в рабочее время (10:00–20:00).`,
@@ -53,13 +52,13 @@ const STRINGS = {
   uz: {
     langName: "O'zbekcha",
     welcome:
-      "👋 Assalomu alaykum! Men — *Garmin Uzbekistan* AI-maslahatchisiman.\n\n" +
+      "👋 Assalomu alaykum! Bu *Garmin Uzbekistan* qo'llab-quvvatlash xizmati.\n\n" +
       "Soat tanlashda yordam beraman, modellarni solishtiraman, narx, kafolat va " +
       "yetkazib berish haqida ma'lumot beraman.\n\n" +
       "Sizni nima qiziqtirayotganini yozing.",
     welcomeProduct: (name, price) =>
       `👋 Assalomu alaykum! Siz *${name}* modelini ko'rdingiz — ${price}.\n\n` +
-      "Men — Garmin Uzbekistan AI-maslahatchisiman. Bu model haqida so'zlab beraman, " +
+      "Bu Garmin Uzbekistan qo'llab-quvvatlash xizmati. Bu model haqida so'zlab beraman, " +
       "boshqalari bilan solishtiraman yoki buyurtma rasmiylashtiramanmi?",
     chooseLang: 'Выберите язык / Tilni tanlang:',
     langSet: "✅ Til o'zbekchaga o'zgartirildi.",
@@ -79,7 +78,6 @@ const STRINGS = {
     btnSharePhone: '📱 Raqam qoldirish',
     btnSkipPhone: 'Keyinroq',
     btnLang: '🌐 Til / Язык',
-    askPhone: "Menejer siz bilan tezroq bog'lanishi uchun telefon raqamingizni qoldiring 👇",
     phoneSkipped: "Yaxshi. Menejer shu chatga yozadi.",
     phoneThanks: (phone) =>
       `✅ Rahmat! Raqamingiz saqlandi: ${phone}\nMenejer ish vaqtida (10:00–20:00) siz bilan bog'lanadi.`,
