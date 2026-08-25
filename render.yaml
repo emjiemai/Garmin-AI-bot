@@ -1,0 +1,76 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+#
+# Deploys the Telegram bot as a free web service running a Telegram webhook.
+# The web app itself stays on Vercel; nothing here touches it.
+#
+# Secrets marked `sync: false` are NOT stored in this file. Render prompts for
+# them once when the Blueprint is first applied, and you can edit them later
+# under Dashboard -> service -> Environment.
+
+services:
+  - type: web
+    name: garmin-ai-bot
+    runtime: node
+    plan: free
+    # Frankfurt is the lowest-latency free region for Uzbekistan.
+    region: frankfurt
+    branch: main
+    # Only the bot/ folder is built and run; web/ is ignored at runtime but is
+    # still checked out, which is what `npm run build` reads the catalog from.
+    rootDir: bot
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+
+    envVars:
+      - key: NODE_VERSION
+        value: "22.20.0"
+
+      # --- Telegram ---------------------------------------------------------
+      # Bot token from @BotFather.
+      - key: BOT_TOKEN
+        sync: false
+      - key: BOT_USERNAME
+        value: garminofficialuzbot
+      # Chat id that receives lead alerts.
+      - key: MANAGER_CHAT_ID
+        sync: false
+      # Random 256-bit value Render generates; Telegram echoes it back in
+      # X-Telegram-Bot-Api-Secret-Token so forged webhook posts are rejected.
+      - key: WEBHOOK_SECRET
+        generateValue: true
+
+      # --- DeepSeek ---------------------------------------------------------
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: DEEPSEEK_BASE_URL
+        value: https://api.deepseek.com
+      - key: DEEPSEEK_MODEL
+        value: deepseek-v4-flash
+      - key: DEEPSEEK_TEMPERATURE
+        value: "0.4"
+      - key: DEEPSEEK_MAX_TOKENS
+        value: "900"
+
+      # --- Runtime ----------------------------------------------------------
+      - key: BOT_MODE
+        value: webhook
+      # PUBLIC_URL is left unset on purpose: the app falls back to
+      # RENDER_EXTERNAL_URL, which Render injects automatically.
+      # Free instances sleep after 15 min idle and cost ~1 min to wake, so the
+      # app pings its own /healthz to stay warm.
+      - key: KEEP_ALIVE
+        value: "true"
+      - key: KEEP_ALIVE_MINUTES
+        value: "12"
+
+      # --- Business links ---------------------------------------------------
+      - key: WEBAPP_URL
+        value: https://garmin-insta-webpage.vercel.app
+      - key: SITE_URL
+        value: https://www.garmin.com.uz
+      - key: CATALOG_URL
+        value: https://www.garmin.com.uz/catalog
+      - key: CONTACT_PHONE
+        value: "+998701203333"

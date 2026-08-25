@@ -1,0 +1,10 @@
+{
+  "name": "garmin-uz-instagram-page",
+  "version": "1.0.0",
+  "description": "Garmin Uzbekistan Interactive Mobile Web App for Instagram Profile",
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  }
+}

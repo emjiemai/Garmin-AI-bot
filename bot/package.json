@@ -1,0 +1,21 @@
+{
+  "name": "garmin-ai-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI sales assistant for Garmin Uzbekistan on Telegram (RU/UZ)",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "node scripts/build-catalog.mjs",
+    "start": "node src/index.js",
+    "dev": "node --env-file=.env --watch src/index.js",
+    "smoke": "node --env-file=.env scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "grammy": "^1.45.1",
+    "openai": "^7.5.0"
+  }
+}
