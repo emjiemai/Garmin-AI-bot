@@ -189,7 +189,7 @@ class GarminApp {
       } else if (story.actionTarget === 'openBranches') {
         document.getElementById('showroomsSection')?.scrollIntoView({ behavior: 'smooth' });
       } else if (story.actionTarget === 'contactTelegram') {
-        window.open(APP_CONFIG.telegramUrl, '_blank');
+        window.open(botLink('story', null, this.currentLang), '_blank');
       } else if (story.actionTarget.startsWith('product:')) {
         const pId = story.actionTarget.split(':')[1];
         const prod = PRODUCTS.find(p => p.id === pId);
