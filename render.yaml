@@ -11,12 +11,14 @@
 services:
   # ---------------------------------------------------------------------
   # Web app — static files, no build step, served from Render's CDN.
-  # Unlike the bot, a static site does not sleep on the free plan.
+  # Unlike the bot, a static site never sleeps — no idle spin-down to work around.
   # ---------------------------------------------------------------------
   - type: web
     name: garmin-webapp
     runtime: static
-    plan: free
+    # Static sites have no instance plan — hosting is free by default and
+    # billed by bandwidth, not compute. `plan` only applies to services with a
+    # real runtime (node, docker, etc.) like garmin-ai-bot below.
     branch: main
     # rootDir scopes both the auto-deploy trigger (only redeploys on changes
     # under web/) and staticPublishPath, which is relative to it below.
