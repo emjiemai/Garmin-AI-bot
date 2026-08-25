@@ -3,7 +3,7 @@ import { APP_CONFIG, CATEGORIES, STORIES, BRANCHES, PRODUCTS, FAQ_DATA, TRANSLAT
 import { GarminQuiz } from './quiz.js';
 import { GarminComparator } from './compare.js';
 import { BatterySimulator } from './batterySimulator.js';
-import { botLink, HUMAN_TELEGRAM_URL, openBotLink, installTelegramLinkBridge } from './telegram.js';
+import { botLink, HUMAN_TELEGRAM_URL, openBotLink, installTelegramLinkBridge, setupBackButton } from './telegram.js';
 
 class GarminApp {
   constructor() {
@@ -26,6 +26,7 @@ class GarminApp {
     // detect (via WebApp.initData) whether we're actually inside Telegram.
     window.Telegram?.WebApp?.ready?.();
     installTelegramLinkBridge();
+    setupBackButton(() => this.closeTopOverlay());
     this.initInteractiveModules();
     this.setupLanguageSwitcher();
     this.renderStories();
@@ -216,6 +217,26 @@ class GarminApp {
       modal.classList.add('hidden');
       modal.classList.remove('flex');
     }
+  }
+
+  /** Closes whichever modal is currently open, for the Telegram BackButton.
+   *  Returns true if something was closed, false if the page had nothing
+   *  open (so the caller knows to close the Mini App itself instead). */
+  closeTopOverlay() {
+    const storyModal = document.getElementById('storyModal');
+    if (storyModal && !storyModal.classList.contains('hidden')) {
+      this.closeStory(); // also clears the story auto-advance timer
+      return true;
+    }
+
+    const productModal = document.getElementById('productModal');
+    if (productModal && !productModal.classList.contains('hidden')) {
+      productModal.classList.add('hidden');
+      productModal.classList.remove('flex');
+      return true;
+    }
+
+    return false;
   }
 
   // --- CATEGORIES ---

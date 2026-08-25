@@ -86,3 +86,25 @@ export function installTelegramLinkBridge() {
     // Outside Telegram: let the browser handle the link natively.
   });
 }
+
+/**
+ * Telegram's in-app WebView intentionally disables the OS edge-swipe-back
+ * gesture inside a Mini App — it would conflict with Telegram's own screen
+ * navigation. The supported replacement is BackButton: a back arrow Telegram
+ * renders in its own header, wired through this SDK call rather than page
+ * content. Without it, a customer has no obvious way to leave.
+ *
+ * @param {() => boolean} closeTopOverlay Called on tap; return true if it
+ *   closed something (a modal), false if there was nothing open. On false,
+ *   the Mini App itself closes, returning the customer to the bot chat they
+ *   opened it from — the natural "back" target for a single-page catalog.
+ */
+export function setupBackButton(closeTopOverlay) {
+  const tg = window.Telegram?.WebApp;
+  if (!tg?.initData || !tg.BackButton) return; // not actually inside Telegram
+
+  tg.BackButton.show();
+  tg.BackButton.onClick(() => {
+    if (!closeTopOverlay()) tg.close();
+  });
+}
