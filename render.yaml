@@ -1,13 +1,53 @@
 # Render Blueprint — https://render.com/docs/blueprint-spec
 #
-# Deploys the Telegram bot as a free web service running a Telegram webhook.
-# The web app itself stays on Vercel; nothing here touches it.
+# Deploys two services from this one repo:
+#   - garmin-webapp : the customer-facing catalog/quiz/comparison site (static)
+#   - garmin-ai-bot : the Telegram bot behind it (Node web service)
 #
 # Secrets marked `sync: false` are NOT stored in this file. Render prompts for
 # them once when the Blueprint is first applied, and you can edit them later
 # under Dashboard -> service -> Environment.
 
 services:
+  # ---------------------------------------------------------------------
+  # Web app — static files, no build step, served from Render's CDN.
+  # Unlike the bot, a static site does not sleep on the free plan.
+  # ---------------------------------------------------------------------
+  - type: web
+    name: garmin-webapp
+    runtime: static
+    plan: free
+    branch: main
+    # rootDir scopes both the auto-deploy trigger (only redeploys on changes
+    # under web/) and staticPublishPath, which is relative to it below.
+    rootDir: web
+    staticPublishPath: .
+    autoDeployTrigger: commit
+
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-XSS-Protection
+        value: "1; mode=block"
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+
+    routes:
+      # cleanUrls equivalent: index.html serves both "/" and any unknown path,
+      # since this is a single-page app with in-page anchors, not real routes.
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # ---------------------------------------------------------------------
+  # Telegram bot — Node web service behind a webhook.
+  # ---------------------------------------------------------------------
   - type: web
     name: garmin-ai-bot
     runtime: node
@@ -68,8 +108,10 @@ services:
         value: "12"
 
       # --- Business links ---------------------------------------------------
+      # Update this once the static site's real onrender.com URL (or custom
+      # domain) is known — Render assigns it at first deploy.
       - key: WEBAPP_URL
-        value: https://garmin-insta-webpage.vercel.app
+        value: https://garmin-webapp.onrender.com
       - key: SITE_URL
         value: https://www.garmin.com.uz
       - key: CATALOG_URL
