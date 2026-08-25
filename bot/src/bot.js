@@ -9,6 +9,7 @@ import { classifyAiError, respond } from './ai/agent.js';
 import { alertManager } from './leads/notify.js';
 import { leadStats, recentLeads } from './leads/store.js';
 import { indexChannelPost, channelCatalogSize } from './channelCatalog.js';
+import { sendProductPhoto } from './media.js';
 
 export const bot = new Bot(config.telegram.token);
 
@@ -127,6 +128,10 @@ bot.command('start', async (ctx) => {
 
   // Arriving with a product in hand is already a buying signal worth logging.
   if (product) {
+    // Show the real photo right away — the customer already told us which
+    // model they want by tapping through from the web app, no need to ask.
+    await sendProductPhoto(bot, session, product, session.lang);
+
     session.history.push({
       role: 'assistant',
       content: `[Клиент открыл чат из веб-приложения, интересуется моделью ${product.name}]`

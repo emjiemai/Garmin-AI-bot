@@ -3,10 +3,11 @@
  *  Executors return plain objects; the caller JSON-stringifies them back into
  *  the conversation as `role: "tool"` messages. */
 
-import { catalog, formatPrice, getProduct, productName, searchProducts } from '../catalog/catalog.js';
+import { catalog, formatPrice, getProduct, searchProducts } from '../catalog/catalog.js';
 import { alertManager } from '../leads/notify.js';
 import { config } from '../config.js';
 import { searchChannelCatalog } from '../channelCatalog.js';
+import { sendProductPhoto } from '../media.js';
 
 export const TOOL_SCHEMAS = [
   {
@@ -45,7 +46,10 @@ export const TOOL_SCHEMAS = [
       name: 'get_product_details',
       description:
         'Получить полные характеристики конкретной модели по её id из каталога. ' +
-        'Вызывай ВСЕГДА перед тем как называть точные спецификации (батарея, экран, GPS, водозащита).',
+        'Вызывай ВСЕГДА перед тем как называть точные спецификации (батарея, экран, ' +
+        'GPS, водозащита) — то есть в любой момент, когда разговор сузился до ОДНОЙ ' +
+        'конкретной модели. Автоматически отправляет клиенту её реальное фото (в ' +
+        'первый раз за диалог) — тебе не нужно ничего для этого делать отдельно.',
       parameters: {
         type: 'object',
         properties: {
@@ -60,10 +64,10 @@ export const TOOL_SCHEMAS = [
     function: {
       name: 'send_product_photo',
       description:
-        'Отправить клиенту реальное фото конкретной модели из каталога часов. ' +
-        'ВСЕГДА вызывай, когда клиент просит фото/показать как выглядит ("фото", ' +
-        '"есть фотки?", "покажи", "rasm bormi", "surat"), а не отправляй ссылку ' +
-        'на сайт вместо этого — у нас есть настоящее фото прямо здесь.',
+        'Отправить (или переслать ещё раз) реальное фото конкретной модели. ' +
+        'get_product_details уже присылает фото автоматически при первом упоминании ' +
+        'модели — эту функцию вызывай отдельно только если клиент просит фото ПОВТОРНО, ' +
+        'или другой цвет/вариант, или ты ещё не вызывал get_product_details для этой модели.',
       parameters: {
         type: 'object',
         properties: {
@@ -277,7 +281,18 @@ export async function executeTool({ name, args }, { bot, session, user }) {
           note: `Модели с id "${args.product_id}" нет в каталоге. Вызови search_catalog.`
         };
       }
-      return publicProduct(p, lang);
+
+      // A specific model just got identified — that's the moment to show a
+      // real photo, without waiting for the customer to ask for one.
+      const details = publicProduct(p, lang);
+      if (!session.sentPhotos.has(p.id)) {
+        const photo = await sendProductPhoto(bot, session, p, lang);
+        if (photo.sent) {
+          details.photo_sent = true;
+          details.note = 'Фото уже отправлено клиенту вместе с этим ответом — не пиши "фото на сайте" и не дублируй ссылку.';
+        }
+      }
+      return details;
     }
 
     case 'send_product_photo': {
@@ -288,19 +303,15 @@ export async function executeTool({ name, args }, { bot, session, user }) {
           note: `Модели с id "${args.product_id}" нет в каталоге. Вызови search_catalog, чтобы найти правильный id.`
         };
       }
-      if (!p.image) {
+
+      const result = await sendProductPhoto(bot, session, p, lang);
+      if (result.error === 'no_image') {
         return { sent: false, error: 'no_image', note: 'Для этой модели нет фото в базе. Извинись и предложи каталог на сайте.' };
       }
-
-      try {
-        await bot.api.sendPhoto(session.chatId, p.image, {
-          caption: `${productName(p, lang)} — ${formatPrice(p.price, lang)}`
-        });
-        return { sent: true, note: 'Фото уже отправлено клиенту. Не присылай ссылку на сайт — она не нужна.' };
-      } catch (err) {
-        console.error('[tools] send_product_photo failed:', err.message);
+      if (!result.sent) {
         return { sent: false, error: 'send_failed', note: 'Не удалось отправить фото. Извинись и предложи каталог на сайте.' };
       }
+      return { sent: true, note: 'Фото отправлено клиенту. Не присылай ссылку на сайт — она не нужна.' };
     }
 
     case 'compare_products': {

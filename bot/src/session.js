@@ -24,6 +24,9 @@ function blank(chatId) {
     context: { productId: null, source: null },
     profile: { name: null, phone: null },
     lead: { saved: false, escalated: false },
+    /** product ids already photographed this session — avoids resending the
+     *  same photo every time the AI re-checks details on the same model. */
+    sentPhotos: new Set(),
     lastSeen: Date.now(),
     /** Simple flood guard. */
     lastMessageAt: 0,
@@ -46,6 +49,7 @@ export function resetHistory(chatId) {
   const s = getSession(chatId);
   s.history = [];
   s.lead = { saved: false, escalated: false };
+  s.sentPhotos = new Set();
   return s;
 }
 
