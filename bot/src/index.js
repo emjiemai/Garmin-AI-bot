@@ -82,7 +82,18 @@ async function main() {
       path,
       express.json(),
       webhookCallback(bot, 'express', {
-        secretToken: config.telegram.webhookSecret || undefined
+        secretToken: config.telegram.webhookSecret || undefined,
+        // grammy's default is 10s with onTimeout:"throw" — Express 5 turns that
+        // rejection into a 500, and Telegram logs it as "Wrong response from
+        // the webhook". A DeepSeek turn with a few tool-calling rounds can
+        // easily take longer than 10s, especially on Render's free CPU, so the
+        // default was firing 500s on ordinary (not even slow) conversations.
+        // Raise the ceiling and make a true timeout non-fatal: Telegram still
+        // gets 200 immediately, the reply just arrives whenever it's ready
+        // instead of the whole exchange being dropped.
+        timeoutMilliseconds: 25_000,
+        onTimeout: () =>
+          console.warn('[webhook] update exceeded 25s — replying in the background instead of failing the request')
       })
     );
 

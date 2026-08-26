@@ -272,26 +272,35 @@ bot.on('message:text', async (ctx) => {
   // manager. Only real purchase intent (via the AI's notify_manager tool) or
   // an explicit /manager should page a human.
   const lang = session.lang;
-  if (text === t(lang, 'btnContact')) {
-    // Two direct escape hatches to a real phone, alongside the AI itself —
-    // no backend alert fires just from tapping this.
-    // A @username link resolves with no lookup step, unlike t.me/+<phone>
-    // (which depends on Telegram's phone resolution and is throttled
-    // server-side against scraping regardless of that account's privacy
-    // settings) — always the more reliable choice when a username exists.
-    const directContact = new InlineKeyboard()
-      .url(t(lang, 'btnCallUs'), `tel:${config.business.phone}`)
-      .url(t(lang, 'btnTelegramUs'), config.business.humanTelegramUrl);
-    return safeSend(ctx, t(lang, 'contactPrompt'), { reply_markup: directContact });
-  }
-  if (text === t(lang, 'btnShowrooms')) {
-    const body = catalog.branches
-      .map((b) => `📍 *${b.name}*\n${b.address}\n🕙 ${b.hours}\n📞 ${b.phone}\n${b.mapUrl}`)
-      .join('\n\n');
-    return safeSend(ctx, body, { link_preview_options: { is_disabled: true } });
-  }
-  if (text === t(lang, 'btnSkipPhone')) {
-    return safeSend(ctx, t(lang, 'phoneSkipped'), { reply_markup: mainKeyboard(lang) });
+  try {
+    if (text === t(lang, 'btnContact')) {
+      // Two direct escape hatches to a real phone, alongside the AI itself —
+      // no backend alert fires just from tapping this.
+      // A @username link resolves with no lookup step, unlike t.me/+<phone>
+      // (which depends on Telegram's phone resolution and is throttled
+      // server-side against scraping regardless of that account's privacy
+      // settings) — always the more reliable choice when a username exists.
+      const directContact = new InlineKeyboard()
+        .url(t(lang, 'btnCallUs'), `tel:${config.business.phone}`)
+        .url(t(lang, 'btnTelegramUs'), config.business.humanTelegramUrl);
+      return await safeSend(ctx, t(lang, 'contactPrompt'), { reply_markup: directContact });
+    }
+    if (text === t(lang, 'btnShowrooms')) {
+      const body = catalog.branches
+        .map((b) => `📍 *${b.name}*\n${b.address}\n🕙 ${b.hours}\n📞 ${b.phone}\n${b.mapUrl}`)
+        .join('\n\n');
+      return await safeSend(ctx, body, { link_preview_options: { is_disabled: true } });
+    }
+    if (text === t(lang, 'btnSkipPhone')) {
+      return await safeSend(ctx, t(lang, 'phoneSkipped'), { reply_markup: mainKeyboard(lang) });
+    }
+  } catch (err) {
+    // These are simple, static replies — a failure here is almost certainly a
+    // Telegram API hiccup, not a real bug. Never let it look like the button
+    // silently did nothing: log it and still tell the customer something broke.
+    console.error('[bot] quick-reply handler failed:', err.message);
+    await safeSend(ctx, t(lang, 'error', config.business.phone)).catch(() => {});
+    return;
   }
 
   if (!session.langLocked) {
