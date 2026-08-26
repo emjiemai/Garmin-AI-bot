@@ -34,14 +34,17 @@ const STRINGS = {
     btnSharePhone: '📱 Оставить номер',
     btnSkipPhone: 'Позже',
     btnLang: '🌐 Til / Язык',
-    contactPrompt: 'Слушаю! Напишите, что вас интересует — цена, наличие, сравнение моделей.',
+    // Telegram has no button type for a phone dialer (a "tel:" URL is rejected
+    // outright as an inline button target) — the number goes in the message
+    // text instead, which Telegram auto-links as tappable-to-call on mobile.
+    contactPrompt: (phone) =>
+      `Слушаю! Напишите, что вас интересует — цена, наличие, сравнение моделей.\n\n📞 Или позвоните: ${phone}`,
     phoneSkipped: 'Хорошо. Менеджер напишет вам прямо в этот чат.',
     phoneThanks: (phone) =>
       `✅ Спасибо! Записал ваш номер: ${phone}\nМенеджер свяжется с вами в рабочее время (10:00–20:00).`,
     managerCalled: (phone) =>
       '✅ Передал ваш запрос менеджеру — он свяжется с вами в ближайшее время.\n' +
       `Если срочно, позвоните: ${phone}`,
-    btnCallUs: '📞 Позвонить',
     btnTelegramUs: '✉️ Telegram',
     help:
       '*Команды:*\n' +
@@ -81,14 +84,14 @@ const STRINGS = {
     btnSharePhone: '📱 Raqam qoldirish',
     btnSkipPhone: 'Keyinroq',
     btnLang: '🌐 Til / Язык',
-    contactPrompt: "Tinglayapman! Sizni nima qiziqtirayotganini yozing — narx, mavjudligi, modellarni solishtirish.",
+    contactPrompt: (phone) =>
+      `Tinglayapman! Sizni nima qiziqtirayotganini yozing — narx, mavjudligi, modellarni solishtirish.\n\n📞 Yoki qo'ng'iroq qiling: ${phone}`,
     phoneSkipped: "Yaxshi. Menejer shu chatga yozadi.",
     phoneThanks: (phone) =>
       `✅ Rahmat! Raqamingiz saqlandi: ${phone}\nMenejer ish vaqtida (10:00–20:00) siz bilan bog'lanadi.`,
     managerCalled: (phone) =>
       "✅ So'rovingiz menejerga yuborildi — u tez orada bog'lanadi.\n" +
       `Shoshilinch bo'lsa qo'ng'iroq qiling: ${phone}`,
-    btnCallUs: "📞 Qo'ng'iroq qilish",
     btnTelegramUs: '✉️ Telegram',
     help:
       '*Buyruqlar:*\n' +

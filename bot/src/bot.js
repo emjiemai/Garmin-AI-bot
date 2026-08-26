@@ -274,16 +274,16 @@ bot.on('message:text', async (ctx) => {
   const lang = session.lang;
   try {
     if (text === t(lang, 'btnContact')) {
-      // Two direct escape hatches to a real phone, alongside the AI itself —
-      // no backend alert fires just from tapping this.
-      // A @username link resolves with no lookup step, unlike t.me/+<phone>
-      // (which depends on Telegram's phone resolution and is throttled
-      // server-side against scraping regardless of that account's privacy
-      // settings) — always the more reliable choice when a username exists.
-      const directContact = new InlineKeyboard()
-        .url(t(lang, 'btnCallUs'), `tel:${config.business.phone}`)
-        .url(t(lang, 'btnTelegramUs'), config.business.humanTelegramUrl);
-      return await safeSend(ctx, t(lang, 'contactPrompt'), { reply_markup: directContact });
+      // Telegram flatly rejects "tel:" as an inline button URL — confirmed
+      // directly against the live API ("Wrong port number specified in the
+      // URL", for every phone format tried) — and rejecting one button
+      // silently kills the WHOLE sendMessage call, not just that button. The
+      // phone number goes in the message text instead (Telegram auto-links a
+      // properly formatted number as tap-to-call), and the username link
+      // — which Telegram does accept — stays as the one inline button. A
+      // @username link also has no phone-resolution step, unlike t.me/+<phone>.
+      const directContact = new InlineKeyboard().url(t(lang, 'btnTelegramUs'), config.business.humanTelegramUrl);
+      return await safeSend(ctx, t(lang, 'contactPrompt', config.business.phone), { reply_markup: directContact });
     }
     if (text === t(lang, 'btnShowrooms')) {
       const body = catalog.branches
