@@ -1,6 +1,6 @@
 export const APP_CONFIG = {
   "storeName": "Garmin Uzbekistan",
-  "officialTitle": "Официальный дистрибьютор в Узбекистане",
+  "officialTitle": "Официальный партнёр Garmin в Узбекистане",
   "phone": "+998 (70) 120-33-33",
   "phoneClean": "+998701203333",
   "telegramBotOrUsername": "garmin_uz",
@@ -100,8 +100,8 @@ export const STORIES = [
     "title": "Гарантия",
     "badge": "Сервис",
     "thumb": "https://www.garmin.com.uz/assets/enduro-3-CY4jEgN2.png",
-    "storyTitle": "Официальная гарантия и сервис",
-    "storySubtitle": "1 год официальной гарантии дистрибьютора, сервисный центр в Ташкенте и бесплатная экспресс-доставка.",
+    "storyTitle": "Официальная гарантия",
+    "storySubtitle": "1 год официальной гарантии на все устройства Garmin.",
     "actionText": "Консультация",
     "actionTarget": "contactTelegram"
   }
@@ -2192,24 +2192,24 @@ export const FAQ_DATA = [
     "q_ru": "Условия гарантии и сервиса",
     "q_uz": "Kafolat va servis shartlari",
     "q_en": "Warranty and service terms",
-    "a_ru": "Мы являемся официальным дистрибьютором Garmin в Узбекистане. На все устройства предоставляется 1 год официальной гарантии и обслуживание в сервисном центре в Ташкенте.",
-    "a_uz": "Barcha qurilmalarga 1 yillik rasmiy distribyutor kafolati va Toshkentdagi servis markazida xizmat ko'rsatish taqdim etiladi.",
-    "a_en": "We provide 1 year of official distributor warranty and service center support in Tashkent for genuine Garmin products."
+    "a_ru": "Мы — официальный партнёр Garmin в Узбекистане. На все устройства предоставляется 1 год официальной гарантии.",
+    "a_uz": "Biz O'zbekistondagi Garmin rasmiy hamkorimiz. Barcha qurilmalarga 1 yillik rasmiy kafolat beriladi.",
+    "a_en": "We are Garmin's official partner in Uzbekistan. All devices come with a 1-year official warranty."
   },
   {
     "q_ru": "Доставка по Ташкенту и регионам Узбекистана",
     "q_uz": "Toshkent va viloyatlar bo'ylab yetkazish",
     "q_en": "Delivery across Tashkent and regions",
-    "a_ru": "Бесплатная экспресс-доставка по Ташкенту в день заказа. Доставка во все регионы Узбекистана курьерскими службами занимает 1–2 рабочих дня.",
-    "a_uz": "Toshkent bo'ylab buyurtma kuni bepul yetkaziladi. Viloyatlarga kuryerlik xizmatlari orqali 1–2 ish kunida yetkazib beriladi.",
-    "a_en": "Free same-day delivery across Tashkent. Regional delivery across Uzbekistan takes 1–2 business days via express couriers."
+    "a_ru": "Доставка выполняется по Ташкенту и регионам Узбекистана. Сроки и стоимость уточняет менеджер при оформлении заказа.",
+    "a_uz": "Yetkazib berish Toshkent va O'zbekiston viloyatlari bo'ylab amalga oshiriladi. Muddat va narxini menejer buyurtma rasmiylashtirishda aytadi.",
+    "a_en": "Delivery is available across Tashkent and the regions of Uzbekistan. Timing and cost are confirmed by our manager when placing your order."
   }
 ];
 
 export const TRANSLATIONS = {
   "ru": {
     "storeStatus": "Шоурумы открыты до 20:00",
-    "heroTagline": "Официальный дистрибьютор Garmin в Узбекистане. Смарт-часы, навигаторы и аксессуары с гарантией 1 год.",
+    "heroTagline": "Официальный партнёр Garmin в Узбекистане. Смарт-часы, навигаторы и аксессуары с гарантией 1 год.",
     "findWatchQuizBtn": "Подбор модели",
     "findWatchQuizSubtitle": "Тест за 60 секунд",
     "compareBtn": "Сравнение",
@@ -2254,7 +2254,7 @@ export const TRANSLATIONS = {
   },
   "uz": {
     "storeStatus": "Shourumlar 20:00 gacha ochiq",
-    "heroTagline": "O'zbekistondagi rasmiy Garmin distribyutori. 1 yillik kafolat bilan aqlli soatlar, navigatorlar va aksessuarlar.",
+    "heroTagline": "O'zbekistondagi Garmin rasmiy hamkori. 1 yillik kafolat bilan aqlli soatlar, navigatorlar va aksessuarlar.",
     "findWatchQuizBtn": "Model tanlash",
     "findWatchQuizSubtitle": "60 soniyali test",
     "compareBtn": "Solishtirish",
@@ -2299,7 +2299,7 @@ export const TRANSLATIONS = {
   },
   "en": {
     "storeStatus": "Showrooms open until 20:00",
-    "heroTagline": "Official Garmin distributor in Uzbekistan. Premium smartwatches, GPS devices and accessories with 1-year warranty.",
+    "heroTagline": "Official Garmin partner in Uzbekistan. Premium smartwatches, GPS devices and accessories with 1-year warranty.",
     "findWatchQuizBtn": "Watch Advisor",
     "findWatchQuizSubtitle": "60-second test",
     "compareBtn": "Compare",

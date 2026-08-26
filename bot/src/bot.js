@@ -275,9 +275,13 @@ bot.on('message:text', async (ctx) => {
   if (text === t(lang, 'btnContact')) {
     // Two direct escape hatches to a real phone, alongside the AI itself —
     // no backend alert fires just from tapping this.
+    // WhatsApp's click-to-chat always opens a real chat with the number; the
+    // Telegram equivalent (t.me/+<phone>) only works if that number's account
+    // has phone-number discovery enabled, which is usually off by default.
+    const phoneDigits = config.business.phone.replace(/\D/g, '');
     const directContact = new InlineKeyboard()
       .url(t(lang, 'btnCallUs'), `tel:${config.business.phone}`)
-      .url(t(lang, 'btnTelegramUs'), `https://t.me/${config.business.phone}`);
+      .url(t(lang, 'btnWhatsApp'), `https://wa.me/${phoneDigits}`);
     return safeSend(ctx, t(lang, 'contactPrompt'), { reply_markup: directContact });
   }
   if (text === t(lang, 'btnShowrooms')) {
