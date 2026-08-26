@@ -42,7 +42,7 @@ const STRINGS = {
       '✅ Передал ваш запрос менеджеру — он свяжется с вами в ближайшее время.\n' +
       `Если срочно, позвоните: ${phone}`,
     btnCallUs: '📞 Позвонить',
-    btnWhatsApp: '💬 WhatsApp',
+    btnTelegramUs: '✉️ Telegram',
     help:
       '*Команды:*\n' +
       '/start — начать заново\n' +
@@ -89,7 +89,7 @@ const STRINGS = {
       "✅ So'rovingiz menejerga yuborildi — u tez orada bog'lanadi.\n" +
       `Shoshilinch bo'lsa qo'ng'iroq qiling: ${phone}`,
     btnCallUs: "📞 Qo'ng'iroq qilish",
-    btnWhatsApp: '💬 WhatsApp',
+    btnTelegramUs: '✉️ Telegram',
     help:
       '*Buyruqlar:*\n' +
       '/start — qaytadan boshlash\n' +
