@@ -275,14 +275,13 @@ bot.on('message:text', async (ctx) => {
   if (text === t(lang, 'btnContact')) {
     // Two direct escape hatches to a real phone, alongside the AI itself —
     // no backend alert fires just from tapping this.
-    // t.me/+<phone> depends on Telegram resolving that phone to an account,
-    // which requires phone-number discovery to be enabled on it AND is
-    // throttled server-side against scraping regardless of that setting — it
-    // can be flaky even when configured correctly. A public @username link
-    // has no such resolution step and is the reliable alternative if one exists.
+    // A @username link resolves with no lookup step, unlike t.me/+<phone>
+    // (which depends on Telegram's phone resolution and is throttled
+    // server-side against scraping regardless of that account's privacy
+    // settings) — always the more reliable choice when a username exists.
     const directContact = new InlineKeyboard()
       .url(t(lang, 'btnCallUs'), `tel:${config.business.phone}`)
-      .url(t(lang, 'btnTelegramUs'), `https://t.me/${config.business.phone}`);
+      .url(t(lang, 'btnTelegramUs'), config.business.humanTelegramUrl);
     return safeSend(ctx, t(lang, 'contactPrompt'), { reply_markup: directContact });
   }
   if (text === t(lang, 'btnShowrooms')) {

@@ -91,7 +91,7 @@ export const config = {
     managerPhone: optional('MANAGER_PHONE', ''),
     /** Human-run Telegram channel, separate from this AI bot — an escape
      *  hatch for customers who want a person instead of the assistant. */
-    humanTelegramUrl: optional('HUMAN_TELEGRAM_URL', 'https://t.me/garmin_uz')
+    humanTelegramUrl: optional('HUMAN_TELEGRAM_URL', 'https://t.me/Garmin_callcenter')
   },
 
   /** Where lead JSONL is appended. Ephemeral on Render free — Telegram alerts

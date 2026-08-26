@@ -127,7 +127,7 @@ services:
       - key: MANAGER_PHONE
         sync: false
       - key: HUMAN_TELEGRAM_URL
-        value: https://t.me/garmin_uz
+        value: https://t.me/Garmin_callcenter
 
       # --- Extended catalog (non-watch products) -----------------------------
       # Photos + Cyrillic descriptions posted here get indexed and forwarded to
