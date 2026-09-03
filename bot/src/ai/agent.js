@@ -1,7 +1,8 @@
-/** DeepSeek chat loop with tool calling.
+/** Chat loop with tool calling, via OpenRouter.
  *
- *  DeepSeek exposes an OpenAI-compatible API, so we drive it with the official
- *  `openai` SDK pointed at https://api.deepseek.com. */
+ *  OpenRouter exposes an OpenAI-compatible API in front of many providers'
+ *  models (Gemini included), so the official `openai` SDK works unmodified —
+ *  only the base URL, key and model name are provider-specific. */
 
 import OpenAI from 'openai';
 import { config } from '../config.js';
@@ -13,7 +14,13 @@ const client = new OpenAI({
   apiKey: config.ai.apiKey,
   baseURL: config.ai.baseUrl,
   timeout: 45_000,
-  maxRetries: 2
+  maxRetries: 2,
+  // Optional per OpenRouter's docs, but recommended: identifies this app on
+  // their leaderboards and in per-app rate-limit accounting.
+  defaultHeaders: {
+    'HTTP-Referer': config.business.siteUrl,
+    'X-Title': 'Garmin Uzbekistan AI Bot'
+  }
 });
 
 /**
@@ -97,7 +104,7 @@ export async function respond({ bot, session, user, userText }) {
     });
 
     const message = completion.choices?.[0]?.message;
-    if (!message) throw new Error('DeepSeek returned no message');
+    if (!message) throw new Error('AI provider returned no message');
 
     const calls = message.tool_calls ?? [];
 

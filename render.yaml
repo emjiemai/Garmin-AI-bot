@@ -85,16 +85,18 @@ services:
       - key: WEBHOOK_SECRET
         generateValue: true
 
-      # --- DeepSeek ---------------------------------------------------------
-      - key: DEEPSEEK_API_KEY
+      # --- AI (via OpenRouter) ------------------------------------------------
+      # https://openrouter.ai/settings/keys
+      - key: AI_API_KEY
         sync: false
-      - key: DEEPSEEK_BASE_URL
-        value: https://api.deepseek.com
-      - key: DEEPSEEK_MODEL
-        value: deepseek-v4-flash
-      - key: DEEPSEEK_TEMPERATURE
+      - key: AI_BASE_URL
+        value: https://openrouter.ai/api/v1
+      # Any OpenRouter model id works here — see https://openrouter.ai/models
+      - key: AI_MODEL
+        value: google/gemini-3.8-flash
+      - key: AI_TEMPERATURE
         value: "0.4"
-      - key: DEEPSEEK_MAX_TOKENS
+      - key: AI_MAX_TOKENS
         value: "900"
 
       # --- Runtime ----------------------------------------------------------

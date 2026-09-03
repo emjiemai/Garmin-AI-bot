@@ -18,7 +18,7 @@ const app = express();
 app.disable('x-powered-by');
 
 const startedAt = Date.now();
-/** Result of the boot-time DeepSeek credential check, reported by /healthz. */
+/** Result of the boot-time AI credential check, reported by /healthz. */
 let aiHealthy = null;
 
 /** Render's health check and the keep-alive pinger both hit this. Always 200:
@@ -51,13 +51,13 @@ async function main() {
   if (aiProblem) {
     console.error(
       `\n${'!'.repeat(72)}\n` +
-        `[ai] DeepSeek is NOT usable — ${aiProblem}\n` +
+        `[ai] ${config.ai.model} is NOT usable — ${aiProblem}\n` +
         `[ai] Customers will be handed straight to a manager until this is fixed.\n` +
-        `[ai] Check DEEPSEEK_API_KEY and the account balance at platform.deepseek.com\n` +
+        `[ai] Check AI_API_KEY and the account balance at openrouter.ai/settings/keys\n` +
         `${'!'.repeat(72)}\n`
     );
   } else {
-    console.log(`[ai] DeepSeek reachable, model ${config.ai.model}`);
+    console.log(`[ai] ${config.ai.model} reachable via OpenRouter`);
   }
   aiHealthy = !aiProblem;
 
@@ -85,7 +85,7 @@ async function main() {
         secretToken: config.telegram.webhookSecret || undefined,
         // grammy's default is 10s with onTimeout:"throw" — Express 5 turns that
         // rejection into a 500, and Telegram logs it as "Wrong response from
-        // the webhook". A DeepSeek turn with a few tool-calling rounds can
+        // the webhook". An AI turn with a few tool-calling rounds can
         // easily take longer than 10s, especially on Render's free CPU, so the
         // default was firing 500s on ordinary (not even slow) conversations.
         // Raise the ceiling and make a true timeout non-fatal: Telegram still

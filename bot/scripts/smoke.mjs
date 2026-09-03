@@ -1,6 +1,6 @@
 /**
- * Offline sanity check — exercises the catalog, the DeepSeek connection and the
- * full tool-calling loop without touching Telegram.
+ * Offline sanity check — exercises the catalog, the OpenRouter connection and
+ * the full tool-calling loop without touching Telegram.
  *
  *   cd bot && npm run smoke
  *
@@ -141,18 +141,18 @@ console.log('\n6. Channel catalog (extended products beyond watches)');
   check('caption-less post is not indexed (nothing to search on)', skipped === null);
 }
 
-console.log(`\n7. DeepSeek (${config.ai.model} @ ${config.ai.baseUrl})`);
+console.log(`\n7. AI provider (${config.ai.model} via ${config.ai.baseUrl})`);
 
 const aiProblem = await checkAiHealth();
 if (aiProblem) {
   failures++;
-  console.log(`\n  FAIL  DeepSeek is unreachable — ${aiProblem}`);
+  console.log(`\n  FAIL  ${config.ai.model} is unreachable — ${aiProblem}`);
   if (aiProblem.startsWith('auth')) {
     console.log('\n  The API key is rejected. Generate a new one at');
-    console.log('  https://platform.deepseek.com/api_keys and set DEEPSEEK_API_KEY.');
+    console.log('  https://openrouter.ai/settings/keys and set AI_API_KEY.');
     console.log('  Keys that have been posted publicly are revoked automatically.');
   } else if (aiProblem.startsWith('billing')) {
-    console.log('\n  The account has no credit. Top up at platform.deepseek.com.');
+    console.log('\n  The account has no credit. Top up at openrouter.ai/settings/credits.');
   }
   console.log('\n  Skipping the conversation scenarios.');
 }

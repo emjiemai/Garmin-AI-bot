@@ -56,12 +56,15 @@ export const config = {
     managerChatId: required('MANAGER_CHAT_ID')
   },
 
+  // OpenRouter is an OpenAI-compatible gateway in front of many providers'
+  // models (Gemini included), so the client code in ai/agent.js needs no
+  // provider-specific logic — only these settings change.
   ai: {
-    apiKey: required('DEEPSEEK_API_KEY'),
-    baseUrl: optional('DEEPSEEK_BASE_URL', 'https://api.deepseek.com'),
-    model: optional('DEEPSEEK_MODEL', 'deepseek-v4-flash'),
-    temperature: Number(optional('DEEPSEEK_TEMPERATURE', '0.4')),
-    maxTokens: Number(optional('DEEPSEEK_MAX_TOKENS', '900')),
+    apiKey: required('AI_API_KEY'),
+    baseUrl: optional('AI_BASE_URL', 'https://openrouter.ai/api/v1'),
+    model: optional('AI_MODEL', 'google/gemini-3.8-flash'),
+    temperature: Number(optional('AI_TEMPERATURE', '0.4')),
+    maxTokens: Number(optional('AI_MAX_TOKENS', '900')),
     /** Safety valve on the tool-calling loop. */
     maxToolRounds: Number(optional('AI_MAX_TOOL_ROUNDS', '4')),
     /** How many prior turns of the conversation we replay to the model. */

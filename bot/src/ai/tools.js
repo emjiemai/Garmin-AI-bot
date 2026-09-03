@@ -1,4 +1,4 @@
-/** Tool definitions handed to DeepSeek plus their server-side executors.
+/** Tool definitions handed to the model plus their server-side executors.
  *
  *  Executors return plain objects; the caller JSON-stringifies them back into
  *  the conversation as `role: "tool"` messages. */

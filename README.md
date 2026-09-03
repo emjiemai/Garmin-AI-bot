@@ -17,7 +17,7 @@ buy.
 | Path | What it is | Hosted on |
 | --- | --- | --- |
 | `web/` | Mobile web app — catalog, quiz, comparison, battery simulator | Vercel |
-| `bot/` | Telegram bot powered by DeepSeek | Render (free) |
+| `bot/` | Telegram bot powered by Gemini (via OpenRouter) | Render (free) |
 | `render.yaml` | Render Blueprint for the bot | — |
 
 The web app is the single source of truth for products and prices.
@@ -103,15 +103,15 @@ index on redeploy becomes a real problem.
 
 ```bash
 cd bot
-cp .env.example .env    # fill in BOT_TOKEN, DEEPSEEK_API_KEY, MANAGER_CHAT_ID
+cp .env.example .env    # fill in BOT_TOKEN, AI_API_KEY, MANAGER_CHAT_ID
 npm install
 npm run build           # generate catalog.json from web/js/data.js
 npm run dev             # long polling, no public URL needed
 ```
 
 Verify everything without touching Telegram — catalog search, language
-detection, deep links, HTML formatting, and three real DeepSeek conversations
-including a hot-lead escalation:
+detection, deep links, HTML formatting, and real conversations against the
+live AI (including a hot-lead escalation):
 
 ```bash
 cd bot && npm run smoke
@@ -128,9 +128,9 @@ npx serve web -l 5177
 1. Push this repo to GitHub.
 2. Render Dashboard → **New → Blueprint** → pick this repo. It reads
    `render.yaml`.
-3. Render prompts for the three secrets marked `sync: false`:
-   `BOT_TOKEN`, `DEEPSEEK_API_KEY`, `MANAGER_CHAT_ID`. `WEBHOOK_SECRET` is
-   generated automatically.
+3. Render prompts for the secrets marked `sync: false`:
+   `BOT_TOKEN` and `AI_API_KEY` (from [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys)).
+   `WEBHOOK_SECRET` is generated automatically.
 4. Deploy. On boot the app registers its own Telegram webhook using
    `RENDER_EXTERNAL_URL` — no manual `setWebhook` call needed.
 5. Check `https://<service>.onrender.com/healthz`.
@@ -151,8 +151,8 @@ The ones worth knowing:
 
 | Variable | Default | Notes |
 | --- | --- | --- |
-| `DEEPSEEK_MODEL` | `deepseek-v4-flash` | Switch to `deepseek-v4-pro` for harder reasoning at higher latency and cost |
-| `DEEPSEEK_TEMPERATURE` | `0.4` | Lower is more literal about prices and specs |
+| `AI_MODEL` | `google/gemini-3.8-flash` | Any [OpenRouter model id](https://openrouter.ai/models) works — swap for a stronger/cheaper one without touching code |
+| `AI_TEMPERATURE` | `0.4` | Lower is more literal about prices and specs |
 | `BOT_MODE` | webhook on Render, polling locally | |
 | `KEEP_ALIVE` | `true` | Self-ping to defeat free-tier spin-down |
 | `AI_HISTORY_TURNS` | `12` | Conversation turns replayed to the model |
