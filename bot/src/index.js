@@ -85,13 +85,13 @@ async function main() {
         secretToken: config.telegram.webhookSecret || undefined,
         // grammy's default is 10s with onTimeout:"throw" — Express 5 turns that
         // rejection into a 500, and Telegram logs it as "Wrong response from
-        // the webhook". An AI turn with a few tool-calling rounds can
-        // easily take longer than 10s, especially on Render's free CPU, so the
-        // default was firing 500s on ordinary (not even slow) conversations.
-        // Raise the ceiling and make a true timeout non-fatal: Telegram still
-        // gets 200 immediately, the reply just arrives whenever it's ready
-        // instead of the whole exchange being dropped.
-        timeoutMilliseconds: 25_000,
+        // the webhook". Measured against the real model (Gemini 3.8 Flash has
+        // mandatory reasoning): ordinary multi-tool-call turns took 8-21s in
+        // testing, so 25s left uncomfortably little margin. Raised further, and
+        // a true timeout is still non-fatal: Telegram gets 200 immediately, the
+        // reply just arrives whenever it's ready instead of the exchange
+        // being dropped.
+        timeoutMilliseconds: 45_000,
         onTimeout: () =>
           console.warn('[webhook] update exceeded 25s — replying in the background instead of failing the request')
       })
