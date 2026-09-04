@@ -47,9 +47,12 @@ export function recentLeads(limit = 10) {
 
 export function leadStats() {
   return {
-    total: recent.length,
+    // "total" is genuine sales leads only — an outage ticket is not one, and
+    // counting it in would overstate real interest to whoever reads /stats.
+    total: recent.filter((l) => l.urgency !== 'outage').length,
     hot: recent.filter((l) => l.urgency === 'now').length,
     warm: recent.filter((l) => l.urgency === 'next').length,
+    outages: recent.filter((l) => l.urgency === 'outage').length,
     withPhone: recent.filter((l) => l.phone).length
   };
 }

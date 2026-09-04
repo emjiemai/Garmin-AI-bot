@@ -1,11 +1,17 @@
 /** Manager alerting.
  *
- *  Two tiers, because the business rule is "rich people can't wait":
- *   - urgency "now"  -> 🔥 HOT LEAD, the manager is expected to act immediately
- *   - urgency "next" -> 🟡 warm lead, follow up during working hours
+ *  Three kinds, because the business rule is "rich people can't wait" — but a
+ *  robot glitching is not the same event as a customer being ready to buy,
+ *  and must never look like one:
+ *   - urgency "now"    -> 🔥 HOT LEAD, the manager is expected to act immediately
+ *   - urgency "next"   -> 🟡 warm lead, follow up during working hours
+ *   - urgency "outage" -> ⚠️ the AI failed to answer at all — an ops problem,
+ *     not a sales signal. Styled deliberately differently from a hot lead so
+ *     it can never be mistaken for "this customer is dying to buy right now"
+ *     when the real story is "our bot broke and someone's waiting."
  *
- *  Both go to MANAGER_CHAT_ID. The alert always carries a direct link to the
- *  customer's chat so the manager can jump straight in. */
+ *  All three go to MANAGER_CHAT_ID. The alert always carries a direct link to
+ *  the customer's chat so the manager can jump straight in. */
 
 import { config } from '../config.js';
 import { formatPrice, getProduct } from '../catalog/catalog.js';
@@ -27,9 +33,12 @@ function customerLink(user) {
 
 function buildAlert({ urgency, user, session, product, summary, phone, name, budget }) {
   const hot = urgency === 'now';
-  const head = hot
-    ? '🔥 <b>ГОРЯЧИЙ ЛИД — КЛИЕНТ ГОТОВ КУПИТЬ СЕЙЧАС</b>'
-    : '🟡 <b>Новый лид — интерес к покупке</b>';
+  const outage = urgency === 'outage';
+  const head = outage
+    ? '⚠️ <b>Клиент остался без ответа — сбой AI-консультанта</b>'
+    : hot
+      ? '🔥 <b>ГОРЯЧИЙ ЛИД — КЛИЕНТ ГОТОВ КУПИТЬ СЕЙЧАС</b>'
+      : '🟡 <b>Новый лид — интерес к покупке</b>';
 
   const lines = [head, ''];
 
@@ -57,7 +66,10 @@ function buildAlert({ urgency, user, session, product, summary, phone, name, bud
   lines.push(`🌐 Язык: ${session.lang.toUpperCase()}  •  Источник: ${esc(session.context.source || 'telegram')}`);
   lines.push(`💬 <a href="${customerLink(user)}">Открыть чат с клиентом</a>`);
 
-  if (hot) {
+  if (outage) {
+    lines.push('');
+    lines.push('🙋 Клиент ждёт ответа вручную — бот не смог ответить сам.');
+  } else if (hot) {
     lines.push('');
     lines.push('⏱ <b>Ответьте в течение 5 минут.</b>');
   }
@@ -92,7 +104,10 @@ export async function alertManager(bot, payload) {
     await bot.api.sendMessage(config.telegram.managerChatId, text, {
       parse_mode: 'HTML',
       link_preview_options: { is_disabled: true },
-      disable_notification: payload.urgency !== 'now'
+      // "next" (warm, follow up whenever) is the only kind quiet enough to
+      // silence — a customer stuck on a broken bot is just as time-sensitive
+      // as a hot lead, even though it must not be styled like one.
+      disable_notification: payload.urgency === 'next'
     });
   } catch (err) {
     // Never let a failed alert break the customer conversation.

@@ -184,16 +184,18 @@ bot.command('stats', async (ctx) => {
     `Лидов всего: <b>${s.total}</b>`,
     `🔥 Горячих (now): <b>${s.hot}</b>`,
     `🟡 Тёплых (next): <b>${s.warm}</b>`,
+    `⚠️ Сбоев AI (не лиды): <b>${s.outages}</b>`,
     `📱 С телефоном: <b>${s.withPhone}</b>`,
     `💬 Активных диалогов: <b>${sessionCount()}</b>`,
     '',
-    '<b>Последние лиды:</b>'
+    '<b>Последние записи:</b>'
   ];
   const last = recentLeads(5);
   if (!last.length) lines.push('—');
+  const icon = { now: '🔥', next: '🟡', outage: '⚠️' };
   for (const l of last) {
     const who = l.username ? `@${l.username}` : l.name || l.chatId;
-    lines.push(`• ${l.urgency === 'now' ? '🔥' : '🟡'} ${who} — ${l.productName ?? 'без товара'}`);
+    lines.push(`• ${icon[l.urgency] ?? '•'} ${who} — ${l.productName ?? 'без товара'}`);
   }
   lines.push('', `🗂 Каталог из канала: <b>${channelCatalogSize()}</b> товаров`);
   await ctx.reply(lines.join('\n'), { parse_mode: 'HTML' });
@@ -335,26 +337,34 @@ bot.on('message:text', async (ctx) => {
     const kind = classifyAiError(err);
     console.error(`[bot] respond failed (${kind}):`, err.message);
 
-    // Roll back the unanswered user turn so it does not poison the next call.
+    // The user's turn failed rather than getting answered — but deleting it
+    // outright (as this used to do) wiped it from the model's memory too, so
+    // the next message started from a blank slate with no idea a question had
+    // even been asked. Keep the question, and record a truthful note in its
+    // place of the answer, so a follow-up like "why is it unavailable?" still
+    // has something to refer back to instead of the model apologizing for
+    // conversation it can no longer see happened.
     if (session.history.at(-1)?.role !== 'assistant') {
-      const lastUser = session.history.findLastIndex((m) => m.role === 'user');
-      if (lastUser >= 0) session.history = session.history.slice(0, lastUser);
+      session.history.push({
+        role: 'assistant',
+        content: '[Технический сбой — не удалось ответить на это сообщение клиента.]'
+      });
     }
 
-    // An AI outage must not cost us the customer. Hand the conversation to a
-    // human rather than showing an error and letting them walk away.
+    // An AI outage must not cost us the customer, but it is not a buying
+    // signal either — alert the manager with urgency "outage", never "now",
+    // so this never gets mistaken for a hot sales lead.
     if (!session.lead.saved) {
       await alertManager(bot, {
-        urgency: 'now',
+        urgency: 'outage',
         user: ctx.from,
         session,
         summary:
-          `ИИ-консультант недоступен (${kind}) — клиент остался без ответа.\n` +
+          `ИИ-консультант не смог ответить (${kind}).\n` +
           `Последнее сообщение клиента: "${text.slice(0, 300)}"`,
         productId: session.context.productId
       }).catch((e) => console.error('[bot] fallback alert failed:', e.message));
       session.lead.saved = true;
-      session.lead.escalated = true;
     }
 
     await safeSend(ctx, t(session.lang, 'aiDown', config.business.phone), phoneRequestExtra(session));
