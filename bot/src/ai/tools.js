@@ -153,7 +153,15 @@ export const TOOL_SCHEMAS = [
             description:
               'Кратко ПО-РУССКИ что нужно клиенту и на чём остановились. 1–3 предложения.'
           },
-          product_id: { type: 'string', description: 'id модели, которой интересуется клиент.' },
+          product_id: { type: 'string', description: 'id модели из каталога, если она там есть.' },
+          product_query: {
+            type: 'string',
+            description:
+              'Название модели СВОИМИ СЛОВАМИ КЛИЕНТА, если её нет в каталоге ' +
+              '(например "Garmin Cirqa", "ремешок для vívomove Luxe"). Обязательно ' +
+              'передавай, когда product_id неизвестен — иначе менеджер получит лид ' +
+              'без единого намёка, о каком товаре шла речь.'
+          },
           customer_name: { type: 'string', description: 'Имя клиента, если известно.' },
           phone: { type: 'string', description: 'Телефон клиента, если оставил.' },
           budget: { type: 'string', description: 'Бюджет клиента, если называл.' }
@@ -269,7 +277,9 @@ export async function executeTool({ name, args }, { bot, session, user }) {
         products: results.map((p) => publicProduct(p, lang)),
         note: results.length
           ? undefined
-          : 'Ничего не найдено. Предложи расширить бюджет или уточнить запрос.'
+          : 'В моих данных ничего не подошло. Это НЕ значит, что мы такое не продаём — ' +
+            'каталог неполный. Уточни запрос/бюджет у клиента, либо попробуй ' +
+            'search_channel_catalog, либо пообещай уточнить наличие у менеджера.'
       };
     }
 
@@ -351,6 +361,7 @@ export async function executeTool({ name, args }, { bot, session, user }) {
         session,
         summary: args.summary,
         productId: args.product_id || session.context.productId,
+        productQuery: args.product_query,
         name: args.customer_name,
         phone: args.phone,
         budget: args.budget
@@ -377,8 +388,9 @@ export async function executeTool({ name, args }, { bot, session, user }) {
         products: matches.map((m) => ({ message_id: m.messageId, snippet: m.snippet })),
         note: matches.length
           ? 'Вызови forward_channel_product с нужным message_id, чтобы клиент увидел фото и полное описание.'
-          : 'Не найдено в расширенном каталоге. Если это похоже на часы, попробуй search_catalog. ' +
-            'Иначе честно скажи, что уточнишь у менеджера.'
+          : 'Нет в моих данных. Если это похоже на часы, попробуй search_catalog. ' +
+            'Иначе НЕ говори клиенту, что мы это не продаём — наши данные неполные. ' +
+            'Скажи, что уточнишь наличие и цену, и вызови notify_manager с product_query.'
       };
     }
 

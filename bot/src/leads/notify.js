@@ -31,7 +31,7 @@ function customerLink(user) {
   return `tg://user?id=${user?.id}`;
 }
 
-function buildAlert({ urgency, user, session, product, summary, phone, name, budget }) {
+function buildAlert({ urgency, user, session, product, summary, phone, name, budget, productQuery }) {
   const hot = urgency === 'now';
   const outage = urgency === 'outage';
   const head = outage
@@ -55,6 +55,13 @@ function buildAlert({ urgency, user, session, product, summary, phone, name, bud
     lines.push('');
     lines.push(`⌚️ <b>Товар:</b> ${esc(product.name)}`);
     lines.push(`💰 <b>Цена:</b> ${esc(formatPrice(product.price))}`);
+  } else if (productQuery) {
+    // Our catalog is not the whole Garmin line-up — a customer asking about a
+    // model we haven't listed is a real lead, not a dead end. Name it, so the
+    // manager isn't handed "customer asked about something" with no subject.
+    lines.push('');
+    lines.push(`⌚️ <b>Спрашивает про:</b> ${esc(productQuery)}`);
+    lines.push('❔ <i>Нет в нашем каталоге — нужно подтвердить наличие и цену.</i>');
   }
 
   if (budget) lines.push(`💵 <b>Бюджет клиента:</b> ${esc(budget)}`);
@@ -92,7 +99,9 @@ export async function alertManager(bot, payload) {
     username: payload.user?.username || null,
     phone: payload.phone || payload.session.profile.phone || null,
     productId: payload.productId || null,
-    productName: product?.name || null,
+    // Falls back to what the customer actually asked for, so a lead about a
+    // model we don't stock still says which model in /stats and the log.
+    productName: product?.name || payload.productQuery || null,
     price: product?.price ?? null,
     budget: payload.budget || null,
     summary: payload.summary,

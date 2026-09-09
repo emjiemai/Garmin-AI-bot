@@ -10,6 +10,7 @@ import { alertManager } from './leads/notify.js';
 import { leadStats, recentLeads } from './leads/store.js';
 import { indexChannelPost, channelCatalogSize } from './channelCatalog.js';
 import { sendProductPhoto } from './media.js';
+import { beginHandoff, endHandoff, extractCustomerId, formatForManager, inHandoff } from './relay.js';
 
 export const bot = new Bot(config.telegram.token);
 
@@ -201,6 +202,71 @@ bot.command('stats', async (ctx) => {
   await ctx.reply(lines.join('\n'), { parse_mode: 'HTML' });
 });
 
+/** Ends a handoff and lets the AI answer this customer again. Accepts either
+ *  a reply to that customer's thread, or an explicit `/release <chat id>`. */
+bot.command('release', async (ctx) => {
+  if (!isManager(ctx)) return;
+
+  const chatId =
+    String(ctx.match ?? '').trim() ||
+    extractCustomerId(ctx.message?.reply_to_message?.text ?? '');
+
+  if (!chatId) {
+    return ctx.reply(
+      'Ответьте командой /release на сообщение клиента, или укажите id: /release 123456789'
+    );
+  }
+
+  endHandoff(getSession(chatId));
+  await ctx.reply(`✅ AI снова отвечает клиенту <code>${chatId}</code>.`, { parse_mode: 'HTML' });
+});
+
+/* ------------------------------------------------------------------- relay */
+
+/**
+ * Everything the manager types in the bot's chat. A reply to a lead alert (or
+ * to a relayed customer message) is carried to that customer; anything else
+ * gets a short hint rather than being fed to the AI as if the manager were a
+ * customer, which is what used to happen — confusing, and it burned credits.
+ */
+bot.on('message:text', async (ctx, next) => {
+  if (!isManager(ctx)) return next();
+
+  const replied = ctx.message.reply_to_message?.text;
+  const customerId = replied ? extractCustomerId(replied) : null;
+
+  if (!customerId) {
+    await ctx.reply(
+      'ℹ️ Чтобы ответить клиенту — ответьте (reply) на сообщение с лидом, ' +
+        'и я передам ваш текст ему.\n\n/stats — статистика, /release — вернуть AI.'
+    );
+    return;
+  }
+
+  const session = getSession(customerId);
+  try {
+    // Sent as ordinary text: from the customer's side this is the same voice
+    // that has been helping them all along, not a visibly different channel.
+    await bot.api.sendMessage(customerId, ctx.message.text);
+  } catch (err) {
+    console.error('[relay] delivery to customer failed:', err.message);
+    await ctx.reply(
+      `⚠️ Не удалось доставить сообщение клиенту <code>${customerId}</code>: ${err.message}`,
+      { parse_mode: 'HTML' }
+    );
+    return;
+  }
+
+  const first = !inHandoff(session);
+  beginHandoff(session);
+  await ctx.reply(
+    first
+      ? '✅ Отправлено. AI больше не отвечает этому клиенту — вы ведёте диалог. ' +
+          'Его ответы будут приходить сюда. /release — вернуть AI.'
+      : '✅ Отправлено.'
+  );
+});
+
 /* ------------------------------------------------------------- channel catalog */
 
 /** Indexes a product post from CHANNEL_CATALOG_ID for later search+forward.
@@ -268,6 +334,25 @@ bot.on('message:text', async (ctx) => {
     return; // drop the burst silently rather than queueing duplicate answers
   }
   session.lastMessageAt = now;
+
+  // A manager is handling this person personally — carry their message across
+  // instead of answering, so the customer isn't talking to two voices at once.
+  if (inHandoff(session)) {
+    try {
+      const sent = await bot.api.sendMessage(
+        config.telegram.managerChatId,
+        formatForManager({ user: ctx.from, session, text }),
+        { parse_mode: 'HTML' }
+      );
+      if (!sent) throw new Error('no message returned');
+    } catch (err) {
+      // Don't strand the customer in silence if the relay itself breaks:
+      // drop the handoff so the AI picks the conversation back up.
+      console.error('[relay] delivery to manager failed, releasing handoff:', err.message);
+      endHandoff(session);
+    }
+    return;
+  }
 
   // Reply-keyboard buttons are ordinary text; map them to intents first.
   // btnContact is a soft "I have a question" nudge — it does NOT alert the

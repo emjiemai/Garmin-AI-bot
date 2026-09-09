@@ -27,6 +27,9 @@ function blank(chatId) {
     /** product ids already photographed this session — avoids resending the
      *  same photo every time the AI re-checks details on the same model. */
     sentPhotos: new Set(),
+    /** Epoch ms until which a manager is handling this customer personally
+     *  and the AI stays quiet. 0 = the AI is answering. See relay.js. */
+    handoffUntil: 0,
     lastSeen: Date.now(),
     /** Simple flood guard. */
     lastMessageAt: 0,
