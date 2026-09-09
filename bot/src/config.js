@@ -56,19 +56,34 @@ export const config = {
     managerChatId: required('MANAGER_CHAT_ID')
   },
 
-  // OpenRouter is an OpenAI-compatible gateway in front of many providers'
-  // models (Gemini included), so the client code in ai/agent.js needs no
-  // provider-specific logic — only these settings change.
+  /**
+   * DeepSeek and OpenRouter are both OpenAI-compatible, so ai/agent.js needs
+   * no provider-specific logic — switching between them is these three values
+   * and nothing else. Anything that genuinely differs per provider (auth
+   * headers, where to top up a balance) is derived from the base URL below
+   * rather than hardcoded, so flipping back is one env var, not a code edit.
+   */
   ai: {
     apiKey: required('AI_API_KEY'),
-    baseUrl: optional('AI_BASE_URL', 'https://openrouter.ai/api/v1'),
-    model: optional('AI_MODEL', 'google/gemini-3.8-flash'),
+    baseUrl: optional('AI_BASE_URL', 'https://api.deepseek.com'),
+    model: optional('AI_MODEL', 'deepseek-v4-flash'),
     temperature: Number(optional('AI_TEMPERATURE', '0.4')),
     maxTokens: Number(optional('AI_MAX_TOKENS', '900')),
     /** Safety valve on the tool-calling loop. */
     maxToolRounds: Number(optional('AI_MAX_TOOL_ROUNDS', '4')),
     /** How many prior turns of the conversation we replay to the model. */
-    historyTurns: Number(optional('AI_HISTORY_TURNS', '12'))
+    historyTurns: Number(optional('AI_HISTORY_TURNS', '12')),
+    /** Where to fix a rejected key or an empty balance, for the boot-time
+     *  banner and the smoke test — right for whichever provider is set. */
+    get consoleUrl() {
+      if (/openrouter\.ai/i.test(this.baseUrl)) return 'https://openrouter.ai/settings/keys';
+      if (/deepseek\.com/i.test(this.baseUrl)) return 'https://platform.deepseek.com/api_keys';
+      return this.baseUrl;
+    },
+    /** OpenRouter asks callers to identify themselves; nobody else wants it. */
+    get isOpenRouter() {
+      return /openrouter\.ai/i.test(this.baseUrl);
+    }
   },
 
   server: {

@@ -85,15 +85,19 @@ services:
       - key: WEBHOOK_SECRET
         generateValue: true
 
-      # --- AI (via OpenRouter) ------------------------------------------------
-      # https://openrouter.ai/settings/keys
+      # --- AI ------------------------------------------------------------------
+      # Currently DeepSeek (https://platform.deepseek.com/api_keys).
+      # Any OpenAI-compatible provider works: set AI_BASE_URL + AI_MODEL and
+      # put that provider's key in AI_API_KEY — no code change needed. For
+      # OpenRouter it's https://openrouter.ai/api/v1 + any id from
+      # https://openrouter.ai/models.
       - key: AI_API_KEY
         sync: false
       - key: AI_BASE_URL
-        value: https://openrouter.ai/api/v1
-      # Any OpenRouter model id works here — see https://openrouter.ai/models
+        value: https://api.deepseek.com
+      # deepseek-v4-flash (fast, cheap) or deepseek-v4-pro (smarter, slower)
       - key: AI_MODEL
-        value: google/gemini-3.8-flash
+        value: deepseek-v4-flash
       - key: AI_TEMPERATURE
         value: "0.4"
       - key: AI_MAX_TOKENS

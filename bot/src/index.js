@@ -53,11 +53,11 @@ async function main() {
       `\n${'!'.repeat(72)}\n` +
         `[ai] ${config.ai.model} is NOT usable — ${aiProblem}\n` +
         `[ai] Customers will be handed straight to a manager until this is fixed.\n` +
-        `[ai] Check AI_API_KEY and the account balance at openrouter.ai/settings/keys\n` +
+        `[ai] Check AI_API_KEY and the account balance at ${config.ai.consoleUrl}\n` +
         `${'!'.repeat(72)}\n`
     );
   } else {
-    console.log(`[ai] ${config.ai.model} reachable via OpenRouter`);
+    console.log(`[ai] ${config.ai.model} reachable via ${config.ai.baseUrl}`);
   }
   aiHealthy = !aiProblem;
 

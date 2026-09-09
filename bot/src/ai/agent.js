@@ -1,8 +1,8 @@
-/** Chat loop with tool calling, via OpenRouter.
+/** Chat loop with tool calling.
  *
- *  OpenRouter exposes an OpenAI-compatible API in front of many providers'
- *  models (Gemini included), so the official `openai` SDK works unmodified —
- *  only the base URL, key and model name are provider-specific. */
+ *  DeepSeek and OpenRouter both expose OpenAI-compatible APIs, so the official
+ *  `openai` SDK drives either one unmodified — the base URL, key and model
+ *  name (see config.ai) are all that differ. */
 
 import OpenAI from 'openai';
 import { config } from '../config.js';
@@ -15,12 +15,16 @@ const client = new OpenAI({
   baseURL: config.ai.baseUrl,
   timeout: 45_000,
   maxRetries: 2,
-  // Optional per OpenRouter's docs, but recommended: identifies this app on
-  // their leaderboards and in per-app rate-limit accounting.
-  defaultHeaders: {
-    'HTTP-Referer': config.business.siteUrl,
-    'X-Title': 'Garmin Uzbekistan AI Bot'
-  }
+  // Only OpenRouter asks for these (it uses them for per-app rate-limit
+  // accounting); sending them to DeepSeek would just be noise.
+  ...(config.ai.isOpenRouter
+    ? {
+        defaultHeaders: {
+          'HTTP-Referer': config.business.siteUrl,
+          'X-Title': 'Garmin Uzbekistan AI Bot'
+        }
+      }
+    : {})
 });
 
 /**

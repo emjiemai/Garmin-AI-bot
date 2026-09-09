@@ -17,7 +17,7 @@ buy.
 | Path | What it is | Hosted on |
 | --- | --- | --- |
 | `web/` | Mobile web app — catalog, quiz, comparison, battery simulator | Vercel |
-| `bot/` | Telegram bot powered by Gemini (via OpenRouter) | Render (free) |
+| `bot/` | Telegram bot powered by DeepSeek | Render (free) |
 | `render.yaml` | Render Blueprint for the bot | — |
 
 The web app is the single source of truth for products and prices.
@@ -129,7 +129,7 @@ npx serve web -l 5177
 2. Render Dashboard → **New → Blueprint** → pick this repo. It reads
    `render.yaml`.
 3. Render prompts for the secrets marked `sync: false`:
-   `BOT_TOKEN` and `AI_API_KEY` (from [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys)).
+   `BOT_TOKEN` and `AI_API_KEY` (from [platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys)).
    `WEBHOOK_SECRET` is generated automatically.
 4. Deploy. On boot the app registers its own Telegram webhook using
    `RENDER_EXTERNAL_URL` — no manual `setWebhook` call needed.
@@ -151,7 +151,8 @@ The ones worth knowing:
 
 | Variable | Default | Notes |
 | --- | --- | --- |
-| `AI_MODEL` | `google/gemini-3.8-flash` | Any [OpenRouter model id](https://openrouter.ai/models) works — swap for a stronger/cheaper one without touching code |
+| `AI_MODEL` | `deepseek-v4-flash` | `deepseek-v4-pro` for harder reasoning at higher latency/cost |
+| `AI_BASE_URL` | `https://api.deepseek.com` | Any OpenAI-compatible provider — e.g. `https://openrouter.ai/api/v1` with an [OpenRouter model id](https://openrouter.ai/models). Switching providers is these two vars plus the key, no code change |
 | `AI_TEMPERATURE` | `0.4` | Lower is more literal about prices and specs |
 | `BOT_MODE` | webhook on Render, polling locally | |
 | `KEEP_ALIVE` | `true` | Self-ping to defeat free-tier spin-down |

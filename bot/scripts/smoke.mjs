@@ -149,10 +149,10 @@ if (aiProblem) {
   console.log(`\n  FAIL  ${config.ai.model} is unreachable — ${aiProblem}`);
   if (aiProblem.startsWith('auth')) {
     console.log('\n  The API key is rejected. Generate a new one at');
-    console.log('  https://openrouter.ai/settings/keys and set AI_API_KEY.');
+    console.log(`  ${config.ai.consoleUrl} and set AI_API_KEY.`);
     console.log('  Keys that have been posted publicly are revoked automatically.');
   } else if (aiProblem.startsWith('billing')) {
-    console.log('\n  The account has no credit. Top up at openrouter.ai/settings/credits.');
+    console.log(`\n  The account has no credit. Top up at ${config.ai.consoleUrl}.`);
   }
   console.log('\n  Skipping the conversation scenarios.');
 }
