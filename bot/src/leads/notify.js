@@ -31,7 +31,34 @@ function customerLink(user) {
   return `tg://user?id=${user?.id}`;
 }
 
-function buildAlert({ urgency, user, session, product, summary, phone, name, budget, productQuery }) {
+/** Why a buy-now lead went out before the bot collected everything. */
+const INCOMPLETE_NOTES = {
+  timeout: '⚠️ <i>Клиент не завершил оформление — не ответил на уточняющие вопросы. Отправляем что есть.</i>',
+  phone_declined: '⚠️ <i>Клиент не захотел оставлять номер — свяжитесь через Telegram.</i>'
+};
+
+function fulfillmentLine(order) {
+  if (order?.fulfillment === 'pickup') {
+    return `🏬 <b>Получение:</b> самовывоз${order.showroom ? ` — ${esc(order.showroom)}` : ''}`;
+  }
+  if (order?.fulfillment === 'delivery') {
+    return `🚚 <b>Получение:</b> доставка${order.address ? ` — ${esc(order.address)}` : ''}`;
+  }
+  return '🚚 <b>Получение:</b> не уточнено';
+}
+
+function buildAlert({
+  urgency,
+  user,
+  session,
+  product,
+  summary,
+  phone,
+  name,
+  budget,
+  productQuery,
+  incompleteReason
+}) {
   const hot = urgency === 'now';
   const outage = urgency === 'outage';
   const head = outage
@@ -66,12 +93,21 @@ function buildAlert({ urgency, user, session, product, summary, phone, name, bud
 
   if (budget) lines.push(`💵 <b>Бюджет клиента:</b> ${esc(budget)}`);
 
+  if (hot) lines.push(fulfillmentLine(session.order));
+
   lines.push('');
   lines.push(`🗒 <b>Суть запроса:</b>\n${esc(summary)}`);
+
+  if (incompleteReason) {
+    lines.push('');
+    lines.push(INCOMPLETE_NOTES[incompleteReason] ?? INCOMPLETE_NOTES.timeout);
+  }
 
   lines.push('');
   lines.push(`🌐 Язык: ${session.lang.toUpperCase()}  •  Источник: ${esc(session.context.source || 'telegram')}`);
   lines.push(`💬 <a href="${customerLink(user)}">Открыть чат с клиентом</a>`);
+  // Works even for customers with no @username — see relay.js.
+  lines.push('↩️ <i>Ответьте на это сообщение — ответ уйдёт клиенту в бот.</i>');
 
   if (outage) {
     lines.push('');

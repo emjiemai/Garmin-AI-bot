@@ -42,6 +42,10 @@ const STRINGS = {
     phoneSkipped: 'Хорошо. Менеджер напишет вам прямо в этот чат.',
     phoneThanks: (phone) =>
       `✅ Спасибо! Записал ваш номер: ${phone}\nМенеджер свяжется с вами в рабочее время (10:00–20:00).`,
+    askFulfillment:
+      'Спасибо, номер записал! Последний вопрос: заберёте в одном из наших шоурумов или нужна доставка?',
+    orderSent: (phone) =>
+      `✅ Спасибо! Заказ передан менеджеру — он свяжется с вами по номеру ${phone} в ближайшие минуты.`,
     managerCalled: (phone) =>
       '✅ Передал ваш запрос менеджеру — он свяжется с вами в ближайшее время.\n' +
       `Если срочно, позвоните: ${phone}`,
@@ -89,6 +93,10 @@ const STRINGS = {
     phoneSkipped: "Yaxshi. Menejer shu chatga yozadi.",
     phoneThanks: (phone) =>
       `✅ Rahmat! Raqamingiz saqlandi: ${phone}\nMenejer ish vaqtida (10:00–20:00) siz bilan bog'lanadi.`,
+    askFulfillment:
+      "Rahmat, raqamingiz saqlandi! Oxirgi savol: showroomimizdan olib ketasizmi yoki yetkazib berish kerakmi?",
+    orderSent: (phone) =>
+      `✅ Rahmat! Buyurtma menejerga yuborildi — u yaqin daqiqalarda ${phone} raqamiga bog'lanadi.`,
     managerCalled: (phone) =>
       "✅ So'rovingiz menejerga yuborildi — u tez orada bog'lanadi.\n" +
       `Shoshilinch bo'lsa qo'ng'iroq qiling: ${phone}`,

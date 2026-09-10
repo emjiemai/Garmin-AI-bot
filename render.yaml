@@ -127,6 +127,10 @@ services:
       # Public call center number — fine to expose in buttons/links.
       - key: CONTACT_PHONE
         value: "+998701203333"
+      # A buy-now lead waits this long for the customer's phone and
+      # pickup/delivery choice before it goes to the manager anyway.
+      - key: LEAD_HOLD_MINUTES
+        value: "5"
       # Manager's direct line — spoken as text only on explicit /manager, never
       # in a button. Set this in the dashboard once known; falls back to
       # CONTACT_PHONE until then.

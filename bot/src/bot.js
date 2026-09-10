@@ -7,6 +7,7 @@ import { parseStartPayload } from './deeplink.js';
 import { getSession, resetHistory, sessionCount } from './session.js';
 import { classifyAiError, isFatalAiError, respond } from './ai/agent.js';
 import { alertManager } from './leads/notify.js';
+import { flushPendingLead, missingForHotLead } from './leads/pending.js';
 import { leadStats, recentLeads } from './leads/store.js';
 import { indexChannelPost, channelCatalogSize } from './channelCatalog.js';
 import { sendProductPhoto } from './media.js';
@@ -162,13 +163,20 @@ bot.command('help', async (ctx) => {
 
 /** Explicit "get me a human" — always a hot alert, no AI in the loop. */
 async function callManager(ctx, session, reason) {
-  await alertManager(bot, {
-    urgency: 'now',
-    user: ctx.from,
-    session,
-    summary: reason,
-    productId: session.context.productId
-  });
+  if (session.lead.pending) {
+    // An order was already being collected — send that one, now, with the
+    // request for a human noted, rather than a second separate alert.
+    session.lead.pending.summary = `${session.lead.pending.summary}\n${reason}`;
+    await flushPendingLead(bot, session, 'immediate');
+  } else {
+    await alertManager(bot, {
+      urgency: 'now',
+      user: ctx.from,
+      session,
+      summary: reason,
+      productId: session.context.productId
+    });
+  }
   session.lead.saved = true;
   session.lead.escalated = true;
   const managerPhone = config.business.managerPhone || config.business.phone;
@@ -312,6 +320,31 @@ bot.on('message:contact', async (ctx) => {
     session.profile.name = [contact.first_name, contact.last_name].filter(Boolean).join(' ');
   }
 
+  // Mid-order: the phone was one of the details a held buy-now lead was
+  // waiting on. Either that completes it, or ask the one thing still missing.
+  // Recorded in history too, so the AI knows what was just asked and answered.
+  if (session.lead.pending) {
+    session.history.push({
+      role: 'user',
+      content: `[Клиент поделился номером телефона через кнопку: ${contact.phone_number}]`
+    });
+
+    if (missingForHotLead(session).length) {
+      const ask = t(session.lang, 'askFulfillment');
+      session.history.push({ role: 'assistant', content: ask });
+      await safeSend(ctx, ask, { reply_markup: mainKeyboard(session.lang) });
+      return;
+    }
+
+    const result = await flushPendingLead(bot, session, 'complete');
+    const reply = result?.delivered
+      ? t(session.lang, 'orderSent', contact.phone_number)
+      : t(session.lang, 'phoneThanks', contact.phone_number);
+    session.history.push({ role: 'assistant', content: reply });
+    await safeSend(ctx, reply, { reply_markup: mainKeyboard(session.lang) });
+    return;
+  }
+
   await safeSend(ctx, t(session.lang, 'phoneThanks', contact.phone_number), {
     reply_markup: mainKeyboard(session.lang)
   });
@@ -384,6 +417,8 @@ bot.on('message:text', async (ctx) => {
       return await safeSend(ctx, body, { link_preview_options: { is_disabled: true } });
     }
     if (text === t(lang, 'btnSkipPhone')) {
+      // No number is coming — don't make a held buy-now lead wait out its timer.
+      if (session.lead.pending) await flushPendingLead(bot, session, 'phone_declined');
       return await safeSend(ctx, t(lang, 'phoneSkipped'), { reply_markup: mainKeyboard(lang) });
     }
   } catch (err) {
@@ -417,8 +452,9 @@ bot.on('message:text', async (ctx) => {
     clearInterval(typing);
 
     // Attach the one-tap contact button directly to this same message when the
-    // AI just escalated a lead and we don't have a number yet.
-    const extra = toolsUsed.includes('notify_manager') ? phoneRequestExtra(session) : {};
+    // AI just escalated a lead, or an order is still waiting on the number.
+    const extra =
+      toolsUsed.includes('notify_manager') || session.lead.pending ? phoneRequestExtra(session) : {};
 
     if (reply) await safeSend(ctx, reply, extra);
     else await safeSend(ctx, t(session.lang, 'error', config.business.phone), extra);

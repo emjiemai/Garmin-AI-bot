@@ -8,6 +8,14 @@ import { alertManager } from '../leads/notify.js';
 import { config } from '../config.js';
 import { searchChannelCatalog } from '../channelCatalog.js';
 import { sendProductPhoto } from '../media.js';
+import {
+  completeIfReady,
+  describeMissing,
+  dropPendingLead,
+  flushPendingLead,
+  holdHotLead,
+  missingForHotLead
+} from '../leads/pending.js';
 
 export const TOOL_SCHEMAS = [
   {
@@ -121,13 +129,21 @@ export const TOOL_SCHEMAS = [
     function: {
       name: 'save_customer_contact',
       description:
-        'Сохранить имя и/или телефон клиента, как только он их назвал. ' +
-        'Вызывай сразу, не откладывая до конца диалога.',
+        'Сохранить данные клиента для заказа — имя, телефон, способ получения, ' +
+        'шоурум или адрес доставки — как только он их назвал. Вызывай сразу, не ' +
+        'откладывая. Если заказ ждал этих данных, он уйдёт менеджеру автоматически.',
       parameters: {
         type: 'object',
         properties: {
           name: { type: 'string', description: 'Имя клиента.' },
-          phone: { type: 'string', description: 'Номер телефона в любом формате.' }
+          phone: { type: 'string', description: 'Номер телефона в любом формате.' },
+          fulfillment: {
+            type: 'string',
+            enum: ['pickup', 'delivery'],
+            description: '"pickup" — заберёт в шоуруме; "delivery" — нужна доставка.'
+          },
+          showroom: { type: 'string', description: 'Какой шоурум, если клиент назвал.' },
+          delivery_address: { type: 'string', description: 'Город/адрес доставки, если клиент назвал.' }
         }
       }
     }
@@ -137,9 +153,10 @@ export const TOOL_SCHEMAS = [
     function: {
       name: 'notify_manager',
       description:
-        'Уведомить живого менеджера о клиенте. urgency="now" — клиент готов купить ' +
-        'прямо сейчас, менеджер получит срочный алерт. urgency="next" — тёплый лид, ' +
-        'связаться в рабочее время. Вызывай по правилам из системного промпта.',
+        'Уведомить живого менеджера о клиенте. urgency="now" — клиент готов купить: ' +
+        'заказ уйдёт менеджеру, когда известны телефон и способ получения, а пока их ' +
+        'нет, результат скажет, что спросить. urgency="next" — тёплый лид, связаться ' +
+        'в рабочее время. Вызывай по правилам из системного промпта.',
       parameters: {
         type: 'object',
         properties: {
@@ -164,7 +181,13 @@ export const TOOL_SCHEMAS = [
           },
           customer_name: { type: 'string', description: 'Имя клиента, если известно.' },
           phone: { type: 'string', description: 'Телефон клиента, если оставил.' },
-          budget: { type: 'string', description: 'Бюджет клиента, если называл.' }
+          budget: { type: 'string', description: 'Бюджет клиента, если называл.' },
+          immediate: {
+            type: 'boolean',
+            description:
+              'true ТОЛЬКО если клиент прямо просит живого человека/менеджера/звонок ' +
+              'сейчас — тогда алерт уходит сразу, без сбора телефона и способа получения.'
+          }
         },
         required: ['urgency', 'summary']
       }
@@ -261,6 +284,17 @@ const STORE_TOPICS = {
  * @param {{name:string, args:object}} call
  * @param {{bot:import('grammy').Bot, session:object, user:object}} ctx
  */
+/** What the model is told after a buy-now alert actually went out. */
+function hotLeadResult(result) {
+  return {
+    notified: Boolean(result?.delivered),
+    urgency: 'now',
+    note: result?.delivered
+      ? 'Менеджер получил срочный алерт. Скажи клиенту, что менеджер свяжется в течение нескольких минут.'
+      : 'Алерт не доставлен. Дай клиенту прямой телефон ' + catalog.store.phone
+  };
+}
+
 export async function executeTool({ name, args }, { bot, session, user }) {
   const lang = session.lang;
 
@@ -341,42 +375,95 @@ export async function executeTool({ name, args }, { bot, session, user }) {
     case 'save_customer_contact': {
       if (args.name) session.profile.name = String(args.name).slice(0, 80);
       if (args.phone) session.profile.phone = String(args.phone).slice(0, 32);
-      return { saved: true, profile: session.profile };
+      if (args.fulfillment === 'pickup' || args.fulfillment === 'delivery') {
+        session.order.fulfillment = args.fulfillment;
+      }
+      if (args.showroom) session.order.showroom = String(args.showroom).slice(0, 80);
+      if (args.delivery_address) session.order.address = String(args.delivery_address).slice(0, 200);
+
+      if (!session.lead.pending) return { saved: true, profile: session.profile, order: session.order };
+
+      const sent = await completeIfReady(bot, session);
+      if (sent) {
+        return {
+          saved: true,
+          order_sent: sent.delivered,
+          note: sent.delivered
+            ? 'Заказ со всеми данными передан менеджеру. Теперь скажи клиенту, что менеджер свяжется в ближайшие минуты.'
+            : 'Алерт не доставлен. Дай клиенту прямой телефон ' + catalog.store.phone
+        };
+      }
+      const missing = missingForHotLead(session);
+      return {
+        saved: true,
+        order_sent: false,
+        missing,
+        note: `Заказ ещё НЕ передан менеджеру — не хватает: ${describeMissing(missing)}. Коротко спроси это у клиента.`
+      };
     }
 
     case 'notify_manager': {
       const urgency = args.urgency === 'now' ? 'now' : 'next';
 
       // Guard against the model re-alerting on every turn of the same intent.
-      if (urgency === 'next' && session.lead.saved) {
+      if (urgency === 'next' && (session.lead.saved || session.lead.pending)) {
         return { skipped: true, note: 'Менеджер уже уведомлён об этом клиенте. Не сообщай об этом повторно, просто продолжай диалог.' };
       }
       if (urgency === 'now' && session.lead.escalated) {
         return { skipped: true, note: 'Срочный алерт уже отправлен. Успокой клиента: менеджер уже в пути.' };
       }
 
-      const result = await alertManager(bot, {
-        urgency,
+      if (args.customer_name && !session.profile.name) session.profile.name = String(args.customer_name).slice(0, 80);
+      if (args.phone && !session.profile.phone) session.profile.phone = String(args.phone).slice(0, 32);
+
+      const payload = {
         user,
-        session,
         summary: args.summary,
         productId: args.product_id || session.context.productId,
         productQuery: args.product_query,
         name: args.customer_name,
         phone: args.phone,
         budget: args.budget
-      });
+      };
+
+      if (urgency === 'now') {
+        // A buy-now alert without a number to call or a pickup/delivery choice
+        // pages the manager with nothing to act on. Hold it until the customer
+        // gives both — see leads/pending.js for the timeout safety net.
+        const missing = missingForHotLead(session);
+        if (missing.length && !args.immediate) {
+          holdHotLead(bot, session, payload);
+          return {
+            notified: false,
+            held: true,
+            missing,
+            note:
+              `Заказ ПОКА НЕ передан менеджеру — не хватает: ${describeMissing(missing)}. ` +
+              'Одним коротким сообщением спроси это у клиента. НЕ говори, что менеджер уже ' +
+              'подключён или свяжется — сначала данные. Когда клиент ответит, вызови save_customer_contact.'
+          };
+        }
+        if (session.lead.pending) {
+          holdHotLead(bot, session, payload); // merge the fresher details in
+          const result = await flushPendingLead(bot, session, args.immediate ? 'immediate' : 'complete');
+          return hotLeadResult(result);
+        }
+      }
+
+      const result = await alertManager(bot, { ...payload, urgency, session });
 
       session.lead.saved = true;
-      if (urgency === 'now') session.lead.escalated = true;
+      if (urgency === 'now') {
+        session.lead.escalated = true;
+        dropPendingLead(session);
+        return hotLeadResult(result);
+      }
 
       return {
         notified: result.delivered,
         urgency,
         note: result.delivered
-          ? urgency === 'now'
-            ? 'Менеджер получил срочный алерт. Скажи клиенту, что менеджер свяжется в течение нескольких минут.'
-            : 'Менеджер уведомлён. Скажи клиенту, что с ним свяжутся, и продолжи помогать.'
+          ? 'Менеджер уведомлён. Скажи клиенту, что с ним свяжутся, и продолжи помогать.'
           : 'Алерт не доставлен. Дай клиенту прямой телефон ' + catalog.store.phone
       };
     }

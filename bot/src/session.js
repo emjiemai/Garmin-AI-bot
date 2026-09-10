@@ -23,7 +23,11 @@ function blank(chatId) {
     /** Product the customer arrived with from the web app deep link. */
     context: { productId: null, source: null },
     profile: { name: null, phone: null },
-    lead: { saved: false, escalated: false },
+    /** How the customer wants to receive a purchase — collected before a
+     *  buy-now lead goes to the manager. See leads/pending.js. */
+    order: { fulfillment: null, showroom: null, address: null },
+    /** `pending` holds a buy-now lead still waiting on phone/fulfillment. */
+    lead: { saved: false, escalated: false, pending: null },
     /** product ids already photographed this session — avoids resending the
      *  same photo every time the AI re-checks details on the same model. */
     sentPhotos: new Set(),
@@ -51,7 +55,10 @@ export function getSession(chatId) {
 export function resetHistory(chatId) {
   const s = getSession(chatId);
   s.history = [];
-  s.lead = { saved: false, escalated: false };
+  // A buy-now lead still collecting details survives a /start (the web app's
+  // deep links trigger one) — its timer will still deliver it. Like `profile`,
+  // `order` is about the customer, not the conversation, so it stays too.
+  s.lead = { saved: false, escalated: false, pending: s.lead?.pending ?? null };
   s.sentPhotos = new Set();
   return s;
 }

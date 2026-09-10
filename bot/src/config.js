@@ -116,6 +116,10 @@ export const config = {
    *  to the manager are the durable record until a database is wired up. */
   leadsFile: optional('LEADS_FILE', './data/leads.jsonl'),
 
+  /** How long a buy-now lead waits for the customer's phone and pickup/delivery
+   *  choice before going to the manager anyway. See leads/pending.js. */
+  leadHoldMinutes: Number(optional('LEAD_HOLD_MINUTES', '5')),
+
   /**
    * The extended product catalog beyond watches (navigators, marine, cycling
    * computers, etc.) lives as photo+caption posts in this Telegram channel
