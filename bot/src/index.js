@@ -20,6 +20,9 @@ app.disable('x-powered-by');
 const startedAt = Date.now();
 /** Result of the boot-time AI credential check, reported by /healthz. */
 let aiHealthy = null;
+/** Why it failed, so "degraded" can be diagnosed without Render's logs —
+ *  a rejected key and an empty balance need completely different fixes. */
+let aiProblemReason = null;
 
 /** Render's health check and the keep-alive pinger both hit this. Always 200:
  *  a failing health check makes Render tear the service down, and the bot is
@@ -30,6 +33,9 @@ app.get('/healthz', (_req, res) => {
     mode: config.server.mode,
     ai: aiHealthy === null ? 'unchecked' : aiHealthy ? 'ok' : 'degraded',
     model: config.ai.model,
+    baseUrl: config.ai.baseUrl,
+    // Providers mask keys in these messages; truncated regardless.
+    ...(aiProblemReason ? { aiError: aiProblemReason.slice(0, 200), fixAt: config.ai.consoleUrl } : {}),
     uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
     products: catalog.products.length,
     activeChats: sessionCount(),
@@ -60,6 +66,7 @@ async function main() {
     console.log(`[ai] ${config.ai.model} reachable via ${config.ai.baseUrl}`);
   }
   aiHealthy = !aiProblem;
+  aiProblemReason = aiProblem;
 
   await bot.api.setMyCommands([
     { command: 'start', description: 'Начать / Boshlash' },

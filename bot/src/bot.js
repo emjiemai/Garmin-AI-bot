@@ -5,7 +5,7 @@ import { detectLang, normalizeLang, t } from './i18n.js';
 import { toTelegramHtml } from './format.js';
 import { parseStartPayload } from './deeplink.js';
 import { getSession, resetHistory, sessionCount } from './session.js';
-import { classifyAiError, respond } from './ai/agent.js';
+import { classifyAiError, isFatalAiError, respond } from './ai/agent.js';
 import { alertManager } from './leads/notify.js';
 import { leadStats, recentLeads } from './leads/store.js';
 import { indexChannelPost, channelCatalogSize } from './channelCatalog.js';
@@ -16,6 +16,11 @@ export const bot = new Bot(config.telegram.token);
 
 const TELEGRAM_MAX = 4096;
 const MIN_MESSAGE_GAP_MS = 800;
+
+/** Systemic AI failures (bad key, no balance) hit every customer at once. The
+ *  operator only needs telling once — see the catch block in message:text. */
+let lastSystemicNotice = 0;
+const SYSTEMIC_NOTICE_MS = 30 * 60 * 1000;
 
 /* ------------------------------------------------------------------ helpers */
 
@@ -440,13 +445,28 @@ bot.on('message:text', async (ctx) => {
     // signal either — alert the manager with urgency "outage", never "now",
     // so this never gets mistaken for a hot sales lead.
     if (!session.lead.saved) {
+      let summary =
+        `ИИ-консультант не смог ответить (${kind}).\n` +
+        `Последнее сообщение клиента: "${text.slice(0, 300)}"`;
+
+      // A rejected key or an empty balance is ONE operator problem, not one
+      // per customer: without this, everybody who writes during the outage
+      // gets their own full-width alert and the real cause — a single env var
+      // — is nowhere in any of them. Say what to actually do, once per window.
+      if (isFatalAiError(err) && Date.now() - lastSystemicNotice > SYSTEMIC_NOTICE_MS) {
+        lastSystemicNotice = Date.now();
+        summary +=
+          `\n\n🔧 Это не разовый сбой — он повторится у КАЖДОГО клиента, пока не починить:\n` +
+          `ключ AI_API_KEY отклонён или на счету пусто (${kind}).\n` +
+          `Проверьте ${config.ai.consoleUrl} и переменную AI_API_KEY в Render.\n` +
+          `Текущая модель: ${config.ai.model} (${config.ai.baseUrl}).`;
+      }
+
       await alertManager(bot, {
         urgency: 'outage',
         user: ctx.from,
         session,
-        summary:
-          `ИИ-консультант не смог ответить (${kind}).\n` +
-          `Последнее сообщение клиента: "${text.slice(0, 300)}"`,
+        summary,
         productId: session.context.productId
       }).catch((e) => console.error('[bot] fallback alert failed:', e.message));
       session.lead.saved = true;
