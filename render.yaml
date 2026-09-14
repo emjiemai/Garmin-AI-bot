@@ -93,18 +93,17 @@ services:
         generateValue: true
 
       # --- AI ------------------------------------------------------------------
-      # Currently DeepSeek (https://platform.deepseek.com/api_keys).
-      # Any OpenAI-compatible provider works: set AI_BASE_URL + AI_MODEL and
-      # put that provider's key in AI_API_KEY — no code change needed. For
-      # OpenRouter it's https://openrouter.ai/api/v1 + any id from
-      # https://openrouter.ai/models.
+      # Currently OpenRouter (key: https://openrouter.ai/settings/keys) running
+      # Gemini 3.8 Flash. Any OpenAI-compatible provider works: set AI_BASE_URL +
+      # AI_MODEL and put that provider's key in AI_API_KEY — no code change
+      # needed. For DeepSeek it's https://api.deepseek.com + deepseek-v4-flash.
       - key: AI_API_KEY
         sync: false
       - key: AI_BASE_URL
-        value: https://api.deepseek.com
-      # deepseek-v4-flash (fast, cheap) or deepseek-v4-pro (smarter, slower)
+        value: https://openrouter.ai/api/v1
+      # Any id from https://openrouter.ai/models
       - key: AI_MODEL
-        value: deepseek-v4-flash
+        value: google/gemini-3.8-flash
       - key: AI_TEMPERATURE
         value: "0.4"
       - key: AI_MAX_TOKENS

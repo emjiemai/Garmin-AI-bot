@@ -82,8 +82,8 @@ export const config = {
    */
   ai: {
     apiKey: required('AI_API_KEY'),
-    baseUrl: optional('AI_BASE_URL', 'https://api.deepseek.com'),
-    model: optional('AI_MODEL', 'deepseek-v4-flash'),
+    baseUrl: optional('AI_BASE_URL', 'https://openrouter.ai/api/v1'),
+    model: optional('AI_MODEL', 'google/gemini-3.8-flash'),
     temperature: num('AI_TEMPERATURE', 0.4, { min: 0, max: 2 }),
     maxTokens: num('AI_MAX_TOKENS', 900, { min: 64, max: 32_000 }),
     /** Safety valve on the tool-calling loop. */
