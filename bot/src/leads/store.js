@@ -41,6 +41,13 @@ export function saveLead(lead) {
   return record;
 }
 
+/** A phone that arrived after the lead went out belongs on that lead, so
+ *  /stats counts it under "with phone" instead of as a second lead. */
+export function attachPhoneToLead(chatId, phone) {
+  const lead = recent.find((l) => l.chatId === chatId && l.urgency !== 'outage');
+  if (lead && !lead.phone) lead.phone = phone;
+}
+
 export function recentLeads(limit = 10) {
   return recent.slice(0, limit);
 }

@@ -31,10 +31,13 @@ const MISSING_LABELS = {
   fulfillment: 'самовывоз из шоурума или доставка'
 };
 
-/** What a buy-now lead still lacks before the manager can act on it. */
+/** What a buy-now lead still lacks before the manager can act on it. A phone
+ *  the customer already refused to give is not "missing" — waiting for it
+ *  would only delay the lead by the full hold timer. The manager reaches such
+ *  a customer by replying to the alert (see relay.js). */
 export function missingForHotLead(session) {
   const missing = [];
-  if (!session.profile.phone) missing.push('phone');
+  if (!session.profile.phone && !session.profile.phoneDeclined) missing.push('phone');
   if (!session.order?.fulfillment) missing.push('fulfillment');
   return missing;
 }
@@ -96,11 +99,16 @@ export async function flushPendingLead(bot, session, reason) {
   dropPendingLead(session);
 
   const { token, ...payload } = pending;
+  const incomplete = INCOMPLETE_REASONS.has(reason)
+    ? reason
+    : !session.profile.phone && session.profile.phoneDeclined
+      ? 'phone_declined'
+      : null;
   const result = await alertManager(bot, {
     ...payload,
     urgency: 'now',
     session,
-    incompleteReason: INCOMPLETE_REASONS.has(reason) ? reason : null
+    incompleteReason: incomplete
   });
 
   session.lead.saved = true;

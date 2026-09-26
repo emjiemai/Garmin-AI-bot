@@ -78,12 +78,19 @@ export function indexChannelPost({ messageId, caption, hasPhoto }) {
   return entry;
 }
 
+/** True when this channel message was indexed as a product post. */
+export function hasChannelPost(messageId) {
+  return entries.has(Number(messageId));
+}
+
+/** Any letter or digit, not just a-z/а-я: Uzbek Cyrillic (қ, ғ, ҳ) must not be
+ *  treated as a word separator, or "қўл" would be searched as "л". */
 function normalize(str) {
   return String(str ?? '')
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9а-яё]+/gi, ' ')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
     .trim();
 }
 
@@ -107,11 +114,11 @@ export function searchChannelCatalog(query, limit = 5) {
   scored.sort((a, b) => b.score - a.score);
   return scored.slice(0, limit).map(({ entry }) => ({
     messageId: entry.messageId,
-    // Long enough to actually answer a question from (price, specs) without
-    // forwarding — forwarding is reserved for an explicit "show me a photo"
-    // ask, not every match. Still capped so a multi-result search doesn't blow
-    // up the tool-result payload.
-    snippet: entry.caption.slice(0, 500)
+    // Long enough to tell several matches apart and answer a question (price,
+    // specs) before forwarding. Still capped so a multi-result search doesn't
+    // blow up the tool-result payload.
+    snippet: entry.caption.slice(0, 500),
+    has_photo: Boolean(entry.hasPhoto)
   }));
 }
 

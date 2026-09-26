@@ -6,8 +6,9 @@
 import { catalog, formatPrice, getProduct, searchProducts } from '../catalog/catalog.js';
 import { alertManager } from '../leads/notify.js';
 import { config } from '../config.js';
-import { searchChannelCatalog } from '../channelCatalog.js';
+import { hasChannelPost, searchChannelCatalog } from '../channelCatalog.js';
 import { sendProductPhoto } from '../media.js';
+import { isBusinessPhone, normalizePhone } from '../phone.js';
 import {
   completeIfReady,
   describeMissing,
@@ -131,12 +132,24 @@ export const TOOL_SCHEMAS = [
       description:
         'Сохранить данные клиента для заказа — имя, телефон, способ получения, ' +
         'шоурум или адрес доставки — как только он их назвал. Вызывай сразу, не ' +
-        'откладывая. Если заказ ждал этих данных, он уйдёт менеджеру автоматически.',
+        'откладывая. Если заказ ждал этих данных, он уйдёт менеджеру автоматически. ' +
+        'Если клиент отказывается дать номер — вызови с phone_declined=true.',
       parameters: {
         type: 'object',
         properties: {
           name: { type: 'string', description: 'Имя клиента.' },
-          phone: { type: 'string', description: 'Номер телефона в любом формате.' },
+          phone: {
+            type: 'string',
+            description:
+              'Номер телефона КЛИЕНТА, как он его написал. Только если клиент сам его назвал — ' +
+              'никогда не подставляй наш номер магазина и не выдумывай.'
+          },
+          phone_declined: {
+            type: 'boolean',
+            description:
+              'true, если клиент не хочет оставлять номер (скрыт, "не дам", "пишите сюда"). ' +
+              'Заказ тогда уйдёт менеджеру без номера — менеджер ответит клиенту прямо в этот чат.'
+          },
           fulfillment: {
             type: 'string',
             enum: ['pickup', 'delivery'],
@@ -203,9 +216,8 @@ export const TOOL_SCHEMAS = [
         'фишфайндеры, авиационное оборудование, GPS-трекеры для собак и т.д. ' +
         'Эти товары НЕ в структурированном каталоге (search_catalog не найдёт их) — ' +
         'они хранятся как посты с фото в отдельном Telegram-канале. Вызывай эту ' +
-        'функцию, когда клиент спрашивает о чём-то, чего нет среди часов — ' +
-        'это просто поиск информации, отвечай по её результату своими словами. ' +
-        'Само по себе не отправляет ничего клиенту — для этого есть forward_channel_product.',
+        'функцию, когда клиент спрашивает о чём-то, чего нет среди часов. ' +
+        'Сама по себе ничего не отправляет клиенту — для этого есть forward_channel_product.',
       parameters: {
         type: 'object',
         properties: {
@@ -224,10 +236,10 @@ export const TOOL_SCHEMAS = [
       name: 'forward_channel_product',
       description:
         'Переслать клиенту реальное фото и полное описание товара из канала ' +
-        '(используй message_id из результата search_channel_catalog). Вызывай ' +
-        'ТОЛЬКО когда клиент явно попросил фото/показать товар — не вызывай просто ' +
-        'потому что search_channel_catalog что-то нашёл. Если фото не просили, ' +
-        'ответь по данным поиска своими словами, без пересылки.',
+        '(используй message_id из результата search_channel_catalog). Вызывай, ' +
+        'как только понятно, о каком ОДНОМ товаре речь — отдельной просьбы "покажи ' +
+        'фото" ждать не нужно. Если поиск вернул несколько разных товаров — сначала ' +
+        'уточни у клиента, какой именно, и не пересылай всё подряд.',
       parameters: {
         type: 'object',
         properties: {
@@ -280,10 +292,30 @@ const STORE_TOPICS = {
 };
 
 /**
- * Runs one tool call.
- * @param {{name:string, args:object}} call
- * @param {{bot:import('grammy').Bot, session:object, user:object}} ctx
+ * Checks a phone the model extracted before anything treats it as "we can call
+ * this customer". Returns `{ phone }` when usable, `{ problem }` (a note for the
+ * model) when not, or `{}` when no phone was given at all.
  */
+function checkPhone(raw) {
+  if (raw === undefined || raw === null || String(raw).trim() === '') return {};
+  const phone = normalizePhone(raw);
+  if (!phone) {
+    return {
+      problem:
+        `"${String(raw).slice(0, 40)}" — не похоже на номер телефона, он НЕ сохранён. ` +
+        'Вежливо попроси номер ещё раз (например +998 90 123 45 67) или предложи кнопку «Оставить номер».'
+    };
+  }
+  if (isBusinessPhone(phone)) {
+    return {
+      problem:
+        'Это номер нашего магазина, а не клиента — он НЕ сохранён. Никогда не подставляй свой номер вместо клиентского. ' +
+        'Если клиент свой номер не называл — просто спроси его.'
+    };
+  }
+  return { phone };
+}
+
 /** What the model is told after a buy-now alert actually went out. */
 function hotLeadResult(result) {
   return {
@@ -295,6 +327,11 @@ function hotLeadResult(result) {
   };
 }
 
+/**
+ * Runs one tool call.
+ * @param {{name:string, args:object}} call
+ * @param {{bot:import('grammy').Bot, session:object, user:object}} ctx
+ */
 export async function executeTool({ name, args }, { bot, session, user }) {
   const lang = session.lang;
 
@@ -373,13 +410,24 @@ export async function executeTool({ name, args }, { bot, session, user }) {
     }
 
     case 'save_customer_contact': {
+      const { phone, problem } = checkPhone(args.phone);
+
       if (args.name) session.profile.name = String(args.name).slice(0, 80);
-      if (args.phone) session.profile.phone = String(args.phone).slice(0, 32);
+      if (phone) {
+        session.profile.phone = phone;
+        session.profile.phoneDeclined = false;
+      } else if (args.phone_declined === true && !session.profile.phone) {
+        session.profile.phoneDeclined = true;
+      }
       if (args.fulfillment === 'pickup' || args.fulfillment === 'delivery') {
         session.order.fulfillment = args.fulfillment;
       }
       if (args.showroom) session.order.showroom = String(args.showroom).slice(0, 80);
       if (args.delivery_address) session.order.address = String(args.delivery_address).slice(0, 200);
+
+      if (problem) {
+        return { saved: false, error: 'invalid_phone', note: problem };
+      }
 
       if (!session.lead.pending) return { saved: true, profile: session.profile, order: session.order };
 
@@ -413,17 +461,31 @@ export async function executeTool({ name, args }, { bot, session, user }) {
         return { skipped: true, note: 'Срочный алерт уже отправлен. Успокой клиента: менеджер уже в пути.' };
       }
 
+      // A bad phone is dropped rather than failing the alert — the lead still
+      // matters more than the number, and the hold below will ask again.
+      const { phone } = checkPhone(args.phone);
       if (args.customer_name && !session.profile.name) session.profile.name = String(args.customer_name).slice(0, 80);
-      if (args.phone && !session.profile.phone) session.profile.phone = String(args.phone).slice(0, 32);
+      if (phone && !session.profile.phone) session.profile.phone = phone;
+
+      // The model sometimes passes a model name instead of a catalog id; keep
+      // it as the free-text subject rather than recording an id that resolves
+      // to nothing and leaving the manager without a product.
+      const requestedId = args.product_id ? String(args.product_id).trim() : null;
+      const productId = requestedId && getProduct(requestedId) ? requestedId : session.context.productId;
+      const productQuery =
+        args.product_query ||
+        (requestedId && !getProduct(requestedId) ? requestedId : null) ||
+        (!productId ? session.context.productHint : null) ||
+        undefined;
 
       const payload = {
         user,
-        summary: args.summary,
-        productId: args.product_id || session.context.productId,
-        productQuery: args.product_query,
-        name: args.customer_name,
-        phone: args.phone,
-        budget: args.budget
+        summary: String(args.summary ?? '').slice(0, 1000) || 'Клиент хочет связаться с менеджером.',
+        productId,
+        productQuery: productQuery ? String(productQuery).slice(0, 120) : undefined,
+        name: args.customer_name ? String(args.customer_name).slice(0, 80) : undefined,
+        phone,
+        budget: args.budget ? String(args.budget).slice(0, 80) : undefined
       };
 
       if (urgency === 'now') {
@@ -483,7 +545,16 @@ export async function executeTool({ name, args }, { bot, session, user }) {
 
     case 'forward_channel_product': {
       const messageId = Number(args.message_id);
-      if (!messageId) return { error: 'bad_message_id' };
+      if (!Number.isInteger(messageId) || messageId <= 0) return { error: 'bad_message_id' };
+      // Only posts we indexed as products — never an arbitrary message id from
+      // the channel (announcements, drafts) that the model guessed at.
+      if (!hasChannelPost(messageId)) {
+        return {
+          sent: false,
+          error: 'unknown_message_id',
+          note: 'Такого товара нет в результатах поиска. Используй message_id только из search_channel_catalog.'
+        };
+      }
 
       try {
         await bot.api.copyMessage(session.chatId, config.channelCatalog.id, messageId);
