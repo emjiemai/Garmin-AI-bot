@@ -61,6 +61,25 @@ so a casual tap doesn't page a human on a 5-minute SLA. Sharing a phone number
 via the keyboard button also creates a lead. The bot will not re-alert for the
 same intent twice.
 
+### Customers with no @username or a hidden phone number
+
+Many customers have no public `@username` and keep their number private, so
+the alert may carry no link and no phone. The manager never needs either:
+**reply to the alert** (text, photo, voice — anything) and the bot delivers it
+to the customer; while a manager is replying, the customer's messages are
+relayed back the same way. `/release` hands the chat back to the AI.
+
+- A buy-now lead is held until the bot has a phone **and** pickup/delivery
+  choice — but if the customer taps «Позже» or says they won't share a number,
+  it goes out immediately, marked so, instead of waiting out the timer.
+- Phones are normalised before they are stored (invisible characters stripped,
+  `+` added, 9-digit local numbers get `+998`); words, too-short numbers and
+  our own store number are rejected, so the AI can't hand the manager a lead
+  with an unusable phone.
+- Replies are routed by the `ID: <code>…</code>` marker in messages the bot
+  itself sent. A customer who names themselves "ID: 12345" cannot redirect
+  the manager's replies.
+
 Leads are appended to `bot/data/leads.jsonl` **and** sent to the manager chat.
 Render's free instance has no persistent disk, so treat the Telegram alert as the
 durable record until a database is wired up.
@@ -107,6 +126,15 @@ cp .env.example .env    # fill in BOT_TOKEN, AI_API_KEY, MANAGER_CHAT_ID
 npm install
 npm run build           # generate catalog.json from web/js/data.js
 npm run dev             # long polling, no public URL needed
+```
+
+Offline end-to-end checks — real updates through the bot with Telegram
+stubbed and a scripted fake AI, so no token or credits are needed. Covers the
+lead hold, hidden-phone and no-username paths, the manager relay, queued
+messages and chat scoping:
+
+```bash
+cd bot && npm test
 ```
 
 Verify everything without touching Telegram — catalog search, language
@@ -165,6 +193,8 @@ edit when the sales script changes.
 ## Known limits
 
 - Conversation state is in memory. A redeploy resets every open conversation.
+- The bot only works in private chats (plus the manager chat and the catalog
+  channel); it ignores groups it is added to.
 - The catalog snapshot is generated at build time; a price change on the website
   needs a rebuild and redeploy of the bot.
 - The web app's language selector offers EN, but the bot answers only RU and UZ —

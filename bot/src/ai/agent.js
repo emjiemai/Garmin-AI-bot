@@ -86,6 +86,11 @@ export async function respond({ bot, session, user, userText }) {
   session.history.push({ role: 'user', content: userText });
   trimHistory(session, config.ai.historyTurns);
 
+  // Work on this turn's array, not whatever `session.history` points at later:
+  // a /reset or /start (a new web-app deep link) arriving mid-turn replaces
+  // the array, and writing tool results into the fresh one would leave it
+  // starting with orphaned tool messages the provider rejects outright.
+  const history = session.history;
   const toolsUsed = [];
 
   for (let round = 0; round <= config.ai.maxToolRounds; round++) {
@@ -93,7 +98,7 @@ export async function respond({ bot, session, user, userText }) {
     // captured by save_customer_contact earlier in this very turn.
     const messages = [
       { role: 'system', content: buildSystemPrompt(session) },
-      ...session.history
+      ...history
     ];
 
     const isLastRound = round === config.ai.maxToolRounds;
@@ -114,12 +119,14 @@ export async function respond({ bot, session, user, userText }) {
 
     if (!calls.length) {
       const text = (message.content ?? '').trim();
-      session.history.push({ role: 'assistant', content: text });
+      // An empty assistant message is rejected by some providers on the NEXT
+      // request, which would break every later turn for this customer.
+      history.push({ role: 'assistant', content: text || '[Технический сбой — ответ не сформирован.]' });
       return { text, toolsUsed };
     }
 
     // Tool-call messages must be replayed verbatim alongside their results.
-    session.history.push({
+    history.push({
       role: 'assistant',
       content: message.content ?? '',
       tool_calls: calls
@@ -140,7 +147,7 @@ export async function respond({ bot, session, user, userText }) {
         result = { error: 'tool_failed', note: 'Инструмент недоступен. Ответь клиенту без этих данных.' };
       }
 
-      session.history.push({
+      history.push({
         role: 'tool',
         tool_call_id: call.id,
         content: JSON.stringify(result)

@@ -11,35 +11,39 @@ import { config } from './config.js';
 import { bot } from './bot.js';
 import { catalog } from './catalog/catalog.js';
 import { checkAiHealth } from './ai/agent.js';
-import { sessionCount } from './session.js';
-import { leadStats } from './leads/store.js';
 
 const app = express();
 app.disable('x-powered-by');
 
 const startedAt = Date.now();
+
+/** How long a webhook request waits on the handler — see main() for why. */
+const WEBHOOK_TIMEOUT_MS = 45_000;
 /** Result of the boot-time AI credential check, reported by /healthz. */
 let aiHealthy = null;
 /** Why it failed, so "degraded" can be diagnosed without Render's logs —
  *  a rejected key and an empty balance need completely different fixes. */
 let aiProblemReason = null;
 
+/** Updates the bot subscribes to. edited_channel_post keeps the channel
+ *  catalog current when a product post's price or text is corrected. */
+const ALLOWED_UPDATES = ['message', 'callback_query', 'channel_post', 'edited_channel_post'];
+
 /** Render's health check and the keep-alive pinger both hit this. Always 200:
  *  a failing health check makes Render tear the service down, and the bot is
- *  still useful (manager escalation, showrooms) even with the AI degraded. */
+ *  still useful (manager escalation, showrooms) even with the AI degraded.
+ *  This URL is public — lead counts and chat numbers are business data and
+ *  live in the manager-only /stats command, not here. */
 app.get('/healthz', (_req, res) => {
   res.json({
     ok: true,
     mode: config.server.mode,
     ai: aiHealthy === null ? 'unchecked' : aiHealthy ? 'ok' : 'degraded',
     model: config.ai.model,
-    baseUrl: config.ai.baseUrl,
     // Providers mask keys in these messages; truncated regardless.
     ...(aiProblemReason ? { aiError: aiProblemReason.slice(0, 200), fixAt: config.ai.consoleUrl } : {}),
     uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
-    products: catalog.products.length,
-    activeChats: sessionCount(),
-    leads: leadStats()
+    products: catalog.products.length
   });
 });
 
@@ -47,12 +51,14 @@ app.get('/', (_req, res) => {
   res.type('text/plain').send(`Garmin Uzbekistan AI bot — @${config.telegram.username}`);
 });
 
-async function main() {
-  await bot.init();
-
-  // Surface a dead API key in the deploy log rather than letting a customer
-  // discover it. Not fatal: /manager, showrooms and the escalation fallback all
-  // still work without the AI, so a bad key must not take the whole bot down.
+/**
+ * Surfaces a dead API key in the deploy log rather than letting a customer
+ * discover it. Not fatal: /manager, showrooms and the escalation fallback all
+ * still work without the AI, so a bad key must not take the whole bot down.
+ * Runs in the background — with the SDK's retries it can take minutes, and
+ * boot must not wait on it (Render fails a deploy whose port never opens).
+ */
+async function reportAiHealth() {
   const aiProblem = await checkAiHealth();
   if (aiProblem) {
     console.error(
@@ -67,14 +73,37 @@ async function main() {
   }
   aiHealthy = !aiProblem;
   aiProblemReason = aiProblem;
+}
 
-  await bot.api.setMyCommands([
-    { command: 'start', description: 'Начать / Boshlash' },
-    { command: 'lang', description: 'Язык / Til (RU / UZ)' },
-    { command: 'manager', description: 'Связаться с менеджером / Menejer bilan' },
-    { command: 'reset', description: 'Очистить диалог / Suhbatni tozalash' },
-    { command: 'help', description: 'Помощь / Yordam' }
-  ]);
+/** A wrong MANAGER_CHAT_ID, or a manager who never pressed Start in the bot,
+ *  means every lead alert fails. Say so at boot, not after the first lost lead. */
+async function checkManagerChat() {
+  try {
+    await bot.api.getChat(config.telegram.managerChatId);
+    console.log(`[bot] manager chat ${config.telegram.managerChatId} reachable`);
+  } catch (err) {
+    console.error(
+      `\n${'!'.repeat(72)}\n` +
+        `[bot] MANAGER_CHAT_ID=${config.telegram.managerChatId} is NOT reachable — ${err.message}\n` +
+        `[bot] Lead alerts will fail. The manager must open the bot and press Start\n` +
+        `[bot] (or add it to the group), and MANAGER_CHAT_ID must be that chat's id.\n` +
+        `${'!'.repeat(72)}\n`
+    );
+  }
+}
+
+async function main() {
+  await bot.init();
+
+  await bot.api
+    .setMyCommands([
+      { command: 'start', description: 'Начать / Boshlash' },
+      { command: 'lang', description: 'Язык / Til (RU / UZ)' },
+      { command: 'manager', description: 'Связаться с менеджером / Menejer bilan' },
+      { command: 'reset', description: 'Очистить диалог / Suhbatni tozalash' },
+      { command: 'help', description: 'Помощь / Yordam' }
+    ])
+    .catch((err) => console.warn('[bot] setMyCommands failed:', err.message));
 
   if (config.server.mode === 'webhook') {
     if (!config.server.publicUrl) {
@@ -98,9 +127,11 @@ async function main() {
         // a true timeout is still non-fatal: Telegram gets 200 immediately, the
         // reply just arrives whenever it's ready instead of the exchange
         // being dropped.
-        timeoutMilliseconds: 45_000,
+        timeoutMilliseconds: WEBHOOK_TIMEOUT_MS,
         onTimeout: () =>
-          console.warn('[webhook] update exceeded 25s — replying in the background instead of failing the request')
+          console.warn(
+            `[webhook] update exceeded ${WEBHOOK_TIMEOUT_MS / 1000}s — replying in the background instead of failing the request`
+          )
       })
     );
 
@@ -111,8 +142,13 @@ async function main() {
     const url = `${config.server.publicUrl.replace(/\/$/, '')}${path}`;
     await bot.api.setWebhook(url, {
       secret_token: config.telegram.webhookSecret || undefined,
-      drop_pending_updates: true,
-      allowed_updates: ['message', 'callback_query', 'channel_post']
+      // Never drop: on Render's free tier the message that WAKES a sleeping
+      // instance is exactly the one Telegram is still holding while we boot.
+      // Dropping pending updates here threw away that customer's first
+      // message on every cold start and every deploy. A late answer beats
+      // no answer.
+      drop_pending_updates: false,
+      allowed_updates: ALLOWED_UPDATES
     });
     console.log(`[bot] webhook set: ${url}`);
 
@@ -125,7 +161,7 @@ async function main() {
     await bot.api.deleteWebhook({ drop_pending_updates: true });
     console.log('[bot] starting long polling');
     bot.start({
-      allowed_updates: ['message', 'callback_query', 'channel_post'],
+      allowed_updates: ALLOWED_UPDATES,
       onStart: (me) => console.log(`[bot] polling as @${me.username}`)
     });
   }
@@ -133,6 +169,9 @@ async function main() {
   console.log(
     `[bot] ready — @${bot.botInfo.username}, ${catalog.products.length} products, model ${config.ai.model}`
   );
+
+  reportAiHealth().catch((err) => console.error('[ai] health check crashed:', err));
+  checkManagerChat();
 }
 
 /**

@@ -21,8 +21,10 @@ function blank(chatId) {
     /** OpenAI-shaped message list, system prompt excluded. */
     history: [],
     /** Product the customer arrived with from the web app deep link. */
-    context: { productId: null, source: null },
-    profile: { name: null, phone: null },
+    context: { productId: null, source: null, productHint: null },
+    /** `phoneDeclined`: the customer said they won't share a number (the
+     *  "Позже" button or in words) — stop holding leads and re-asking for it. */
+    profile: { name: null, phone: null, phoneDeclined: false },
     /** How the customer wants to receive a purchase — collected before a
      *  buy-now lead goes to the manager. See leads/pending.js. */
     order: { fulfillment: null, showroom: null, address: null },
@@ -34,10 +36,16 @@ function blank(chatId) {
     /** Epoch ms until which a manager is handling this customer personally
      *  and the AI stays quiet. 0 = the AI is answering. See relay.js. */
     handoffUntil: 0,
+    /** Epoch ms of the last /manager alert — repeated taps don't re-page. */
+    managerCalledAt: 0,
     lastSeen: Date.now(),
-    /** Simple flood guard. */
-    lastMessageAt: 0,
-    busy: false
+    /** True while the AI is answering this chat. */
+    busy: false,
+    /** Texts that arrived while `busy`, answered together right after — people
+     *  split one thought across several messages, and none may be dropped. */
+    queue: [],
+    /** Timestamps of recent AI turns, for the per-chat cost guard. */
+    aiTurns: []
   };
 }
 
@@ -74,14 +82,33 @@ export function trimHistory(session, turns) {
   session.history = session.history.slice(cut);
 }
 
+/** A normal conversation is nowhere near this; a script hammering the bot to
+ *  burn AI credits hits it within minutes. */
+const AI_TURN_LIMIT = 30;
+const AI_TURN_WINDOW_MS = 10 * 60 * 1000;
+
+/** Records an AI turn; returns false when the chat is over its budget. */
+export function takeAiTurn(session) {
+  const now = Date.now();
+  session.aiTurns = session.aiTurns.filter((at) => now - at < AI_TURN_WINDOW_MS);
+  if (session.aiTurns.length >= AI_TURN_LIMIT) return false;
+  session.aiTurns.push(now);
+  return true;
+}
+
 export function sessionCount() {
   return sessions.size;
 }
 
 const sweeper = setInterval(() => {
-  const cutoff = Date.now() - TTL_MS;
+  const now = Date.now();
+  const cutoff = now - TTL_MS;
   for (const [key, s] of sessions) {
-    if (s.lastSeen < cutoff) sessions.delete(key);
+    // A conversation a manager is still handling must keep its handoff flag,
+    // or the AI would start answering in the middle of it.
+    if (s.lastSeen < cutoff && !s.busy && !s.lead.pending && s.handoffUntil <= now) {
+      sessions.delete(key);
+    }
   }
 }, SWEEP_MS);
 sweeper.unref?.();

@@ -30,9 +30,16 @@ services:
       - path: /*
         name: X-Content-Type-Options
         value: nosniff
+      # Telegram Web (web.telegram.org) runs Mini Apps inside an iframe, so
+      # X-Frame-Options: SAMEORIGIN blanked the "🛍 Каталог" button there.
+      # frame-ancestors allows exactly that embedder and still blocks any
+      # other site from framing the page (clickjacking).
       - path: /*
-        name: X-Frame-Options
-        value: SAMEORIGIN
+        name: Content-Security-Policy
+        value: "frame-ancestors 'self' https://web.telegram.org"
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
       - path: /*
         name: X-XSS-Protection
         value: "1; mode=block"

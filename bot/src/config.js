@@ -17,6 +17,23 @@ function optional(key, fallback) {
   return value === undefined || value === '' ? fallback : value;
 }
 
+/**
+ * A number from the environment, or the fallback when the value is missing or
+ * not a finite number within bounds. `Number("5 min")` is NaN, and a NaN lead
+ * hold time makes setTimeout fire immediately — a typo in the dashboard must
+ * not silently change behaviour.
+ */
+function num(key, fallback, { min = -Infinity, max = Infinity } = {}) {
+  const raw = process.env[key];
+  if (raw === undefined || raw === '') return fallback;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < min || value > max) {
+    console.warn(`[config] ${key}=${JSON.stringify(raw)} is not a valid number; using ${fallback}`);
+    return fallback;
+  }
+  return value;
+}
+
 function bool(key, fallback) {
   const value = process.env[key];
   if (value === undefined || value === '') return fallback;
@@ -67,12 +84,12 @@ export const config = {
     apiKey: required('AI_API_KEY'),
     baseUrl: optional('AI_BASE_URL', 'https://api.deepseek.com'),
     model: optional('AI_MODEL', 'deepseek-v4-flash'),
-    temperature: Number(optional('AI_TEMPERATURE', '0.4')),
-    maxTokens: Number(optional('AI_MAX_TOKENS', '900')),
+    temperature: num('AI_TEMPERATURE', 0.4, { min: 0, max: 2 }),
+    maxTokens: num('AI_MAX_TOKENS', 900, { min: 64, max: 32_000 }),
     /** Safety valve on the tool-calling loop. */
-    maxToolRounds: Number(optional('AI_MAX_TOOL_ROUNDS', '4')),
+    maxToolRounds: num('AI_MAX_TOOL_ROUNDS', 4, { min: 1, max: 10 }),
     /** How many prior turns of the conversation we replay to the model. */
-    historyTurns: Number(optional('AI_HISTORY_TURNS', '12')),
+    historyTurns: num('AI_HISTORY_TURNS', 12, { min: 1, max: 100 }),
     /** Where to fix a rejected key or an empty balance, for the boot-time
      *  banner and the smoke test — right for whichever provider is set. */
     get consoleUrl() {
@@ -87,14 +104,17 @@ export const config = {
   },
 
   server: {
-    port: Number(optional('PORT', '3000')),
+    port: num('PORT', 3000, { min: 1, max: 65_535 }),
     /** Render injects RENDER_EXTERNAL_URL automatically. */
     publicUrl: optional('PUBLIC_URL', process.env.RENDER_EXTERNAL_URL ?? ''),
     /** webhook (production) or polling (local dev). */
-    mode: optional('BOT_MODE', process.env.RENDER_EXTERNAL_URL ? 'webhook' : 'polling'),
+    mode:
+      optional('BOT_MODE', process.env.RENDER_EXTERNAL_URL ? 'webhook' : 'polling').trim().toLowerCase() === 'webhook'
+        ? 'webhook'
+        : 'polling',
     /** Free Render instances sleep after 15 min idle; ping ourselves to stay warm. */
     keepAlive: bool('KEEP_ALIVE', true),
-    keepAliveMinutes: Number(optional('KEEP_ALIVE_MINUTES', '12'))
+    keepAliveMinutes: num('KEEP_ALIVE_MINUTES', 12, { min: 1, max: 14 })
   },
 
   business: {
@@ -118,7 +138,7 @@ export const config = {
 
   /** How long a buy-now lead waits for the customer's phone and pickup/delivery
    *  choice before going to the manager anyway. See leads/pending.js. */
-  leadHoldMinutes: Number(optional('LEAD_HOLD_MINUTES', '5')),
+  leadHoldMinutes: num('LEAD_HOLD_MINUTES', 5, { min: 0.5, max: 60 }),
 
   /**
    * The extended product catalog beyond watches (navigators, marine, cycling

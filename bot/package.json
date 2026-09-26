@@ -11,7 +11,8 @@
     "build": "node scripts/build-catalog.mjs",
     "start": "node src/index.js",
     "dev": "node --env-file=.env --watch src/index.js",
-    "smoke": "node --env-file=.env scripts/smoke.mjs"
+    "smoke": "node --env-file=.env scripts/smoke.mjs",
+    "test": "node scripts/offline-test.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",

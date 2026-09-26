@@ -1,6 +1,7 @@
 // "Find Your Garmin" Minimal Interactive Recommendation Engine
-import { QUIZ_DATA, PRODUCTS, TRANSLATIONS, APP_CONFIG } from './data.js';
+import { QUIZ_DATA, PRODUCTS } from './data.js';
 import { botLink } from './telegram.js';
+import { formatPrice, tr } from './i18n.js';
 
 export class GarminQuiz {
   constructor(containerId, onSelectProduct) {
@@ -44,7 +45,8 @@ export class GarminQuiz {
     const feature = this.answers.feature || 'battery';
     const budget = this.answers.budget || 'mid';
 
-    const scored = PRODUCTS.map(p => {
+    // Accessories (heart-rate straps, sensors) are never "your watch".
+    const scored = PRODUCTS.filter(p => p.category !== 'accessories').map(p => {
       let score = 0;
       const name = p.name.toLowerCase();
       const price = p.price;
@@ -83,7 +85,7 @@ export class GarminQuiz {
 
   render() {
     if (!this.container) return;
-    const t = TRANSLATIONS[this.lang] || TRANSLATIONS.ru;
+    const t = tr(this.lang);
     const questions = QUIZ_DATA.questions;
     const currentQ = questions[this.currentStep];
     const progressPct = Math.round(((this.currentStep + 1) / questions.length) * 100);
@@ -94,7 +96,7 @@ export class GarminQuiz {
         <!-- Progress Bar -->
         <div class="flex items-center justify-between mb-3 text-xs">
           <span class="font-medium tracking-wide text-zinc-400">
-            ${t.quizStep} ${this.currentStep + 1} из ${questions.length}
+            ${t.quizStep} ${this.currentStep + 1} ${t.quizOf} ${questions.length}
           </span>
           <span class="font-mono text-zinc-400">${progressPct}%</span>
         </div>
@@ -163,14 +165,14 @@ export class GarminQuiz {
   }
 
   renderResults() {
-    const t = TRANSLATIONS[this.lang] || TRANSLATIONS.ru;
+    const t = tr(this.lang);
     const topMatches = this.calculateMatches();
     const primary = topMatches[0] || PRODUCTS[0];
     const alternates = topMatches.slice(1);
 
     const name = this.lang === 'uz' ? (primary.name_uz || primary.name) : (this.lang === 'en' ? (primary.name_en || primary.name) : primary.name);
     const desc = this.lang === 'uz' ? (primary.description_uz || primary.description) : (this.lang === 'en' ? (primary.description_en || primary.description) : primary.description);
-    const formattedPrice = Number(primary.price).toLocaleString('ru-RU') + ' сум';
+    const formattedPrice = formatPrice(primary.price, this.lang);
 
     // The bot greets the customer with the model the quiz recommended.
     const tgUrl = botLink('quiz', primary.id, this.lang);
@@ -182,11 +184,11 @@ export class GarminQuiz {
             ${t.quizResultTitle}
           </div>
           <button type="button" class="quiz-restart-btn text-xs text-zinc-400 hover:text-white transition">
-            Пройти заново
+            ${t.quizRestart}
           </button>
         </div>
 
-        <h2 class="text-2xl sm:text-3xl font-bold text-white mb-5 tracking-tight">${name}</h2>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white mb-5 tracking-tight break-words">${name}</h2>
 
         <!-- Featured Result Card -->
         <div class="bg-zinc-900/80 border border-white/[0.06] rounded-xl p-5 mb-5 flex flex-col sm:flex-row items-center gap-5">
@@ -217,14 +219,16 @@ export class GarminQuiz {
 
         ${alternates.length > 0 ? `
           <div class="border-t border-white/[0.06] pt-4">
-            <h4 class="text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-3">Альтернативные варианты:</h4>
+            <h4 class="text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-3">${t.quizAlternatives}</h4>
             <div class="grid grid-cols-2 gap-2.5">
               ${alternates.map(alt => `
-                <div class="quiz-alt-card bg-zinc-900/60 border border-white/[0.06] hover:border-zinc-600 rounded-xl p-3 flex items-center gap-3 cursor-pointer transition" data-id="${alt.id}">
-                  <img src="${alt.image}" alt="${alt.name}" class="w-12 h-12 object-contain shrink-0" />
+                <!-- On phones the thumbnail shrinks (and hides below 360px) so an
+                     8-digit price fits inside the card instead of spilling out. -->
+                <div class="quiz-alt-card bg-zinc-900/60 border border-white/[0.06] hover:border-zinc-600 rounded-xl p-2.5 sm:p-3 flex items-center gap-2 sm:gap-3 cursor-pointer transition" data-id="${alt.id}">
+                  <img src="${alt.image}" alt="${alt.name}" loading="lazy" class="hidden min-[360px]:block w-10 h-10 sm:w-12 sm:h-12 object-contain shrink-0" />
                   <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-semibold text-white truncate">${alt.name}</div>
-                    <div class="text-xs text-zinc-400 font-mono mt-0.5">${Number(alt.price).toLocaleString('ru-RU')} сум</div>
+                    <div class="text-xs sm:text-sm font-semibold text-white truncate">${this.lang === 'uz' ? (alt.name_uz || alt.name) : alt.name}</div>
+                    <div class="text-[11px] sm:text-xs text-zinc-400 font-mono mt-0.5">${formatPrice(alt.price, this.lang)}</div>
                   </div>
                 </div>
               `).join('')}

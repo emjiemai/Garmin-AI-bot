@@ -22,7 +22,12 @@ const STRINGS = {
     error: (phone) =>
       '⚠️ Извините, произошла техническая ошибка. Попробуйте ещё раз или ' +
       `свяжитесь с менеджером: ${phone}`,
-    rateLimited: '⏳ Слишком много сообщений подряд. Подождите пару секунд.',
+    rateLimited: (phone) =>
+      '⏳ Слишком много сообщений подряд — сделаю небольшую паузу. Напишите чуть позже ' +
+      `или позвоните: ${phone}`,
+    textOnly: (phone) =>
+      'Я пока не вижу фото и не слушаю голосовые 🙏 Напишите, пожалуйста, вопрос текстом ' +
+      `(например, название модели) — или позвоните: ${phone}`,
     aiDown: (phone) =>
       '🙏 Извините, консультант сейчас недоступен. Я уже передал ваш вопрос ' +
       'менеджеру — он свяжется с вами в ближайшее время.\n' +
@@ -76,7 +81,12 @@ const STRINGS = {
     error: (phone) =>
       "⚠️ Kechirasiz, texnik xatolik yuz berdi. Qayta urinib ko'ring yoki " +
       `menejer bilan bog'laning: ${phone}`,
-    rateLimited: "⏳ Juda ko'p xabar yuborildi. Bir necha soniya kuting.",
+    rateLimited: (phone) =>
+      "⏳ Juda ko'p xabar ketma-ket yuborildi — biroz tanaffus qilaman. Keyinroq yozing " +
+      `yoki qo'ng'iroq qiling: ${phone}`,
+    textOnly: (phone) =>
+      "Hozircha rasm va ovozli xabarlarni ko'ra olmayman 🙏 Savolingizni matn bilan yozing " +
+      `(masalan, model nomi) — yoki qo'ng'iroq qiling: ${phone}`,
     aiDown: (phone) =>
       "🙏 Kechirasiz, maslahatchi hozir mavjud emas. Savolingizni menejerga " +
       "yubordim — u tez orada siz bilan bog'lanadi.\n" +
