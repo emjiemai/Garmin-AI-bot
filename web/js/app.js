@@ -1,13 +1,17 @@
 // Main Application Controller (Clean, Minimal & High Contrast)
-import { APP_CONFIG, CATEGORIES, STORIES, BRANCHES, PRODUCTS, FAQ_DATA, TRANSLATIONS } from './data.js';
+import { APP_CONFIG, CATEGORIES, STORIES, BRANCHES, PRODUCTS, FAQ_DATA } from './data.js';
 import { GarminQuiz } from './quiz.js';
 import { GarminComparator } from './compare.js';
 import { BatterySimulator } from './batterySimulator.js';
-import { botLink, HUMAN_TELEGRAM_URL, openBotLink, installTelegramLinkBridge, setupBackButton } from './telegram.js';
+import { botLink, openBotLink, installTelegramLinkBridge, setupBackButton } from './telegram.js';
+import { formatModelCount, formatPrice, readStoredLang, storeLang, tr } from './i18n.js';
+
+const LANGS = ['ru', 'uz', 'en'];
 
 class GarminApp {
   constructor() {
-    this.currentLang = localStorage.getItem('garmin_lang') || 'ru';
+    const stored = readStoredLang();
+    this.currentLang = LANGS.includes(stored) ? stored : 'ru';
     this.activeCategory = 'all';
     this.searchQuery = '';
     this.selectedProduct = null;
@@ -53,12 +57,18 @@ class GarminApp {
 
   setLanguage(lang) {
     this.currentLang = lang;
-    localStorage.setItem('garmin_lang', lang);
+    storeLang(lang);
     this.applyTranslations();
     this.renderStories();
     this.renderCategoryPills();
     this.renderProducts();
+    this.renderShowrooms();
     this.renderFaq();
+    // An open product modal would otherwise stay in the old language.
+    const productModal = document.getElementById('productModal');
+    if (this.selectedProduct && productModal && !productModal.classList.contains('hidden')) {
+      this.openProductModal(this.selectedProduct);
+    }
     if (this.quiz) this.quiz.setLanguage(lang);
     if (this.comparator) this.comparator.setLanguage(lang);
     if (this.batterySim) this.batterySim.setLanguage(lang);
@@ -66,21 +76,27 @@ class GarminApp {
 
   setupLanguageSwitcher() {
     document.querySelectorAll('.lang-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const lang = btn.getAttribute('data-lang');
-        document.querySelectorAll('.lang-btn').forEach(b => {
-          b.classList.remove('active', 'bg-white', 'text-black');
-          b.classList.add('text-zinc-400');
-        });
-        btn.classList.add('active', 'bg-white', 'text-black');
-        btn.classList.remove('text-zinc-400');
-        this.setLanguage(lang);
-      });
+      btn.addEventListener('click', () => this.setLanguage(btn.getAttribute('data-lang')));
+    });
+  }
+
+  // The markup ships with RU highlighted; a visitor who picked UZ last time
+  // must see UZ highlighted, not RU with Uzbek text under it.
+  syncLanguageButtons() {
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      const active = b.getAttribute('data-lang') === this.currentLang;
+      b.classList.toggle('active', active);
+      b.classList.toggle('bg-white', active);
+      b.classList.toggle('text-black', active);
+      b.classList.toggle('text-zinc-400', !active);
+      b.setAttribute('aria-pressed', String(active));
     });
   }
 
   applyTranslations() {
-    const t = TRANSLATIONS[this.currentLang] || TRANSLATIONS.ru;
+    const t = tr(this.currentLang);
+    document.documentElement.lang = this.currentLang;
+    this.syncLanguageButtons();
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       if (t[key]) {
@@ -105,6 +121,11 @@ class GarminApp {
   }
 
   // --- STORY HIGHLIGHTS ---
+  /** A story field in the current language, falling back to Russian. */
+  storyText(story, field) {
+    return (this.currentLang !== 'ru' && story[`${field}_${this.currentLang}`]) || story[field];
+  }
+
   renderStories() {
     const container = document.getElementById('storiesContainer');
     if (!container) return;
@@ -117,10 +138,10 @@ class GarminApp {
       >
         <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-full p-[1.5px] border border-zinc-700 group-hover:border-white transition-all">
           <div class="w-full h-full rounded-full bg-[#11141a] p-1 flex items-center justify-center overflow-hidden">
-            <img src="${s.thumb}" alt="${s.title}" class="w-full h-full object-contain" />
+            <img src="${s.thumb}" alt="${this.storyText(s, 'title')}" loading="lazy" class="w-full h-full object-contain" />
           </div>
         </div>
-        <span class="text-xs font-medium text-zinc-300 truncate max-w-[70px] text-center">${s.title}</span>
+        <span class="text-xs font-medium text-zinc-300 truncate max-w-[70px] text-center">${this.storyText(s, 'title')}</span>
       </button>
     `).join('');
 
@@ -155,8 +176,8 @@ class GarminApp {
           <div class="flex items-center gap-3">
             <img src="${story.thumb}" class="w-10 h-10 rounded-full border border-white/20 bg-zinc-900 p-0.5 object-contain" />
             <div>
-              <div class="text-sm font-bold text-white">${story.title}</div>
-              <div class="text-xs text-zinc-400 uppercase tracking-wider">${story.badge}</div>
+              <div class="text-sm font-bold text-white">${this.storyText(story, 'title')}</div>
+              <div class="text-xs text-zinc-400 uppercase tracking-wider">${this.storyText(story, 'badge')}</div>
             </div>
           </div>
           <button type="button" id="closeStoryBtn" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition">✕</button>
@@ -165,16 +186,16 @@ class GarminApp {
         <!-- Story Body -->
         <div class="my-auto text-center py-6 z-10">
           <div class="w-48 h-48 mx-auto mb-6 flex items-center justify-center p-2">
-            <img src="${story.thumb}" alt="${story.storyTitle}" class="max-h-full max-w-full object-contain" />
+            <img src="${story.thumb}" alt="${this.storyText(story, 'storyTitle')}" class="max-h-full max-w-full object-contain" />
           </div>
-          <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3 tracking-tight">${story.storyTitle}</h2>
-          <p class="text-sm sm:text-base text-zinc-300 leading-relaxed max-w-md mx-auto">${story.storySubtitle}</p>
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3 tracking-tight">${this.storyText(story, 'storyTitle')}</h2>
+          <p class="text-sm sm:text-base text-zinc-300 leading-relaxed max-w-md mx-auto">${this.storyText(story, 'storySubtitle')}</p>
         </div>
 
         <!-- Action Button -->
         <div class="z-10 pt-2">
           <button type="button" id="storyActionBtn" class="w-full py-4 rounded-xl bg-white hover:bg-zinc-200 text-black font-semibold text-sm flex items-center justify-center gap-2 transition">
-            ${story.actionText}
+            ${this.storyText(story, 'actionText')}
           </button>
         </div>
       </div>
@@ -299,32 +320,33 @@ class GarminApp {
     const countBadge = document.getElementById('productsCount');
     if (!grid) return;
 
-    const t = TRANSLATIONS[this.currentLang] || TRANSLATIONS.ru;
+    const t = tr(this.currentLang);
 
     let filtered = PRODUCTS.filter(p => {
       if (this.activeCategory !== 'all' && p.category !== this.activeCategory) {
         return false;
       }
       if (this.searchQuery) {
-        const name = p.name.toLowerCase();
-        const desc = (p.description || '').toLowerCase();
-        const tag = (p.tagline || '').toLowerCase();
-        if (!name.includes(this.searchQuery) && !desc.includes(this.searchQuery) && !tag.includes(this.searchQuery)) {
-          return false;
-        }
+        // Search every language's name and text, so "fenix" and the Uzbek
+        // tagline both find the model whatever the UI language is.
+        const haystack = [p.name, p.name_uz, p.name_en, p.description, p.description_uz, p.tagline, p.tagline_uz]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+        if (!haystack.includes(this.searchQuery)) return false;
       }
       return true;
     });
 
     if (countBadge) {
-      countBadge.textContent = `${filtered.length} моделей`;
+      countBadge.textContent = formatModelCount(filtered.length, this.currentLang);
     }
 
     if (filtered.length === 0) {
       grid.innerHTML = `
         <div class="col-span-full py-16 text-center">
-          <div class="text-base font-semibold text-white">Модели не найдены</div>
-          <p class="text-sm text-zinc-400 mt-1">Попробуйте изменить категорию или поисковый запрос</p>
+          <div class="text-base font-semibold text-white">${t.noModelsTitle}</div>
+          <p class="text-sm text-zinc-400 mt-1">${t.noModelsHint}</p>
         </div>
       `;
       return;
@@ -333,7 +355,7 @@ class GarminApp {
     grid.innerHTML = filtered.map(p => {
       const name = this.currentLang === 'uz' ? (p.name_uz || p.name) : (this.currentLang === 'en' ? (p.name_en || p.name) : p.name);
       const tagline = this.currentLang === 'uz' ? (p.tagline_uz || p.tagline) : (this.currentLang === 'en' ? (p.tagline_en || p.tagline) : p.tagline);
-      const formattedPrice = Number(p.price).toLocaleString('ru-RU') + ' сум';
+      const formattedPrice = formatPrice(p.price, this.currentLang);
 
       return `
         <div 
@@ -343,7 +365,7 @@ class GarminApp {
           <div>
             <div class="relative w-full aspect-square bg-zinc-900/60 rounded-xl p-3 mb-3 flex items-center justify-center overflow-hidden">
               <div class="absolute top-2 left-2 flex flex-col gap-1 z-10">
-                ${p.featured ? '<span class="text-[9px] font-bold px-2 py-0.5 rounded bg-white text-black uppercase tracking-wider">Хит</span>' : ''}
+                ${p.featured ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded bg-white text-black uppercase tracking-wider">${t.badgeHit}</span>` : ''}
               </div>
               <img 
                 src="${p.image}" 
@@ -354,14 +376,16 @@ class GarminApp {
             </div>
 
             <div class="text-xs text-zinc-400 font-mono truncate mb-1">${tagline || p.category.toUpperCase()}</div>
-            <h3 class="font-semibold text-white text-sm sm:text-base leading-snug line-clamp-2 mb-2">${name}</h3>
+            <h3 class="font-semibold text-white text-sm sm:text-base leading-snug line-clamp-2 break-words mb-2">${name}</h3>
           </div>
 
           <div class="pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2 mt-auto">
-            <div>
+            <div class="min-w-0">
               <div class="font-bold text-white text-sm sm:text-base font-mono">${formattedPrice}</div>
             </div>
-            <div class="w-8 h-8 rounded-lg bg-zinc-800 text-zinc-300 group-hover:bg-white group-hover:text-black transition flex items-center justify-center shrink-0">
+            <!-- Decorative (the whole card is the tap target); on the narrowest
+                 phones it would push past the card edge next to an 8-digit price. -->
+            <div class="w-8 h-8 rounded-lg bg-zinc-800 text-zinc-300 group-hover:bg-white group-hover:text-black transition hidden min-[360px]:flex items-center justify-center shrink-0">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
               </svg>
@@ -385,11 +409,11 @@ class GarminApp {
     this.selectedProduct = prod;
     const modal = document.getElementById('productModal');
     const content = document.getElementById('productModalContent');
-    const t = TRANSLATIONS[this.currentLang] || TRANSLATIONS.ru;
+    const t = tr(this.currentLang);
 
     const name = this.currentLang === 'uz' ? (prod.name_uz || prod.name) : (this.currentLang === 'en' ? (prod.name_en || prod.name) : prod.name);
     const desc = this.currentLang === 'uz' ? (prod.description_uz || prod.description) : (this.currentLang === 'en' ? (prod.description_en || prod.description) : prod.description);
-    const formattedPrice = Number(prod.price).toLocaleString('ru-RU') + ' сум';
+    const formattedPrice = formatPrice(prod.price, this.currentLang);
 
     // Opens the AI consultant already knowing which model the customer is on.
     const tgUrl = botLink('card', prod.id, this.currentLang);
@@ -406,38 +430,38 @@ class GarminApp {
 
         <div class="mb-4">
           <div class="text-xs font-mono uppercase tracking-widest text-zinc-400 mb-1">${prod.category}</div>
-          <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">${name}</h2>
+          <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight break-words pr-8">${name}</h2>
           <div class="text-2xl sm:text-3xl font-bold text-white font-mono mt-2">${formattedPrice}</div>
         </div>
 
         <p class="text-sm sm:text-base text-zinc-300 leading-relaxed mb-6 bg-zinc-900/60 border border-white/[0.04] rounded-xl p-4">
-          ${desc || 'Официальное сертифицированное устройство Garmin с гарантией 1 год.'}
+          ${desc || t.defaultDescription}
         </p>
 
         <div class="mb-6">
-          <h3 class="text-xs uppercase tracking-wider font-semibold text-zinc-400 mb-3">Характеристики</h3>
+          <h3 class="text-xs uppercase tracking-wider font-semibold text-zinc-400 mb-3">${t.viewDetails}</h3>
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div class="bg-zinc-900 border border-white/[0.04] rounded-xl p-3.5">
               <div class="text-zinc-400 text-xs">${t.specBattery}</div>
-              <div class="font-semibold text-white mt-0.5">${prod.specs.battery}</div>
+              <div class="font-semibold text-white mt-0.5 break-words hyphens-auto">${prod.specs.battery}</div>
             </div>
             <div class="bg-zinc-900 border border-white/[0.04] rounded-xl p-3.5">
               <div class="text-zinc-400 text-xs">${t.specDisplay}</div>
-              <div class="font-semibold text-white mt-0.5">${prod.specs.display}</div>
+              <div class="font-semibold text-white mt-0.5 break-words hyphens-auto">${prod.specs.display}</div>
             </div>
             <div class="bg-zinc-900 border border-white/[0.04] rounded-xl p-3.5">
               <div class="text-zinc-400 text-xs">${t.specWater}</div>
-              <div class="font-semibold text-white mt-0.5">${prod.specs.waterRating}</div>
+              <div class="font-semibold text-white mt-0.5 break-words hyphens-auto">${prod.specs.waterRating}</div>
             </div>
             <div class="bg-zinc-900 border border-white/[0.04] rounded-xl p-3.5">
               <div class="text-zinc-400 text-xs">${t.specGps}</div>
-              <div class="font-semibold text-white mt-0.5">${prod.specs.gps}</div>
+              <div class="font-semibold text-white mt-0.5 break-words hyphens-auto">${prod.specs.gps}</div>
             </div>
           </div>
         </div>
 
         <div class="mb-8">
-          <h3 class="text-xs uppercase tracking-wider font-semibold text-zinc-400 mb-3">Особенности модели</h3>
+          <h3 class="text-xs uppercase tracking-wider font-semibold text-zinc-400 mb-3">${t.featuresTitle}</h3>
           <div class="flex flex-wrap gap-2">
             ${(prod.specs.keyFeatures || []).map(f => `
               <span class="text-xs px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300">
@@ -447,7 +471,10 @@ class GarminApp {
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sticky bottom-0 bg-[#0e1117]/95 backdrop-blur pt-3 border-t border-white/[0.08]">
+        <!-- The negative bottom offset/margin cancel the scroll container's
+             padding, so the bar sits flush on the modal's bottom edge instead of
+             floating above a strip of scrolling content. -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sticky -bottom-6 sm:-bottom-8 -mb-6 sm:-mb-8 pb-6 sm:pb-8 bg-[#0e1117]/95 backdrop-blur pt-3 border-t border-white/[0.08]">
           <a 
             href="${tgUrl}" 
             target="_blank" 
@@ -480,7 +507,10 @@ class GarminApp {
   renderShowrooms() {
     const container = document.getElementById('showroomsGrid');
     if (!container) return;
-    const t = TRANSLATIONS[this.currentLang] || TRANSLATIONS.ru;
+    const t = tr(this.currentLang);
+    // The button must name the app it actually opens — one branch links to
+    // Google Maps, which was labelled "Яндекс Карты".
+    const mapLabel = (url) => (/google\.|goo\.gl/i.test(url) ? t.showOnGoogle : t.showOnYandex);
 
     container.innerHTML = BRANCHES.map(b => `
       <div class="bg-[#0e1117] border border-white/[0.08] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xl">
@@ -491,11 +521,11 @@ class GarminApp {
           </div>
           <div class="space-y-2 text-sm text-zinc-300 mb-6">
             <div class="flex items-start gap-2.5">
-              <span class="text-zinc-500 shrink-0">Адрес:</span>
+              <span class="text-zinc-500 shrink-0">${t.addressLabel}</span>
               <span>${b.address}</span>
             </div>
             <div class="flex items-center gap-2.5">
-              <span class="text-zinc-500 shrink-0">Телефон:</span>
+              <span class="text-zinc-500 shrink-0">${t.phoneLabel}</span>
               <a href="tel:${b.phone.replace(/[^0-9+]/g, '')}" class="text-white hover:underline font-mono">${b.phone}</a>
             </div>
           </div>
@@ -508,7 +538,7 @@ class GarminApp {
             rel="noopener noreferrer" 
             class="py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-xs text-center border border-zinc-700 transition"
           >
-            ${t.showOnYandex}
+            ${mapLabel(b.map_url)}
           </a>
           <a 
             href="tel:${b.phone.replace(/[^0-9+]/g, '')}" 
@@ -566,11 +596,19 @@ class GarminApp {
   setupModals() {
     document.querySelectorAll('.modal-backdrop').forEach(modal => {
       modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
+        if (e.target !== modal) return;
+        // Closing a story by tapping outside it must also stop its
+        // auto-advance timer, or the next story pops back open 6s later.
+        if (modal.id === 'storyModal') this.closeStory();
+        else {
           modal.classList.add('hidden');
           modal.classList.remove('flex');
         }
       });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') this.closeTopOverlay();
     });
   }
 
