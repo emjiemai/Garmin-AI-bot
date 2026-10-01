@@ -9,6 +9,7 @@ import { classifyAiError, isFatalAiError, respond } from './ai/agent.js';
 import { alertManager, notifyContactUpdate } from './leads/notify.js';
 import { flushPendingLead, missingForHotLead } from './leads/pending.js';
 import { leadStats, recentLeads } from './leads/store.js';
+import { commandCenterEnabled, pendingForCommandCenter } from './leads/commandCenter.js';
 import { indexChannelPost, channelCatalogSize } from './channelCatalog.js';
 import { sendProductPhoto } from './media.js';
 import { normalizePhone } from './phone.js';
@@ -276,6 +277,11 @@ bot.command('stats', async (ctx) => {
     lines.push(`• ${icon[l.urgency] ?? '•'} ${escapeHtml(who)} — ${escapeHtml(l.productName ?? 'без товара')}`);
   }
   lines.push('', `🗂 Каталог из канала: <b>${channelCatalogSize()}</b> товаров`);
+  lines.push(
+    commandCenterEnabled()
+      ? `🗄 Command Center: ${pendingForCommandCenter() ? `⏳ ждут отправки: <b>${pendingForCommandCenter()}</b>` : '✅ все лиды сохранены'}`
+      : '🗄 Command Center: не подключён (COMMAND_CENTER_URL / COMMAND_CENTER_SECRET)'
+  );
   await ctx.reply(lines.join('\n'), { parse_mode: 'HTML' });
 });
 

@@ -1,13 +1,14 @@
-/** Append-only lead log.
+/** Lead log.
  *
- *  Render's free instance filesystem is ephemeral, so this file is a convenience
- *  for local development and post-mortem debugging — the Telegram alert to the
- *  manager is the durable record. Point LEADS_FILE at a mounted disk (or replace
- *  this module with a Supabase insert) when moving off the free plan. */
+ *  The durable record is the MGMG Command Center's Postgres: every lead and
+ *  every later phone number is sent there (commandCenter.js). The JSONL file
+ *  stays as a local/debug copy — Render's free disk is wiped on restart. */
 
+import { randomUUID } from 'node:crypto';
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { config } from '../config.js';
+import { leadEvent, sendToCommandCenter } from './commandCenter.js';
 
 const FILE = resolve(process.cwd(), config.leadsFile);
 
@@ -24,7 +25,7 @@ const recent = [];
 const RECENT_LIMIT = 100;
 
 export function saveLead(lead) {
-  const record = { ...lead, at: new Date().toISOString() };
+  const record = { ...lead, leadId: randomUUID(), at: new Date().toISOString() };
 
   recent.unshift(record);
   if (recent.length > RECENT_LIMIT) recent.pop();
@@ -38,6 +39,7 @@ export function saveLead(lead) {
     }
   }
 
+  sendToCommandCenter(leadEvent(record));
   return record;
 }
 
@@ -46,6 +48,9 @@ export function saveLead(lead) {
 export function attachPhoneToLead(chatId, phone) {
   const lead = recent.find((l) => l.chatId === chatId && l.urgency !== 'outage');
   if (lead && !lead.phone) lead.phone = phone;
+  // Sent even when this process has no such lead in memory (it may have
+  // restarted): the Command Center puts it on the customer's latest lead.
+  sendToCommandCenter({ event: 'phone', chat_id: Number(chatId), phone });
 }
 
 export function recentLeads(limit = 10) {

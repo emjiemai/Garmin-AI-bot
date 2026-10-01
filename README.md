@@ -80,9 +80,21 @@ relayed back the same way. `/release` hands the chat back to the AI.
   itself sent. A customer who names themselves "ID: 12345" cannot redirect
   the manager's replies.
 
-Leads are appended to `bot/data/leads.jsonl` **and** sent to the manager chat.
-Render's free instance has no persistent disk, so treat the Telegram alert as the
-durable record until a database is wired up.
+Every lead goes to the manager chat **and** to the MGMG Command Center
+(`emjiemai/mgmg-agents`), which stores it in its Postgres table `garmin_leads`
+— the durable record — and lets the Director ask OPS Manager Bot about them
+("garmin lidlari qanday?"). A phone number shared later is added to the same
+lead. Set on Render:
+
+| Variable | Value |
+| --- | --- |
+| `COMMAND_CENTER_URL` | `https://mgmg-api-eeky.onrender.com` |
+| `COMMAND_CENTER_SECRET` | a long random string — the same value as the Command Center's `GARMIN_LEADS_SECRET` |
+
+Delivery never blocks the conversation; a failed send (5xx/network) is retried
+and re-sent every 5 minutes while the bot runs; a 4xx is logged and dropped.
+`/stats` shows whether anything is waiting. `bot/data/leads.jsonl` remains a
+local/debug copy (Render's free disk is wiped on restart).
 
 ## Extended catalog (non-watch products)
 

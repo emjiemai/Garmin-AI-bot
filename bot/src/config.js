@@ -132,9 +132,19 @@ export const config = {
     humanTelegramUrl: optional('HUMAN_TELEGRAM_URL', 'https://t.me/Garmin_callcenter')
   },
 
-  /** Where lead JSONL is appended. Ephemeral on Render free — Telegram alerts
-   *  to the manager are the durable record until a database is wired up. */
+  /** Where lead JSONL is appended — a local/debug copy only (Render's free
+   *  disk is wiped on restart). The real record is the Command Center below. */
   leadsFile: optional('LEADS_FILE', './data/leads.jsonl'),
+
+  /** The MGMG Command Center stores every lead in Postgres (leads/commandCenter.js).
+   *  COMMAND_CENTER_SECRET is the same value as its GARMIN_LEADS_SECRET.
+   *  Both empty = leads are not sent (local development). */
+  commandCenter: {
+    url: optional('COMMAND_CENTER_URL', ''),
+    secret: optional('COMMAND_CENTER_SECRET', ''),
+    /** Wait before a retry (× attempt number). Small in tests. */
+    retryMs: num('COMMAND_CENTER_RETRY_MS', 2000, { min: 1, max: 60_000 })
+  },
 
   /** How long a buy-now lead waits for the customer's phone and pickup/delivery
    *  choice before going to the manager anyway. See leads/pending.js. */

@@ -111,6 +111,13 @@ services:
         value: "900"
 
       # --- Runtime ----------------------------------------------------------
+      # The MGMG Command Center stores every lead in Postgres
+      # (bot/src/leads/commandCenter.js). URL like https://mgmg-api-eeky.onrender.com;
+      # SECRET = the Command Center's GARMIN_LEADS_SECRET.
+      - key: COMMAND_CENTER_URL
+        sync: false
+      - key: COMMAND_CENTER_SECRET
+        sync: false
       - key: BOT_MODE
         value: webhook
       # PUBLIC_URL is left unset on purpose: the app falls back to

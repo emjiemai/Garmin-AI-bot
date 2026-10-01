@@ -59,6 +59,27 @@ const ai = createServer(async (req, res) => {
 });
 await new Promise((r) => ai.listen(0, '127.0.0.1', r));
 
+/* ------------------------------------------------- fake Command Center */
+
+/** Every POST the bot made to the Command Center: { path, body }. */
+const ccPosts = [];
+/** Status codes to answer next, in order (then 200). */
+const ccFailures = [];
+const cc = createServer(async (req, res) => {
+  let body = '';
+  for await (const part of req) body += part;
+  const status = ccFailures.shift() ?? 200;
+  ccPosts.push({ path: req.url, body: JSON.parse(body), status });
+  res.writeHead(status, { 'content-type': 'application/json' });
+  res.end(JSON.stringify({ ok: status === 200 }));
+});
+await new Promise((r) => cc.listen(0, '127.0.0.1', r));
+const waitFor = async (cond, ms = 2000) => {
+  const end = Date.now() + ms;
+  while (!cond() && Date.now() < end) await new Promise((r) => setTimeout(r, 10));
+  return cond();
+};
+
 /* ------------------------------------------------------------ environment */
 
 const tmp = mkdtempSync(join(tmpdir(), 'garmin-bot-test-'));
@@ -71,7 +92,10 @@ Object.assign(process.env, {
   AI_MODEL: 'fake',
   LEADS_FILE: join(tmp, 'leads.jsonl'),
   CHANNEL_CATALOG_FILE: join(tmp, 'channel.jsonl'),
-  LEAD_HOLD_MINUTES: '5'
+  LEAD_HOLD_MINUTES: '5',
+  COMMAND_CENTER_URL: `http://127.0.0.1:${cc.address().port}/`,
+  COMMAND_CENTER_SECRET: 'cc-secret',
+  COMMAND_CENTER_RETRY_MS: '5'
 });
 
 const { bot } = await import('../src/bot.js');
@@ -335,6 +359,36 @@ console.log('\n10. An alert that Telegram refuses as HTML is still delivered and
   check('the fallback still carries a routable ID', extractCustomerId(asSent, BOT_ID) === String(chat.id));
 }
 
+console.log('\n11. Leads are stored in the Command Center');
+{
+  const leadPosts = () => ccPosts.filter((p) => p.body.event === 'lead');
+  check('every lead so far reached the Command Center', await waitFor(() => leadPosts().length >= 3), String(leadPosts().length));
+  const first = leadPosts()[0];
+  check('posted to /webhooks/garmin-lead/<secret>', first?.path === '/webhooks/garmin-lead/cc-secret', first?.path);
+  check('lead carries an id, the chat and the urgency',
+    /^[0-9a-f-]{36}$/.test(first?.body.lead_id) && Number.isInteger(first?.body.chat_id) && ['now', 'next', 'outage'].includes(first?.body.urgency),
+    JSON.stringify(first?.body));
+  check('a lead id is never reused', new Set(leadPosts().map((p) => p.body.lead_id)).size === leadPosts().length);
+
+  ccFailures.push(503, 503);
+  const before = leadPosts().length;
+  const { chat, user } = newCustomer();
+  await send(textUpdate(chat, user, '/manager'));
+  check('a 503 is retried until stored', await waitFor(() => leadPosts().length >= before + 3), String(leadPosts().length - before));
+  const failed = leadPosts().slice(before).find((p) => p.status === 503)?.body.lead_id;
+  const tries = leadPosts().filter((p) => p.body.lead_id === failed);
+  check('…as the same lead, until it got through', tries.length === 3 && tries.at(-1).status === 200, JSON.stringify(tries.map((t) => t.status)));
+
+  ccFailures.push(401);
+  const other = newCustomer();
+  await send(textUpdate(other.chat, other.user, '/manager'));
+  await waitFor(() => leadPosts().some((p) => p.status === 401));
+  await new Promise((r) => setTimeout(r, 50));
+  const refusedId = leadPosts().find((p) => p.status === 401)?.body.lead_id;
+  check('a 401 is not retried', leadPosts().filter((p) => p.body.lead_id === refusedId).length === 1);
+}
+
 console.log(`\n${failures === 0 ? '✅ all offline checks passed' : `❌ ${failures} offline check(s) failed`}\n`);
 ai.close();
+cc.close();
 process.exitCode = failures ? 1 : 0;
