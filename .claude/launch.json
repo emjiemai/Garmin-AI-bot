@@ -6,6 +6,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["-y", "serve", "web", "-l", "5177"],
       "port": 5177
+    },
+    {
+      "name": "linktree-copy",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "serve", "linktree-copy", "-l", "5180"],
+      "port": 5180
     }
   ]
 }
