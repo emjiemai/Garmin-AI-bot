@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<title>Garmin Uzbekistan</title>
+<meta name="theme-color" content="#000">
+<link rel="preload" href="products.json" as="fetch" crossorigin>
+<style>
+*{box-sizing:border-box;margin:0}
+html{background:#141414;scrollbar-width:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}
+body{font-family:Roboto,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;justify-content:center}
+.page{width:100%;max-width:460px;background:#000;position:relative;padding:0 16px 40px;min-height:100vh}
+@media(min-width:520px){.page{margin:32px 0;border-radius:32px;overflow:clip;min-height:0}}
+.top{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:16px 0 12px;margin:0 -16px 8px;padding-inline:16px;background:linear-gradient(#000 70%,transparent)}
+.glass{background:rgba(60,60,60,.7);backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);border-radius:20px}
+.back{display:flex;align-items:center;gap:6px;height:38px;padding:0 16px 0 10px;border-radius:19px;color:#fff;text-decoration:none;font:700 13px Roboto,sans-serif;transition:transform .15s}
+.back:active{transform:scale(.95)}
+.back svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.nav{display:flex;padding:3px}
+.nav button{border:0;background:none;color:#fff;font:700 13px Roboto,sans-serif;padding:0 14px;height:32px;border-radius:16px;cursor:pointer;transition:background .15s,color .15s}
+.nav button.on{background:rgba(255,255,255,.9);color:#000}
+.head{padding:14px 8px 22px}
+.head h1{font-size:26px;font-weight:700;letter-spacing:.2px;text-transform:uppercase;line-height:1.1}
+.head p{margin-top:8px;font-size:13.5px;font-weight:500;color:#9a9a9a}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{display:flex;flex-direction:column;text-decoration:none;color:#fff;background:#3a3a3a;border-radius:22px;padding:8px;border:1px solid #4a4a4a;box-shadow:0 2px 6px rgba(0,0,0,.5);transition:transform .15s,border-color .15s}
+.card:active{transform:scale(.97)}
+@media(hover:hover){.card:hover{border-color:#777}.card:hover .ph img{transform:scale(1.05)}}
+.ph{aspect-ratio:1;border-radius:15px;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center}
+.ph img{width:100%;height:100%;object-fit:contain;display:block;padding:8%;transition:transform .35s}
+.info{display:flex;flex-direction:column;flex:1;padding:12px 6px 8px}
+.info h2{overflow-wrap:anywhere;font-size:13px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:3.9em}
+.price{margin-top:8px;font-size:13px;font-weight:500;color:#d6d6d6}
+.price.ask{color:#9a9a9a}
+.go{margin-top:auto;padding-top:12px;display:flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#fff}
+.go svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.sk{aspect-ratio:3/4.2;border-radius:22px;background:linear-gradient(100deg,#2c2c2c 30%,#3a3a3a 50%,#2c2c2c 70%) 0 0/200% 100%;animation:sh 1.2s linear infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.msg{grid-column:1/-1;text-align:center;color:#9a9a9a;font-size:14px;padding:48px 8px}
+.msg a{color:#fff;font-weight:700}
+.more{display:flex;justify-content:center;margin-top:28px}
+.more a{display:flex;align-items:center;justify-content:center;height:54px;padding:0 28px;border-radius:27px;color:#fff;text-decoration:none;font:700 15px Roboto,sans-serif;transition:transform .15s}
+.more a:active{transform:scale(.94)}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.97)}}
+.card{animation:rise .45s both;animation-delay:calc(var(--i,0)*40ms)}
+@media(prefers-reduced-motion:reduce){.card{animation:none}.sk{animation:none}}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="top">
+    <a class="back glass" href="./" id="back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span id="l-back">Back</span></a>
+    <div class="nav glass" role="group" aria-label="Language"><button data-l="uz">UZ</button><button data-l="en">EN</button><button data-l="ru">RU</button></div>
+  </div>
+  <section class="head"><h1 id="title">&nbsp;</h1><p id="count"></p></section>
+  <section class="grid" id="grid" aria-live="polite">
+    <div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div>
+  </section>
+  <div class="more"><a class="glass" id="all" href="https://garmin.com.uz/catalog" target="_blank" rel="noopener">View full catalog</a></div>
+</main>
+
+<script>
+const SITE="https://garmin.com.uz";
+// Each landing-page tile -> which garmin.com.uz products it shows.
+// `cats` = whole site categories, `ids` = a hand-picked list.
+const TILES={
+  smart:{cats:["fitness"],t:["Smartwatches","Smart-soatlar","Смарт-часы"]},
+  health:{ids:["vivosmart-5","lily-2-active","vivoactive-6","010-03013-00","010-03014-01","010-02980-02","010-02980-09","HRM"],t:["Health & Fitness Tracking","Salomatlik va fitnes treklari","Здоровье и фитнес-трекеры"]},
+  sports:{cats:["running","adventure"],t:["Sports & Fitness","Sport va fitnes","Спорт и фитнес"]},
+  marine:{cats:["marine"],t:["Marine","Dengiz uchun","Морская электроника"]},
+  cycling:{cats:["cycling"],t:["Cycling","Velosport","Велоспорт"]},
+  golf:{cats:["golf"],t:["Golf","Golf","Гольф"]}
+};
+const T={
+  en:{title:"Garmin Uzbekistan",back:"Back",view:"View",ask:"Price on request",cur:"UZS",all:"View full catalog",empty:"No products in this category yet.",err:"Couldn't load products.",retry:"Try again",n:["model","models","models"]},
+  uz:{title:"Garmin O'zbekiston",back:"Orqaga",view:"Ko'rish",ask:"Narxini so'rang",cur:"so'm",all:"To'liq katalog",empty:"Bu toifada hozircha mahsulot yo'q.",err:"Mahsulotlarni yuklab bo'lmadi.",retry:"Qayta urinish",n:["model","ta model","ta model"]},
+  ru:{title:"Garmin Узбекистан",back:"Назад",view:"Смотреть",ask:"Цена по запросу",cur:"сум",all:"Весь каталог",empty:"В этой категории пока нет товаров.",err:"Не удалось загрузить товары.",retry:"Повторить",n:["модель","модели","моделей"]}};
+const L={en:0,uz:1,ru:2};
+const key=new URLSearchParams(location.search).get("c");
+const tile=TILES[key];
+if(!tile){location.replace("./")}
+
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=new Intl.NumberFormat("ru-RU");
+let lang="en",items=null,failed=false;
+
+function pick(all){
+  const list=tile.ids?tile.ids.map(id=>all.find(p=>p.id===id)).filter(Boolean):all.filter(p=>tile.cats.includes(p.category));
+  return list.filter(p=>p.price>0).concat(list.filter(p=>!p.price)); // priced first, "on request" last
+}
+function render(){
+  const t=T[lang];
+  document.documentElement.lang=lang;
+  document.title=tile?tile.t[L[lang]]+" · "+t.title:t.title;
+  if(!tile)return;
+  $("title").textContent=tile.t[L[lang]];
+  $("l-back").textContent=t.back;
+  $("all").textContent=t.all;
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.l===lang));
+  const g=$("grid");
+  if(failed){$("count").textContent="";g.innerHTML=`<p class="msg">${t.err}<br><a href="">${t.retry}</a></p>`;return}
+  if(!items)return;
+  if(!items.length){$("count").textContent="";g.innerHTML=`<p class="msg">${t.empty}</p>`;return}
+  const c=items.length,m=c%100,d=c%10,form=lang==="ru"?(m>10&&m<20?2:d===1?0:d>1&&d<5?1:2):(c===1?0:1);
+  $("count").textContent=c+" "+t.n[form];
+  g.innerHTML=items.map((p,i)=>
+    `<a class="card" style="--i:${Math.min(i,10)}" href="${SITE}/product/${encodeURIComponent(p.id)}" target="_blank" rel="noopener">`+
+    `<div class="ph"><img src="${esc(p.image)}" alt="" width="480" height="480" decoding="async" ${i<4?(i<2?'fetchpriority="high"':""):'loading="lazy"'}></div>`+
+    `<div class="info"><h2>${esc(p.name)}</h2>`+
+    (p.price?`<p class="price">${fmt.format(p.price)} ${t.cur}</p>`:`<p class="price ask">${t.ask}</p>`)+
+    `<span class="go">${t.view}<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span></div></a>`).join("");
+}
+// The image host drops some requests when many load at once; retry a failed image a few times.
+$("grid").addEventListener("error",e=>{const i=e.target;if(i.tagName!=="IMG")return;const n=+(i.dataset.r||0);if(n>=3)return;i.dataset.r=n+1;
+  const base=i.src.split("?")[0];setTimeout(()=>{i.src=base+"?r="+(n+1)},600*(n+1))},true);
+function setLang(l){lang=l;try{localStorage.setItem("lang",l)}catch(e){}render()}
+document.querySelector(".nav").addEventListener("click",e=>{const b=e.target.closest("button");if(b)setLang(b.dataset.l)});
+let start="en";
+try{start=localStorage.getItem("lang")||""}catch(e){}
+if(!T[start]){const n=(navigator.language||"").slice(0,2);start=T[n]?n:"en"}
+lang=start;render();
+
+if(tile)fetch("products.json").then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{items=pick(d.products);render()}).catch(()=>{failed=true;render()});
+</script>
+</body>
+</html>

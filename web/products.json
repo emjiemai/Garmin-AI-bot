@@ -1,0 +1,439 @@
+{
+ "syncedAt": "2026-10-14T10:32:31.221Z",
+ "products": [
+  {
+   "id": "010-02904-40",
+   "name": "fenix 8 47mm, AMOLED, Sapphire Titanium Band",
+   "category": "fitness",
+   "price": 20600000,
+   "image": "img/p/010-02904-40.webp"
+  },
+  {
+   "id": "HRM",
+   "name": "HRM 600 M-XL",
+   "category": "accessories",
+   "price": 2600000,
+   "image": "img/p/hrm.webp"
+  },
+  {
+   "id": "010-02903-21",
+   "name": "fenix 8 43mm, AMOLED, Sapphire",
+   "category": "fitness",
+   "price": 17800000,
+   "image": "img/p/010-02903-21.webp"
+  },
+  {
+   "id": "010-02722-21",
+   "name": "MARQ Golfer Gen 2, Carbon",
+   "category": "fitness",
+   "price": 43800000,
+   "image": "img/p/010-02722-21.webp"
+  },
+  {
+   "id": "010-03920-11",
+   "name": "Forerunner 170 Music Whitestone, Black, Teal Green",
+   "category": "running",
+   "price": 5300000,
+   "image": "img/p/010-03920-11.webp"
+  },
+  {
+   "id": "010-03920-01",
+   "name": "Forerunner 170 Whitestone/Cloud Blue",
+   "category": "running",
+   "price": 4800000,
+   "image": "img/p/010-03920-01.webp"
+  },
+  {
+   "id": "010-04675-03",
+   "name": "Cirqa",
+   "category": "fitness",
+   "price": 3300000,
+   "image": "img/p/010-04675-03.webp"
+  },
+  {
+   "id": "010-04549-00",
+   "name": "MARQ® Adventurer (Gen 3)",
+   "category": null,
+   "price": 0,
+   "image": "img/p/010-04549-00.webp"
+  },
+  {
+   "id": "010-04549-20",
+   "name": "MARQ® Aviator (Gen 3)",
+   "category": "fitness",
+   "price": 0,
+   "image": "img/p/010-04549-20.webp"
+  },
+  {
+   "id": "010-04549-40",
+   "name": "MARQ® Diver (Gen 3)",
+   "category": "fitness",
+   "price": 0,
+   "image": "img/p/010-04549-40.webp"
+  },
+  {
+   "id": "010-04549-50",
+   "name": "MARQ® Golfer (Gen 3)",
+   "category": "running",
+   "price": 0,
+   "image": "img/p/010-04549-50.webp"
+  },
+  {
+   "id": "010-04549-10",
+   "name": "MARQ® Athlete (Gen 3)",
+   "category": "fitness",
+   "price": 0,
+   "image": "img/p/010-04549-10.webp"
+  },
+  {
+   "id": "fenix-8",
+   "name": "fēnix 8 — 47 mm, Solar",
+   "category": "adventure",
+   "price": 18000000,
+   "image": "img/p/fenix-8.webp"
+  },
+  {
+   "id": "010-02904-11",
+   "name": "fenix 8 47mm, AMOLED, Sapphire",
+   "category": "fitness",
+   "price": 17800000,
+   "image": "img/p/010-02904-11.webp"
+  },
+  {
+   "id": "010-02904-21",
+   "name": "fenix 8 47mm, AMOLED, Sapphire",
+   "category": "fitness",
+   "price": 18000000,
+   "image": "img/p/010-02904-21.webp"
+  },
+  {
+   "id": "010-02905-11",
+   "name": "fenix 8 51mm, AMOLED, Sapphire",
+   "category": "fitness",
+   "price": 19300000,
+   "image": "img/p/010-02905-11.webp"
+  },
+  {
+   "id": "010-02905-40",
+   "name": "fenix 8 51mm, AMOLED, Sapphire",
+   "category": "fitness",
+   "price": 20100000,
+   "image": "img/p/010-02905-40.webp"
+  },
+  {
+   "id": "010-02905-21",
+   "name": "fenix 8 51mm, AMOLED, Sapphire",
+   "category": "fitness",
+   "price": 19300000,
+   "image": "img/p/010-02905-21.webp"
+  },
+  {
+   "id": "010-02905-00",
+   "name": "fenix 8 51mm, AMOLED, Glass",
+   "category": "fitness",
+   "price": 17700000,
+   "image": "img/p/010-02905-00.webp"
+  },
+  {
+   "id": "010-02907-11",
+   "name": "fenix 8 51mm, Sapphire Solar",
+   "category": "fitness",
+   "price": 19300000,
+   "image": "img/p/010-02907-11.webp"
+  },
+  {
+   "id": "010-03013-00",
+   "name": "Venu 4 (41mm) Lunar Gold + Bone",
+   "category": "fitness",
+   "price": 9000000,
+   "image": "img/p/010-03013-00.webp"
+  },
+  {
+   "id": "010-03014-01",
+   "name": "Venu 4 (45mm) Silver + Gray",
+   "category": "fitness",
+   "price": 9000000,
+   "image": "img/p/010-03014-01.webp"
+  },
+  {
+   "id": "010-02903-40",
+   "name": "fenix 8 43mm, AMOLED, Sapphire",
+   "category": "fitness",
+   "price": 18600000,
+   "image": "img/p/010-02903-40.webp"
+  },
+  {
+   "id": "010-02980-02",
+   "name": "Venu X1 Black",
+   "category": "fitness",
+   "price": 13360000,
+   "image": "img/p/010-02980-02.webp"
+  },
+  {
+   "id": "010-04307-03",
+   "name": "Forerunner 70 Cool Lavender, Citron, Whitestone, Black",
+   "category": "running",
+   "price": 3600000,
+   "image": "img/p/010-04307-03.webp"
+  },
+  {
+   "id": "010-02980-09",
+   "name": "Venu X1 French Gray",
+   "category": "fitness",
+   "price": 13360000,
+   "image": "img/p/010-02980-09.webp"
+  },
+  {
+   "id": "010-03406-01",
+   "name": "Tactix 8 Standard, AMOLED / Solar 51mm",
+   "category": "adventure",
+   "price": 23400000,
+   "image": "img/p/010-03406-01.webp"
+  },
+  {
+   "id": "010-02648-21",
+   "name": "MARQ Golfer Gen 2",
+   "category": "fitness",
+   "price": 35900000,
+   "image": "img/p/010-02648-21.webp"
+  },
+  {
+   "id": "010-03398-01",
+   "name": "Instinct Crossover AMOLED, BronzeSunburst/Cocoa",
+   "category": "adventure",
+   "price": 9000000,
+   "image": "img/p/010-03398-01.webp"
+  },
+  {
+   "id": "010-02722-11",
+   "name": "MARQ Athlete Gen 2, Carbon",
+   "category": "fitness",
+   "price": 43350000,
+   "image": "img/p/010-02722-11.webp"
+  },
+  {
+   "id": "010-02648-31",
+   "name": "MARQ Adventurer Gen 2",
+   "category": "fitness",
+   "price": 33900000,
+   "image": "img/p/010-02648-31.webp"
+  },
+  {
+   "id": "010-03393-31",
+   "name": "MARQ Adventurer Gen 2, Damascus",
+   "category": "fitness",
+   "price": 45900000,
+   "image": "img/p/010-03393-31.webp"
+  },
+  {
+   "id": "010-02936-03",
+   "name": "Instinct 3, 45mm, AMOLED, Black with Bolt Blue Band",
+   "category": "adventure",
+   "price": 7670000,
+   "image": "img/p/010-02936-03.webp"
+  },
+  {
+   "id": "010-02648-01",
+   "name": "MARQ Aviator Gen 2",
+   "category": "fitness",
+   "price": 38900000,
+   "image": "img/p/010-02648-01.webp"
+  },
+  {
+   "id": "010-02648-41",
+   "name": "MARQ Athlete Gen 2",
+   "category": "fitness",
+   "price": 29750000,
+   "image": "img/p/010-02648-41.webp"
+  },
+  {
+   "id": "010-03398-02",
+   "name": "Instinct Crossover AMOLED, Tactical, Black",
+   "category": "adventure",
+   "price": 11200000,
+   "image": "img/p/010-03398-02.webp"
+  },
+  {
+   "id": "010-03398-00",
+   "name": "Instinct Crossover AMOLED, Charcoal Grey",
+   "category": "adventure",
+   "price": 9000000,
+   "image": "img/p/010-03398-00.webp"
+  },
+  {
+   "id": "010-02934-50",
+   "name": "Instinct 3, Tactical, Solar, 45mm, Black",
+   "category": "adventure",
+   "price": 8200000,
+   "image": "img/p/010-02934-50.webp"
+  },
+  {
+   "id": "010-02935-50",
+   "name": "Instinct 3, Tactical, Solar, 50mm, Black",
+   "category": "adventure",
+   "price": 8710000,
+   "image": "img/p/010-02935-50.webp"
+  },
+  {
+   "id": "010-03020-01",
+   "name": "Instinct 3, 50mm, AMOLED, Neotropic Bezel with Twilight Band",
+   "category": "adventure",
+   "price": 8000000,
+   "image": "img/p/010-03020-01.webp"
+  },
+  {
+   "id": "010-03405-01",
+   "name": "Tactix 8 Standard, AMOLED 47mm",
+   "category": "adventure",
+   "price": 21850000,
+   "image": "img/p/010-03405-01.webp"
+  },
+  {
+   "id": "fenix-e",
+   "name": "fēnix E — 47 mm, AMOLED",
+   "category": "adventure",
+   "price": 13900000,
+   "image": "img/p/fenix-e.webp"
+  },
+  {
+   "id": "enduro-3",
+   "name": "Enduro 3",
+   "category": "adventure",
+   "price": 14400000,
+   "image": "img/p/enduro-3.webp"
+  },
+  {
+   "id": "epix-pro",
+   "name": "Epix Pro (Gen 2) Sapphire",
+   "category": "adventure",
+   "price": 14500000,
+   "image": "img/p/epix-pro.webp"
+  },
+  {
+   "id": "010-03920-00",
+   "name": "Forerunner 170 Black/Amp Yellow",
+   "category": "running",
+   "price": 4800000,
+   "image": "img/p/010-03920-00.webp"
+  },
+  {
+   "id": "tactix-7",
+   "name": "tactix 7 AMOLED",
+   "category": "adventure",
+   "price": 21550000,
+   "image": "img/p/tactix-7.webp"
+  },
+  {
+   "id": "tactix-8",
+   "name": "tactix 8 — 51 mm, Solar Elite",
+   "category": "adventure",
+   "price": 26400000,
+   "image": "img/p/tactix-8.webp"
+  },
+  {
+   "id": "instinct-3-amoled",
+   "name": "Instinct 3 — 45 mm, AMOLED",
+   "category": "adventure",
+   "price": 7670000,
+   "image": "img/p/instinct-3-amoled.webp"
+  },
+  {
+   "id": "gpsmap-67",
+   "name": "GPSMAP 67",
+   "category": "adventure",
+   "price": 7900000,
+   "image": "img/p/gpsmap-67.webp"
+  },
+  {
+   "id": "forerunner-970",
+   "name": "Forerunner 970",
+   "category": "running",
+   "price": 12000000,
+   "image": "img/p/forerunner-970.webp"
+  },
+  {
+   "id": "forerunner-570",
+   "name": "Forerunner 570",
+   "category": "running",
+   "price": 8710000,
+   "image": "img/p/forerunner-570.webp"
+  },
+  {
+   "id": "forerunner-265",
+   "name": "Forerunner 265",
+   "category": "running",
+   "price": 8200000,
+   "image": "img/p/forerunner-265.webp"
+  },
+  {
+   "id": "010-02863-30",
+   "name": "Forerunner 165 Music Black/Slate Grey",
+   "category": "running",
+   "price": 5300000,
+   "image": "img/p/010-02863-30.webp"
+  },
+  {
+   "id": "vivoactive-6",
+   "name": "vívoactive 6 Black Slate",
+   "category": null,
+   "price": 5400000,
+   "image": "img/p/vivoactive-6.webp"
+  },
+  {
+   "id": "lily-2-active",
+   "name": "Lily 2 Active",
+   "category": "fitness",
+   "price": 5750000,
+   "image": "img/p/lily-2-active.webp"
+  },
+  {
+   "id": "vivosmart-5",
+   "name": "vívosmart 5",
+   "category": "fitness",
+   "price": 2550000,
+   "image": "img/p/vivosmart-5.webp"
+  },
+  {
+   "id": "edge-1050",
+   "name": "Edge 1050",
+   "category": "cycling",
+   "price": 11600000,
+   "image": "img/p/edge-1050.webp"
+  },
+  {
+   "id": "010-03022-00",
+   "name": "Edge 550",
+   "category": "cycling",
+   "price": 7300000,
+   "image": "img/p/010-03022-00.webp"
+  },
+  {
+   "id": "varia-rct715",
+   "name": "Varia RCT715",
+   "category": "cycling",
+   "price": 7050000,
+   "image": "img/p/varia-rct715.webp"
+  },
+  {
+   "id": "010-02553-01",
+   "name": "Striker Vivid 7sv, WW w/GT52",
+   "category": "marine",
+   "price": 9100000,
+   "image": "img/p/010-02553-01.webp"
+  },
+  {
+   "id": "descent-mk3i",
+   "name": "Descent Mk3i — 51 mm",
+   "category": "marine",
+   "price": 22600000,
+   "image": "img/p/descent-mk3i.webp"
+  },
+  {
+   "id": "approach-s70",
+   "name": "Approach S70 — 47 mm",
+   "category": "golf",
+   "price": 12600000,
+   "image": "img/p/approach-s70.webp"
+  }
+ ]
+}
