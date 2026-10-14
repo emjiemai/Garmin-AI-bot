@@ -95,12 +95,12 @@ addEventListener("keydown",e=>{if(e.key==="Escape")shut()});
 
 const U="https://ugc.production.linktr.ee/",G="https://www.garmin.com/en-US/c/",Q="?io=true&size=thumbnail-feature-v1_0";
 const items=[
-["Smartwatches","https://garmin.com.uz/catalog?category=fitness","img/smart.webp"],
-["Health & Fitness Tracking","https://garmin.com.uz/catalog?category=fitness","img/health.webp"],
-["Sports & Fitness","https://garmin.com.uz/catalog?category=fitness","img/sports.webp"],
-["Marine","https://garmin.com.uz/catalog?category=marine","img/marine.webp"],
-["Cycling","https://garmin.com.uz/catalog?category=cycling","img/cycling.webp"],
-["Golf","https://garmin.com.uz/catalog?category=golf","img/golf.webp"]
+["Smartwatches","category.html?c=smart","img/smart.webp"],
+["Health & Fitness Tracking","category.html?c=health","img/health.webp"],
+["Sports & Fitness","category.html?c=sports","img/sports.webp"],
+["Marine","category.html?c=marine","img/marine.webp"],
+["Cycling","category.html?c=cycling","img/cycling.webp"],
+["Golf","category.html?c=golf","img/golf.webp"]
 ];
 const T={
 en:{tg:"Message us",call:"Call us",title:"Garmin Uzbekistan",tag:"Engineered on the inside for life on the outside.",open:"Open",foot:"Cookie Preferences · Report · Privacy"},
@@ -115,7 +115,7 @@ const N=[
 ["Golf","Golf","Гольф"]];
 const L={en:0,uz:1,ru:2};
 document.getElementById("list").innerHTML=items.map((it,i)=>
-`<a class="card" href="${it[1].startsWith('http')?it[1]:G+it[1]}" target="_blank" rel="noopener"><div class="ph"><img src="${it[2].startsWith('img/')?it[2]:U+it[2]+Q}" alt="" width="400" height="225" decoding="async" ${i<2?'fetchpriority="high"':'loading="lazy"'}></div><span></span></a>`).join("");
+`<a class="card" href="${it[1]}"><div class="ph"><img src="${it[2].startsWith('img/')?it[2]:U+it[2]+Q}" alt="" width="400" height="225" decoding="async" ${i<2?'fetchpriority="high"':'loading="lazy"'}></div><span></span></a>`).join("");
 const spans=[...document.querySelectorAll(".card span")];
 function setLang(l){
   document.documentElement.lang=l;
