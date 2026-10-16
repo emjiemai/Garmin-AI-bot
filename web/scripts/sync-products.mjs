@@ -71,7 +71,8 @@ await Promise.all(
     while (next < raw.length) {
       const i = next++;
       const p = raw[i];
-      const file = fileFor(p.id);
+      const id = p.id.trim(); // two live ids carry a trailing space
+      const file = fileFor(id);
       const out = await sharp(await source(p.image_path))
         .resize(SIZE, SIZE, { fit: 'inside', withoutEnlargement: true, background: '#fff' })
         .flatten({ background: '#fff' }) // cards sit on white; drops the alpha channel
@@ -80,7 +81,7 @@ await Promise.all(
       writeFileSync(IMG_DIR + file, out);
       bytes += out.length;
       products[i] = {
-        id: p.id,
+        id,
         name: p.name.replace(/,(?=\S)/g, ', ').replace(/\s+/g, ' ').trim(),
         category: p.category || null,
         price: Number(p.price) || 0,

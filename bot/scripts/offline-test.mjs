@@ -129,11 +129,17 @@ const parseHtml = htmlToPlainWithCode;
 /** When set, HTML messages to the manager are rejected like a parse error. */
 let rejectManagerHtml = false;
 
+/** When set, sendPhoto fails the way Telegram does for a URL it can't fetch. */
+let rejectPhotos = false;
+
 bot.api.config.use(async (_prev, method, payload) => {
   calls.push({ method, payload });
   const message_id = nextMessageId++;
   if (method === 'sendMessage' && rejectManagerHtml && payload.parse_mode === 'HTML' && String(payload.chat_id) === String(MANAGER)) {
     return { ok: false, error_code: 400, description: "Bad Request: can't parse entities" };
+  }
+  if (method === 'sendPhoto' && rejectPhotos) {
+    return { ok: false, error_code: 400, description: 'Bad Request: wrong type of the web page content' };
   }
   if (method === 'sendMessage') {
     const parsed = payload.parse_mode === 'HTML' ? parseHtml(payload.text) : { text: payload.text, entities: payload.entities ?? [] };
@@ -386,6 +392,76 @@ console.log('\n11. Leads are stored in the Command Center');
   await new Promise((r) => setTimeout(r, 50));
   const refusedId = leadPosts().find((p) => p.status === 401)?.body.lead_id;
   check('a 401 is not retried', leadPosts().filter((p) => p.body.lead_id === refusedId).length === 1);
+}
+
+console.log('\n12. Arriving from the web app: the customer gets the product card');
+{
+  const startFor = async (payload) => {
+    const c = newCustomer();
+    calls = [];
+    await send(textUpdate(c.chat, c.user, `/start ${payload}`));
+    return { c, photo: sent('sendPhoto', c.chat.id)[0]?.payload, texts: sent('sendMessage', c.chat.id).map((m) => m.payload) };
+  };
+  const urlOf = (payload) => payload?.reply_markup?.inline_keyboard?.[0]?.[0]?.url;
+
+  check('part-number ids survive the deep link', parseStartPayload('card__010-02904-40__ru').productId === '010-02904-40');
+  check('an id the site stores with a trailing space still resolves', parseStartPayload('card__010-04336-41__uz').productId === '010-04336-41');
+
+  const uz = await startFor('card__010-04336-41__uz');
+  check('Uzbek greeting names the model, with no price in it', uz.texts[0]?.text.includes('fenix 9 Pro') && !/so'm|\d{2}\s\d{3}/.test(uz.texts[0].text));
+  check('the product photo goes out with a written caption', Boolean(uz.photo?.caption) && uz.photo.parse_mode === 'HTML');
+  check('caption has the model, a description point and the price', /fenix 9 Pro/.test(uz.photo.caption) && /inReach/.test(uz.photo.caption) && /19\s300\s000 so'm/.test(uz.photo.caption));
+  check('caption is in Uzbek, not Russian', /Batafsil aytib beraman/.test(uz.photo.caption) && !/[А-Яа-я]/.test(uz.photo.caption));
+  check("caption fits Telegram's 1024-character limit", uz.photo.caption.length <= 1024);
+  check('button opens the exact product page (id kept as the site stores it)', urlOf(uz.photo) === 'https://www.garmin.com.uz/product/010-04336-41%20', urlOf(uz.photo));
+
+  const ru = await startFor('card__010-02905-11__ru');
+  check('Russian card shows the live price', /17\s085\s000\sсум/.test(ru.photo.caption));
+  check('Russian card has the bullet points', (ru.photo.caption.match(/^• /gm) ?? []).length === 3);
+
+  const soon = await startFor('card__010-04549-20__ru');
+  check('an unpriced model says price on request, never 0', /по запросу/.test(soon.photo.caption) && !/\b0 сум/.test(soon.photo.caption));
+
+  const unknown = await startFor('card__a-model-we-never-had__ru');
+  check('an unknown model still gets the normal welcome, no card', !unknown.photo && unknown.texts.length === 1);
+
+  rejectPhotos = true;
+  const noPhoto = await startFor('card__forerunner-970__ru');
+  rejectPhotos = false;
+  const cardText = noPhoto.texts.find((m) => /Forerunner 970/.test(m.text) && m.reply_markup?.inline_keyboard);
+  check('if Telegram refuses the photo, the same card arrives as text', Boolean(cardText) && /12\s000\s000\sсум/.test(cardText.text));
+  check('…with the product-page button', urlOf(cardText) === 'https://www.garmin.com.uz/product/forerunner-970');
+}
+
+console.log('\n13. Tapping a product inside the Mini App sends its card into the chat');
+{
+  const pick = async (c, data) => {
+    calls = [];
+    await send(mediaUpdate(c.chat, c.user, { web_app_data: { data, button_text: '🛍 Каталог' } }));
+    return { photo: sent('sendPhoto', c.chat.id)[0]?.payload, texts: sent('sendMessage', c.chat.id).map((m) => m.payload) };
+  };
+
+  const c = newCustomer();
+  await send(textUpdate(c.chat, c.user, '/start'));
+  await send(textUpdate(c.chat, c.user, 'привет'));
+  const historyBefore = getSession(c.chat.id).history.length;
+
+  const uz = await pick(c, 'card__010-04336-41__uz');
+  check('the photo card goes out', /fenix 9 Pro/.test(uz.photo?.caption ?? '') && uz.photo.parse_mode === 'HTML');
+  check('…in the language the web app was showing', /Batafsil aytib beraman/.test(uz.photo.caption));
+  check('…with no second greeting', uz.texts.length === 0, JSON.stringify(uz.texts.map((m) => m.text)));
+  const s = getSession(c.chat.id);
+  check('the conversation so far is kept', s.history.length === historyBefore + 1, `${historyBefore} → ${s.history.length}`);
+  check('the AI knows which model was picked', /fenix 9 Pro/i.test(s.history.at(-1)?.content ?? '') && s.context.productId === '010-04336-41');
+
+  const en = await pick(c, 'card__forerunner-970__-');
+  check('an English web UI keeps the chat language', /Batafsil aytib beraman/.test(en.photo?.caption ?? ''));
+
+  const gone = await pick(c, 'card__a-model-we-never-had__ru');
+  check('a model the bot lacks gets an explanation, not silence', !gone.photo && /нет в моём каталоге/.test(gone.texts[0]?.text ?? ''));
+
+  const junk = await pick(c, '<script>');
+  check('garbage data is answered safely', !junk.photo && junk.texts.length === 1);
 }
 
 console.log(`\n${failures === 0 ? '✅ all offline checks passed' : `❌ ${failures} offline check(s) failed`}\n`);

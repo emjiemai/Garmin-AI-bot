@@ -5,7 +5,10 @@
  *  (ai/tools.js), since both are "a specific product just got identified"
  *  moments that should show the customer a real photo without them asking. */
 
+import { InlineKeyboard } from 'grammy';
 import { formatPrice, productName } from './catalog/catalog.js';
+import { buildProductCard, CAPTION_MAX } from './productCard.js';
+import { t } from './i18n.js';
 
 /**
  * @param {import('grammy').Bot} bot
@@ -27,6 +30,44 @@ export async function sendProductPhoto(bot, session, product, lang) {
     return { sent: true, alreadySent };
   } catch (err) {
     console.error('[media] sendProductPhoto failed:', err.message);
+    return { sent: false, error: 'send_failed' };
+  }
+}
+
+/**
+ * The message a customer gets on arriving from the web app: the product photo
+ * with a written card as its caption and an "open on garmin.com.uz" button to
+ * the exact product page. If Telegram can't fetch the photo (a bad URL or file
+ * type), the same card goes out as plain text — the customer still gets it.
+ *
+ * @param {import('grammy').Bot} bot
+ * @param {object} session
+ * @param {object} product
+ * @param {'ru'|'uz'} lang
+ */
+export async function sendProductCard(bot, session, product, lang) {
+  const { caption, url } = buildProductCard(product, lang);
+  const reply_markup = new InlineKeyboard().url(t(lang, 'btnOpenSite'), url);
+
+  if (product.image && caption.length <= CAPTION_MAX) {
+    try {
+      await bot.api.sendPhoto(session.chatId, product.image, { caption, parse_mode: 'HTML', reply_markup });
+      session.sentPhotos.add(product.id);
+      return { sent: true, photo: true };
+    } catch (err) {
+      console.error('[media] sendProductCard photo failed, sending text:', err.message);
+    }
+  }
+
+  try {
+    await bot.api.sendMessage(session.chatId, caption, {
+      parse_mode: 'HTML',
+      reply_markup,
+      link_preview_options: { is_disabled: true }
+    });
+    return { sent: true, photo: false };
+  } catch (err) {
+    console.error('[media] sendProductCard failed:', err.message);
     return { sent: false, error: 'send_failed' };
   }
 }

@@ -14,8 +14,10 @@ export const PRODUCTS = catalog.products;
 
 const BY_ID = new Map(PRODUCTS.map((p) => [p.id, p]));
 
-/** Prices live in the data as integers of UZS. */
+/** Prices live in the data as integers of UZS. A price of 0 means the site
+ *  lists the model without one ("coming soon", "ask a manager"). */
 export function formatPrice(uzs, lang = 'ru') {
+  if (!uzs) return lang === 'uz' ? "so'rov bo'yicha" : 'по запросу';
   const num = new Intl.NumberFormat('ru-RU').format(uzs);
   return lang === 'uz' ? `${num} so'm` : `${num} сум`;
 }
@@ -76,6 +78,8 @@ export function searchProducts(query, { category, maxPrice, minPrice, limit = 6 
 
   const scored = PRODUCTS.map((p) => {
     if (category && category !== 'all' && p.category !== category) return null;
+    // An unpriced model matches no price bound — it isn't "under 10 million".
+    if ((maxPrice || minPrice) && !p.price) return null;
     if (maxPrice && p.price > maxPrice) return null;
     if (minPrice && p.price < minPrice) return null;
 
@@ -106,7 +110,7 @@ export function searchProducts(query, { category, maxPrice, minPrice, limit = 6 
     return { product: p, score };
   }).filter(Boolean);
 
-  scored.sort((a, b) => b.score - a.score || a.product.price - b.product.price);
+  scored.sort((a, b) => b.score - a.score || (a.product.price || Infinity) - (b.product.price || Infinity));
   return scored.slice(0, limit).map((s) => s.product);
 }
 
@@ -115,12 +119,12 @@ export function searchProducts(query, { category, maxPrice, minPrice, limit = 6 
 export function compactIndex() {
   return PRODUCTS.map(
     (p) =>
-      `${p.id} | ${p.name} | ${p.category} | ${new Intl.NumberFormat('ru-RU').format(p.price)} UZS` +
+      `${p.id} | ${p.name} | ${p.category} | ${p.price ? `${new Intl.NumberFormat('ru-RU').format(p.price)} UZS` : 'цена по запросу'}` +
       (p.tagline.ru ? ` | ${p.tagline.ru}` : '')
   ).join('\n');
 }
 
 export function priceRange() {
-  const prices = PRODUCTS.map((p) => p.price);
+  const prices = PRODUCTS.map((p) => p.price).filter(Boolean);
   return { min: Math.min(...prices), max: Math.max(...prices) };
 }

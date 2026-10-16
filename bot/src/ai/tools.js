@@ -260,7 +260,7 @@ function publicProduct(p, lang) {
     name: p.name,
     category: p.category,
     price: formatPrice(p.price, lang),
-    price_uzs: p.price,
+    price_uzs: p.price || null,
     tagline: p.tagline[lang] || p.tagline.ru,
     description: p.description[lang] || p.description.ru,
     battery: p.specs.battery,

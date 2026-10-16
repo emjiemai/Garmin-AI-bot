@@ -12,10 +12,15 @@ const STRINGS = {
       '👋 Здравствуйте! Это поддержка *Garmin Uzbekistan*.\n\n' +
       'Помогу подобрать часы, сравнить модели, расскажу про цены, гарантию и доставку.\n\n' +
       'Просто напишите, что вас интересует.',
-    welcomeProduct: (name, price) =>
-      `👋 Здравствуйте! Вы смотрели *${name}* — ${price}.\n\n` +
-      'Это поддержка Garmin Uzbekistan. Расскажу про эту модель, сравню с другими ' +
-      'или оформлю заказ. Что интересует?',
+    welcomeProduct: (name) =>
+      '👋 Здравствуйте! Это поддержка *Garmin Uzbekistan*.\n\n' +
+      `Вы смотрели *${name}* — вот главное об этой модели 👇`,
+    cardPriceAsk: 'Цена — по запросу, менеджер подскажет',
+    cardClosing: 'Расскажу подробнее, сравню с другими моделями или помогу оформить заказ. Что вас интересует?',
+    cardMore: 'Подробные характеристики — на странице модели на сайте.',
+    btnOpenSite: '🔗 Открыть на garmin.com.uz',
+    productGone:
+      'Этой модели сейчас нет в моём каталоге. Напишите, что вы ищете, — подберу похожую или уточню у менеджера.',
     chooseLang: 'Выберите язык / Tilni tanlang:',
     langSet: '✅ Язык переключён на русский.',
     thinking: '⌛️ Секунду…',
@@ -71,10 +76,15 @@ const STRINGS = {
       "Soat tanlashda yordam beraman, modellarni solishtiraman, narx, kafolat va " +
       "yetkazib berish haqida ma'lumot beraman.\n\n" +
       "Sizni nima qiziqtirayotganini yozing.",
-    welcomeProduct: (name, price) =>
-      `👋 Assalomu alaykum! Siz *${name}* modelini ko'rdingiz — ${price}.\n\n` +
-      "Bu Garmin Uzbekistan qo'llab-quvvatlash xizmati. Bu model haqida so'zlab beraman, " +
-      "boshqalari bilan solishtiraman yoki buyurtma rasmiylashtiramanmi?",
+    welcomeProduct: (name) =>
+      "👋 Assalomu alaykum! Bu *Garmin Uzbekistan* qo'llab-quvvatlash xizmati.\n\n" +
+      `Siz *${name}* modelini ko'rdingiz — bu model haqida asosiy ma'lumot 👇`,
+    cardPriceAsk: "Narxi — so'rov bo'yicha, menejer aytib beradi",
+    cardClosing: "Batafsil aytib beraman, boshqa modellar bilan solishtiraman yoki buyurtma rasmiylashtirishga yordam beraman. Sizni nima qiziqtiradi?",
+    cardMore: "Batafsil xususiyatlar — saytdagi model sahifasida.",
+    btnOpenSite: '🔗 garmin.com.uz saytida ochish',
+    productGone:
+      "Bu model hozir katalogimda yo'q. Nima qidirayotganingizni yozing — o'xshashini topib beraman yoki menejerdan aniqlab beraman.",
     chooseLang: 'Выберите язык / Tilni tanlang:',
     langSet: "✅ Til o'zbekchaga o'zgartirildi.",
     thinking: '⌛️ Bir soniya…',
