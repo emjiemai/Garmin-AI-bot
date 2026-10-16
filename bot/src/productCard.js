@@ -9,7 +9,7 @@
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { catalog, formatPrice, productName } from './catalog/catalog.js';
+import { formatPrice, productName } from './catalog/catalog.js';
 import { escapeHtml } from './format.js';
 import { t } from './i18n.js';
 
@@ -23,12 +23,6 @@ for (const card of cards) for (const id of card.ids) BY_ID.set(id, card);
 export const CAPTION_MAX = 1024;
 
 const FALLBACK_EXCERPT_MAX = 220;
-
-/** Where the "open on the site" button goes: the exact product page. */
-export function productSiteUrl(product) {
-  const base = (catalog.store.website || 'https://garmin.com.uz').replace(/\/+$/, '');
-  return `${base}/product/${encodeURIComponent(product.siteId ?? product.id)}`;
-}
 
 /** First sentence of the site description, only if it is short and clean. */
 function excerpt(text) {
@@ -52,7 +46,7 @@ function copyFor(product, lang) {
 /**
  * @param {object} product catalog product
  * @param {'ru'|'uz'} lang
- * @returns {{caption: string, url: string}} caption is Telegram HTML, ≤ 1024 chars
+ * @returns {{caption: string}} caption is Telegram HTML, ≤ 1024 chars
  */
 export function buildProductCard(product, lang) {
   const { blurb, points } = copyFor(product, lang);
@@ -87,5 +81,5 @@ export function buildProductCard(product, lang) {
     if (caption.length <= CAPTION_MAX) break;
   }
 
-  return { caption, url: productSiteUrl(product) };
+  return { caption };
 }

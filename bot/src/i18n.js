@@ -18,7 +18,6 @@ const STRINGS = {
     cardPriceAsk: 'Цена — по запросу, менеджер подскажет',
     cardClosing: 'Расскажу подробнее, сравню с другими моделями или помогу оформить заказ. Что вас интересует?',
     cardMore: 'Подробные характеристики — на странице модели на сайте.',
-    btnOpenSite: '🔗 Открыть на garmin.com.uz',
     productGone:
       'Этой модели сейчас нет в моём каталоге. Напишите, что вы ищете, — подберу похожую или уточню у менеджера.',
     chooseLang: 'Выберите язык / Tilni tanlang:',
@@ -82,7 +81,6 @@ const STRINGS = {
     cardPriceAsk: "Narxi — so'rov bo'yicha, menejer aytib beradi",
     cardClosing: "Batafsil aytib beraman, boshqa modellar bilan solishtiraman yoki buyurtma rasmiylashtirishga yordam beraman. Sizni nima qiziqtiradi?",
     cardMore: "Batafsil xususiyatlar — saytdagi model sahifasida.",
-    btnOpenSite: '🔗 garmin.com.uz saytida ochish',
     productGone:
       "Bu model hozir katalogimda yo'q. Nima qidirayotganingizni yozing — o'xshashini topib beraman yoki menejerdan aniqlab beraman.",
     chooseLang: 'Выберите язык / Tilni tanlang:',

@@ -402,7 +402,7 @@ console.log('\n12. Arriving from the web app: the customer gets the product card
     await send(textUpdate(c.chat, c.user, `/start ${payload}`));
     return { c, photo: sent('sendPhoto', c.chat.id)[0]?.payload, texts: sent('sendMessage', c.chat.id).map((m) => m.payload) };
   };
-  const urlOf = (payload) => payload?.reply_markup?.inline_keyboard?.[0]?.[0]?.url;
+  const hasInlineButtons = (payload) => Boolean(payload?.reply_markup?.inline_keyboard);
 
   check('part-number ids survive the deep link', parseStartPayload('card__010-02904-40__ru').productId === '010-02904-40');
   check('an id the site stores with a trailing space still resolves', parseStartPayload('card__010-04336-41__uz').productId === '010-04336-41');
@@ -413,7 +413,7 @@ console.log('\n12. Arriving from the web app: the customer gets the product card
   check('caption has the model, a description point and the price', /fenix 9 Pro/.test(uz.photo.caption) && /inReach/.test(uz.photo.caption) && /19\s300\s000 so'm/.test(uz.photo.caption));
   check('caption is in Uzbek, not Russian', /Batafsil aytib beraman/.test(uz.photo.caption) && !/[А-Яа-я]/.test(uz.photo.caption));
   check("caption fits Telegram's 1024-character limit", uz.photo.caption.length <= 1024);
-  check('button opens the exact product page (id kept as the site stores it)', urlOf(uz.photo) === 'https://www.garmin.com.uz/product/010-04336-41%20', urlOf(uz.photo));
+  check('the card has no buttons under it', !hasInlineButtons(uz.photo), JSON.stringify(uz.photo?.reply_markup));
 
   const ru = await startFor('card__010-02905-11__ru');
   check('Russian card shows the live price', /17\s085\s000\sсум/.test(ru.photo.caption));
@@ -428,9 +428,9 @@ console.log('\n12. Arriving from the web app: the customer gets the product card
   rejectPhotos = true;
   const noPhoto = await startFor('card__forerunner-970__ru');
   rejectPhotos = false;
-  const cardText = noPhoto.texts.find((m) => /Forerunner 970/.test(m.text) && m.reply_markup?.inline_keyboard);
-  check('if Telegram refuses the photo, the same card arrives as text', Boolean(cardText) && /12\s000\s000\sсум/.test(cardText.text));
-  check('…with the product-page button', urlOf(cardText) === 'https://www.garmin.com.uz/product/forerunner-970');
+  const cardText = noPhoto.texts.find((m) => /Forerunner 970/.test(m.text) && /12\s000\s000\sсум/.test(m.text));
+  check('if Telegram refuses the photo, the same card arrives as text', Boolean(cardText));
+  check('…also with no buttons under it', cardText && !hasInlineButtons(cardText));
 }
 
 console.log('\n13. Tapping a product inside the Mini App sends its card into the chat');
