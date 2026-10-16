@@ -1,5 +1,5 @@
 {
- "syncedAt": "2026-10-14T10:32:31.221Z",
+ "syncedAt": "2026-10-14T13:13:31.793Z",
  "products": [
   {
    "id": "010-02904-40",
@@ -86,59 +86,87 @@
    "image": "img/p/010-04549-10.webp"
   },
   {
+   "id": "010-04336-26",
+   "name": "fenix 9 Pro 47mm, AMOLED",
+   "category": "adventure",
+   "price": 17000000,
+   "image": "img/p/010-04336-26.webp"
+  },
+  {
+   "id": "010-04763-01",
+   "name": "fenix 9, 51mm Titanium with Pebble Grey Silicone Band",
+   "category": "adventure",
+   "price": 17000000,
+   "image": "img/p/010-04763-01.webp"
+  },
+  {
+   "id": "010-04336-41",
+   "name": "fenix 9 Pro 47mm, AMOLED, inReach",
+   "category": "adventure",
+   "price": 19300000,
+   "image": "img/p/010-04336-41.webp"
+  },
+  {
+   "id": "010-04336-21",
+   "name": "fenix 9 Pro 47mm, AMOLED, inReach",
+   "category": "adventure",
+   "price": 18700000,
+   "image": "img/p/010-04336-21.webp"
+  },
+  {
    "id": "fenix-8",
    "name": "fēnix 8 — 47 mm, Solar",
    "category": "adventure",
-   "price": 18000000,
+   "price": 15300000,
    "image": "img/p/fenix-8.webp"
   },
   {
    "id": "010-02904-11",
    "name": "fenix 8 47mm, AMOLED, Sapphire",
    "category": "fitness",
-   "price": 17800000,
+   "price": 15130000,
    "image": "img/p/010-02904-11.webp"
   },
   {
    "id": "010-02904-21",
    "name": "fenix 8 47mm, AMOLED, Sapphire",
    "category": "fitness",
-   "price": 18000000,
+   "price": 15300000,
    "image": "img/p/010-02904-21.webp"
   },
   {
    "id": "010-02905-11",
    "name": "fenix 8 51mm, AMOLED, Sapphire",
    "category": "fitness",
-   "price": 19300000,
+   "price": 17085000,
    "image": "img/p/010-02905-11.webp"
   },
   {
    "id": "010-02905-40",
    "name": "fenix 8 51mm, AMOLED, Sapphire",
    "category": "fitness",
-   "price": 20100000,
+   "price": 17085000,
    "image": "img/p/010-02905-40.webp"
   },
   {
    "id": "010-02905-21",
    "name": "fenix 8 51mm, AMOLED, Sapphire",
    "category": "fitness",
-   "price": 19300000,
+   "price": 16405000,
    "image": "img/p/010-02905-21.webp"
   },
   {
    "id": "010-02905-00",
    "name": "fenix 8 51mm, AMOLED, Glass",
    "category": "fitness",
-   "price": 17700000,
+   "price": 15044964,
    "image": "img/p/010-02905-00.webp"
   },
   {
    "id": "010-02907-11",
    "name": "fenix 8 51mm, Sapphire Solar",
    "category": "fitness",
-   "price": 19300000,
+   "price": 16405000,
    "image": "img/p/010-02907-11.webp"
   },
   {
@@ -159,7 +187,7 @@
    "id": "010-02903-40",
    "name": "fenix 8 43mm, AMOLED, Sapphire",
    "category": "fitness",
-   "price": 18600000,
+   "price": 15810000,
    "image": "img/p/010-02903-40.webp"
   },
   {

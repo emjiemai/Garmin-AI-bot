@@ -7,6 +7,7 @@
 <link rel="apple-touch-icon" href="favicon.png">
 <title>Garmin Uzbekistan</title>
 <meta name="theme-color" content="#000">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preload" href="products.json" as="fetch" crossorigin>
 <style>
 *{box-sizing:border-box;margin:0}
@@ -37,7 +38,7 @@ body{font-family:Roboto,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;colo
 .price{margin-top:8px;font-size:13px;font-weight:500;color:#d6d6d6}
 .price.ask{color:#9a9a9a}
 .go{margin-top:auto;padding-top:12px;display:flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#fff}
-.go svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.go svg{width:14px;height:14px;flex:none}
 .sk{aspect-ratio:3/4.2;border-radius:22px;background:linear-gradient(100deg,#2c2c2c 30%,#3a3a3a 50%,#2c2c2c 70%) 0 0/200% 100%;animation:sh 1.2s linear infinite}
 @keyframes sh{to{background-position:-200% 0}}
 .msg{grid-column:1/-1;text-align:center;color:#9a9a9a;font-size:14px;padding:48px 8px}
@@ -64,7 +65,19 @@ body{font-family:Roboto,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;colo
 </main>
 
 <script>
-const SITE="https://garmin.com.uz";
+const BOT="garminofficialuzbot";
+// card__<id>__<lang>, capped at 64 chars of [A-Za-z0-9_-] (Telegram's deep-link limit).
+function cardPayload(id,l){
+  const safe=String(id).trim().replace(/[^A-Za-z0-9_-]+/g,"-").replace(/^-+|-+$/g,"");
+  const payload=["card",safe||"-",l].join("__");
+  return payload.length>64?"card__-__"+l:payload;
+}
+// Outside Telegram: opens the bot and fires /start <payload>; the bot answers with that
+// product's card. The bot only speaks RU/UZ, so EN visitors get RU.
+function botLink(id){return "https://t.me/"+BOT+"?start="+cardPayload(id,lang==="uz"?"uz":"ru")}
+// Inside the Mini App the same payload goes through sendData; an English UI sends no
+// language ("-") so the chat keeps the one it was already speaking.
+function appPayload(id){return cardPayload(id,lang==="uz"||lang==="ru"?lang:"-")}
 // Each landing-page tile -> which garmin.com.uz products it shows.
 // `cats` = whole site categories, `ids` = a hand-picked list.
 const TILES={
@@ -76,9 +89,9 @@ const TILES={
   golf:{cats:["golf"],t:["Golf","Golf","Гольф"]}
 };
 const T={
-  en:{title:"Garmin Uzbekistan",back:"Back",view:"View",ask:"Price on request",cur:"UZS",all:"View full catalog",empty:"No products in this category yet.",err:"Couldn't load products.",retry:"Try again",n:["model","models","models"]},
-  uz:{title:"Garmin O'zbekiston",back:"Orqaga",view:"Ko'rish",ask:"Narxini so'rang",cur:"so'm",all:"To'liq katalog",empty:"Bu toifada hozircha mahsulot yo'q.",err:"Mahsulotlarni yuklab bo'lmadi.",retry:"Qayta urinish",n:["model","ta model","ta model"]},
-  ru:{title:"Garmin Узбекистан",back:"Назад",view:"Смотреть",ask:"Цена по запросу",cur:"сум",all:"Весь каталог",empty:"В этой категории пока нет товаров.",err:"Не удалось загрузить товары.",retry:"Повторить",n:["модель","модели","моделей"]}};
+  en:{title:"Garmin Uzbekistan",back:"Back",view:"Details",ask:"Price on request",cur:"UZS",all:"View full catalog",empty:"No products in this category yet.",err:"Couldn't load products.",retry:"Try again",n:["model","models","models"]},
+  uz:{title:"Garmin O'zbekiston",back:"Orqaga",view:"Batafsil",ask:"Narxini so'rang",cur:"so'm",all:"To'liq katalog",empty:"Bu toifada hozircha mahsulot yo'q.",err:"Mahsulotlarni yuklab bo'lmadi.",retry:"Qayta urinish",n:["model","ta model","ta model"]},
+  ru:{title:"Garmin Узбекистан",back:"Назад",view:"Подробнее",ask:"Цена по запросу",cur:"сум",all:"Весь каталог",empty:"В этой категории пока нет товаров.",err:"Не удалось загрузить товары.",retry:"Повторить",n:["модель","модели","моделей"]}};
 const L={en:0,uz:1,ru:2};
 const key=new URLSearchParams(location.search).get("c");
 const tile=TILES[key];
@@ -109,12 +122,29 @@ function render(){
   const c=items.length,m=c%100,d=c%10,form=lang==="ru"?(m>10&&m<20?2:d===1?0:d>1&&d<5?1:2):(c===1?0:1);
   $("count").textContent=c+" "+t.n[form];
   g.innerHTML=items.map((p,i)=>
-    `<a class="card" style="--i:${Math.min(i,10)}" href="${SITE}/product/${encodeURIComponent(p.id)}" target="_blank" rel="noopener">`+
+    `<a class="card" style="--i:${Math.min(i,10)}" href="${botLink(p.id)}" data-p="${esc(appPayload(p.id))}" target="_blank" rel="noopener">`+
     `<div class="ph"><img src="${esc(p.image)}" alt="" width="480" height="480" decoding="async" ${i<4?(i<2?'fetchpriority="high"':""):'loading="lazy"'}></div>`+
     `<div class="info"><h2>${esc(p.name)}</h2>`+
     (p.price?`<p class="price">${fmt.format(p.price)} ${t.cur}</p>`:`<p class="price ask">${t.ask}</p>`)+
-    `<span class="go">${t.view}<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span></div></a>`).join("");
+    `<span class="go"><svg viewBox="0 0 24 24"><path d="M21.6 3.2 2.5 10.6c-1.3.5-1.3 1.3-.2 1.6l4.9 1.5 1.9 5.8c.2.7.4.9.9.9.4 0 .6-.2.9-.5l2.3-2.2 4.800 3.500c.9.5 1.500.2 1.700-.8l3-14.500c.3-1.200-.4-1.800-1.100-1.500z" fill="currentColor" stroke="none"/></svg>${t.view}</span></div></a>`).join("");
 }
+// Inside the Mini App a product tap goes straight back to the chat. Opened from the
+// bot's "Каталог" keyboard button (no query_id, empty initData), sendData hands the
+// pick to the bot — which answers with the photo card — and closes the app. Any other
+// launch (menu button, ?startapp link) can't sendData, so it opens the deep link.
+// Platform, not initData, says "in Telegram": keyboard-button launches get no initData.
+const tg=window.Telegram&&window.Telegram.WebApp;
+const inTg=Boolean(tg&&tg.platform&&tg.platform!=="unknown");
+if(inTg){tg.ready();tg.expand()}
+document.addEventListener("click",e=>{
+  const a=e.target.closest('a[href^="https://t.me/"]');
+  if(!a||!inTg)return;
+  e.preventDefault();
+  if(a.dataset.p&&!(tg.initDataUnsafe&&tg.initDataUnsafe.query_id)){
+    try{tg.sendData(a.dataset.p);return}catch(err){}
+  }
+  tg.openTelegramLink(a.href);tg.close();
+});
 // The image host drops some requests when many load at once; retry a failed image a few times.
 $("grid").addEventListener("error",e=>{const i=e.target;if(i.tagName!=="IMG")return;const n=+(i.dataset.r||0);if(n>=3)return;i.dataset.r=n+1;
   const base=i.src.split("?")[0];setTimeout(()=>{i.src=base+"?r="+(n+1)},600*(n+1))},true);

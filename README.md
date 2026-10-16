@@ -16,14 +16,24 @@ buy.
 
 | Path | What it is | Hosted on |
 | --- | --- | --- |
-| `web/` | Mobile web app — catalog, quiz, comparison, battery simulator | Vercel |
+| `web/` | Link-in-bio landing page with a category page per tile (UZ/EN/RU) | Vercel |
 | `bot/` | Telegram bot powered by Gemini 3.8 Flash via OpenRouter | Render (free) |
 | `render.yaml` | Render Blueprint for the bot | — |
 
-The web app is the single source of truth for products and prices.
-`bot/scripts/build-catalog.mjs` reads `web/js/data.js` and generates
-`bot/src/catalog/catalog.json`, which the bot loads at boot. Re-run
-`npm run build` in `bot/` after any catalog change.
+Products and prices come from the live garmin.com.uz catalog. Two committed
+snapshots are refreshed from it — re-run both after any catalog change:
+
+```bash
+cd web/scripts && npm install          # once (image resizing)
+node web/scripts/sync-products.mjs     # web/products.json + web/img/p/ (480px WebPs)
+cd bot && npm run sync                 # bot/src/catalog/catalog.json (prices, new models)
+```
+
+`sync` refreshes prices and adds models the bot doesn't have yet; it keeps the
+existing hand-written text. The product message the bot sends on arrival is
+written by hand per model in `bot/src/catalog/cards.json` (RU + UZ) — add an
+entry there for every new model, otherwise the bot falls back to the tagline
+plus a short excerpt of the site's description.
 
 ## How the hand-off works
 
@@ -37,9 +47,20 @@ where the payload is `{source}__{productId}__{lang}`:
 | `cmp__venu-3__ru` | Tapped "Order" in the comparison table |
 | `cta__-__ru` | Generic "Message us" button, no product |
 
+Inside the Mini App (opened from the bot's "🛍 Каталог" keyboard button) a
+product tap doesn't open a link: `Telegram.WebApp.sendData()` hands the same
+`card__<id>__<lang>` payload to the bot and closes the app, and the bot answers
+in the chat with the product's photo card (`message:web_app_data` in
+[bot/src/bot.js](bot/src/bot.js)), keeping the conversation so far. An English
+UI sends `-` as the language so the chat keeps the one it was speaking. Mini App
+launches that can't `sendData` (menu button, `?startapp` links) open the deep
+link instead. `index.html` must load `telegram-web-app.js` too — it saves the
+launch params that `category.html` needs to know it's inside Telegram.
+
 Telegram caps the payload at 64 characters of `[A-Za-z0-9_-]`, which is why
 fields are joined with `__` and "no product" is a bare `-`. Generation lives in
-[web/js/telegram.js](web/js/telegram.js); parsing lives in
+`botLink()` in [web/category.html](web/category.html) (each product card opens
+the bot with `card__<id>__<lang>`); parsing lives in
 [bot/src/deeplink.js](bot/src/deeplink.js). The bot resolves the id against the
 catalog, so a link to a discontinued model degrades to a normal greeting instead
 of breaking.
@@ -136,7 +157,7 @@ index on redeploy becomes a real problem.
 cd bot
 cp .env.example .env    # fill in BOT_TOKEN, AI_API_KEY, MANAGER_CHAT_ID
 npm install
-npm run build           # generate catalog.json from web/js/data.js
+npm run sync            # refresh catalog.json from garmin.com.uz
 npm run dev             # long polling, no public URL needed
 ```
 

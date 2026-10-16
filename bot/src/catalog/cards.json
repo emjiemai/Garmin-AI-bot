@@ -1,0 +1,435 @@
+{
+  "_note": "Hand-written product-card copy for the bot's /start deep-link greeting (see src/productCard.js). Every claim comes from the product's own description on garmin.com.uz — never from the catalog's structured specs, which are unreliable. `ids` are catalog ids (trimmed). Products without an entry fall back to tagline + a short excerpt of the description.",
+  "cards": [
+    {
+      "ids": ["010-02903-21", "010-02903-40"],
+      "ru": {
+        "blurb": "Премиальные мультиспортивные часы с ярким AMOLED-дисплеем. Прочный корпус рассчитан на погружения и прошёл испытания по военным стандартам США на термо-, ударо- и водостойкость.",
+        "points": ["До 10 дней работы в режиме умных часов", "Динамик и микрофон: звонки и голосовое управление", "Яркий встроенный светодиодный фонарик"]
+      },
+      "uz": {
+        "blurb": "Yorqin AMOLED displeyli premium multisport soat. Mustahkam korpus sho'ng'ish uchun mo'ljallangan va issiqlik, zarba hamda suvga chidamliligi bo'yicha AQSh harbiy standartlari sinovlaridan o'tgan.",
+        "points": ["Aqlli soat rejimida 10 kungacha ishlaydi", "Karnay va mikrofon: qo'ng'iroqlar va ovozli boshqaruv", "Yorqin o'rnatilgan LED chiroq"]
+      }
+    },
+    {
+      "ids": ["010-02904-40", "010-02904-11", "010-02904-21"],
+      "ru": {
+        "blurb": "Премиальные мультиспортивные часы с ярким AMOLED-дисплеем. Прочный корпус рассчитан на погружения и прошёл испытания по военным стандартам США на термо-, ударо- и водостойкость.",
+        "points": ["До 16 дней работы в режиме умных часов", "Динамик и микрофон: звонки и голосовое управление", "Яркий встроенный светодиодный фонарик"]
+      },
+      "uz": {
+        "blurb": "Yorqin AMOLED displeyli premium multisport soat. Mustahkam korpus sho'ng'ish uchun mo'ljallangan va issiqlik, zarba hamda suvga chidamliligi bo'yicha AQSh harbiy standartlari sinovlaridan o'tgan.",
+        "points": ["Aqlli soat rejimida 16 kungacha ishlaydi", "Karnay va mikrofon: qo'ng'iroqlar va ovozli boshqaruv", "Yorqin o'rnatilgan LED chiroq"]
+      }
+    },
+    {
+      "ids": ["010-02905-11", "010-02905-40", "010-02905-00", "010-02905-21"],
+      "ru": {
+        "blurb": "Премиальные мультиспортивные часы с ярким AMOLED-дисплеем. Прочный корпус рассчитан на погружения и прошёл испытания по военным стандартам США на термо-, ударо- и водостойкость.",
+        "points": ["До 29 дней работы в режиме умных часов", "Динамик и микрофон: звонки и голосовое управление", "Яркий встроенный светодиодный фонарик"]
+      },
+      "uz": {
+        "blurb": "Yorqin AMOLED displeyli premium multisport soat. Mustahkam korpus sho'ng'ish uchun mo'ljallangan va issiqlik, zarba hamda suvga chidamliligi bo'yicha AQSh harbiy standartlari sinovlaridan o'tgan.",
+        "points": ["Aqlli soat rejimida 29 kungacha ishlaydi", "Karnay va mikrofon: qo'ng'iroqlar va ovozli boshqaruv", "Yorqin o'rnatilgan LED chiroq"]
+      }
+    },
+    {
+      "ids": ["010-02907-11"],
+      "ru": {
+        "blurb": "Премиальные часы с солнечной зарядкой: линза Power Sapphire, сапфировое стекло и титановый безель. Прочный корпус рассчитан на погружения и прошёл испытания по военным стандартам США.",
+        "points": ["Автономность до 48 дней", "Постоянно включённый дисплей с солнечной зарядкой", "Динамик, микрофон и яркий светодиодный фонарик"]
+      },
+      "uz": {
+        "blurb": "Quyoshdan zaryadlanadigan premium soat: Power Sapphire linzasi, sapfir oyna va titan bezel. Mustahkam korpus sho'ng'ish uchun mo'ljallangan va AQSh harbiy standartlari sinovlaridan o'tgan.",
+        "points": ["48 kungacha avtonom ishlaydi", "Doim yoniq, quyoshdan zaryadlanadigan displey", "Karnay, mikrofon va yorqin LED chiroq"]
+      }
+    },
+    {
+      "ids": ["fenix-8"],
+      "ru": {
+        "blurb": "Высокопроизводительные мультиспортивные смарт-часы с GPS и точным мульти-GNSS позиционированием.",
+        "points": ["Солнечная зарядка", "Голосовые команды", "Встроенный фонарик"]
+      },
+      "uz": {
+        "blurb": "GPS va aniq ko'p tizimli GNSS joylashuviga ega yuqori unumdor multisport aqlli soat.",
+        "points": ["Quyoshdan zaryadlash", "Ovozli buyruqlar", "O'rnatilgan chiroq"]
+      }
+    },
+    {
+      "ids": ["010-04336-26"],
+      "ru": {
+        "blurb": "Премиальные мультиспортивные GPS-часы для серьёзных спортсменов и искателей приключений: прочный титановый корпус и яркий AMOLED-дисплей. Улучшенное отслеживание выносливости и более удобные карты.",
+        "points": ["До 18 дней работы в режиме умных часов", "Светодиодный фонарик с регулировкой яркости", "Расширенные тренировки и круглосуточный мониторинг здоровья"]
+      },
+      "uz": {
+        "blurb": "Jiddiy sportchilar va sarguzasht ishqibozlari uchun premium multisport GPS-soat: mustahkam titan korpus va yorqin AMOLED displey. Chidamlilikni yaxshiroq kuzatish va qulayroq xaritalar.",
+        "points": ["Aqlli soat rejimida 18 kungacha ishlaydi", "Yorqinligi sozlanadigan LED chiroq", "Kengaytirilgan mashg'ulotlar va sutka davomida salomatlik monitoringi"]
+      }
+    },
+    {
+      "ids": ["010-04763-01"],
+      "ru": {
+        "blurb": "Премиальные мультиспортивные GPS-часы для серьёзных спортсменов и искателей приключений. Яркий AMOLED-дисплей, титановая рамка, улучшенное отслеживание выносливости и более удобные карты.",
+        "points": ["До 29 дней работы в режиме умных часов", "Яркий светодиодный фонарь с регулировкой яркости", "Динамик и микрофон для голосовых сообщений и управления"]
+      },
+      "uz": {
+        "blurb": "Jiddiy sportchilar va sarguzasht ishqibozlari uchun premium multisport GPS-soat. Yorqin AMOLED displey, titan ramka, chidamlilikni yaxshiroq kuzatish va qulayroq xaritalar.",
+        "points": ["Aqlli soat rejimida 29 kungacha ishlaydi", "Yorqinligi sozlanadigan LED chiroq", "Ovozli xabarlar va boshqaruv uchun karnay va mikrofon"]
+      }
+    },
+    {
+      "ids": ["010-04336-41", "010-04336-21"],
+      "ru": {
+        "blurb": "Титановые мультиспортивные GPS-часы для любителей активного отдыха на природе: яркий AMOLED-дисплей и связь inReach — LTE и спутник там, где нет обычной сети.",
+        "points": ["Поддержка LTE и спутниковой связи inReach", "До 18 дней работы в режиме умных часов", "Прочный и лёгкий титановый корпус, светодиодный фонарик"]
+      },
+      "uz": {
+        "blurb": "Tabiatda faol dam olish ishqibozlari uchun titan multisport GPS-soat: yorqin AMOLED displey va inReach aloqasi — oddiy tarmoq bo'lmagan joyda LTE va sun'iy yo'ldosh.",
+        "points": ["LTE va inReach sun'iy yo'ldosh aloqasi", "Aqlli soat rejimida 18 kungacha ishlaydi", "Mustahkam va yengil titan korpus, LED chiroq"]
+      }
+    },
+    {
+      "ids": ["fenix-e"],
+      "ru": { "blurb": "Мощные смарт-часы с GPS и AMOLED-дисплеем: силовые тренировки, ежедневные рекомендации и навигация.", "points": [] },
+      "uz": { "blurb": "GPS va AMOLED displeyli kuchli aqlli soat: kuch mashqlari, kunlik tavsiyalar va navigatsiya.", "points": [] }
+    },
+    {
+      "ids": ["enduro-3"],
+      "ru": { "blurb": "Лёгкие супервыносливые часы с GPS: экстремальное время работы, карты и расширенные метрики.", "points": [] },
+      "uz": { "blurb": "GPS'li yengil, o'ta chidamli soat: ekstremal ishlash vaqti, xaritalar va kengaytirilgan metrikalar.", "points": [] }
+    },
+    {
+      "ids": ["epix-pro"],
+      "ru": { "blurb": "Премиальные часы с ярким AMOLED-дисплеем, продвинутыми тренировками и встроенным светодиодным фонариком.", "points": [] },
+      "uz": { "blurb": "Yorqin AMOLED displey, ilg'or mashg'ulotlar va o'rnatilgan LED chiroqli premium soat.", "points": [] }
+    },
+    {
+      "ids": ["tactix-7"],
+      "ru": { "blurb": "Тактические часы с ночным режимом NVG, расчётом прыжков и сверхпрочной конструкцией.", "points": [] },
+      "uz": { "blurb": "NVG tungi rejimi, sakrashlarni hisoblash va o'ta mustahkam konstruksiyaga ega taktik soat.", "points": [] }
+    },
+    {
+      "ids": ["tactix-8"],
+      "ru": { "blurb": "Премиальные тактические смарт-часы с GPS, солнечной зарядкой и AMOLED-дисплеем.", "points": [] },
+      "uz": { "blurb": "GPS, quyoshdan zaryadlash va AMOLED displeyli premium taktik aqlli soat.", "points": [] }
+    },
+    {
+      "ids": ["010-03406-01"],
+      "ru": {
+        "blurb": "Усовершенствованные тактические GPS-смарт-часы с ярким 1,4-дюймовым дисплеем. Прошли испытания по военным стандартам США на термо-, ударо- и водостойкость.",
+        "points": ["До 29 дней работы в режиме умных часов", "Тактические функции, включая решатель Applied Ballistics®", "Погружение до 40 метров, многоцветный светодиодный фонарик"]
+      },
+      "uz": {
+        "blurb": "Yorqin 1,4 dyuymli displeyli takomillashtirilgan taktik GPS aqlli soat. Issiqlik, zarba va suvga chidamliligi bo'yicha AQSh harbiy standartlari sinovlaridan o'tgan.",
+        "points": ["Aqlli soat rejimida 29 kungacha ishlaydi", "Taktik funksiyalar, jumladan Applied Ballistics® yechimi", "40 metrgacha sho'ng'ish, ko'p rangli LED chiroq"]
+      }
+    },
+    {
+      "ids": ["010-03405-01"],
+      "ru": {
+        "blurb": "Усовершенствованные тактические GPS-смарт-часы с 1,4-дюймовым AMOLED-дисплеем, титановым безелем и сапфировым стеклом. Прошли испытания по военным стандартам США.",
+        "points": ["До 16 дней работы в режиме умных часов", "Тактические функции, включая решатель Applied Ballistics®", "Погружение до 40 метров, многоцветный светодиодный фонарик"]
+      },
+      "uz": {
+        "blurb": "1,4 dyuymli AMOLED displey, titan bezel va sapfir oynali takomillashtirilgan taktik GPS aqlli soat. AQSh harbiy standartlari sinovlaridan o'tgan.",
+        "points": ["Aqlli soat rejimida 16 kungacha ishlaydi", "Taktik funksiyalar, jumladan Applied Ballistics® yechimi", "40 metrgacha sho'ng'ish, ko'p rangli LED chiroq"]
+      }
+    },
+    {
+      "ids": ["010-02936-03"],
+      "ru": {
+        "blurb": "Яркие, лёгкие и прочные часы в корпусе 45 мм с AMOLED-экраном — для каждого дня и для спорта.",
+        "points": ["Автономность до 18 дней", "Многодиапазонный GPS и водозащита 10 ATM", "Фонарик, Garmin Pay и уведомления"]
+      },
+      "uz": {
+        "blurb": "45 mm korpusli, AMOLED ekranli yorqin, yengil va mustahkam soat — har kuni va sport uchun.",
+        "points": ["18 kungacha avtonom ishlaydi", "Ko'p diapazonli GPS va 10 ATM suv himoyasi", "Chiroq, Garmin Pay va bildirishnomalar"]
+      }
+    },
+    {
+      "ids": ["010-03020-01"],
+      "ru": {
+        "blurb": "Яркие, лёгкие и прочные часы в корпусе 50 мм с AMOLED-экраном — для каждого дня и для спорта.",
+        "points": ["Автономность до 24 дней", "Многодиапазонный GPS и водозащита 10 ATM", "Фонарик, Garmin Pay и уведомления"]
+      },
+      "uz": {
+        "blurb": "50 mm korpusli, AMOLED ekranli yorqin, yengil va mustahkam soat — har kuni va sport uchun.",
+        "points": ["24 kungacha avtonom ishlaydi", "Ko'p diapazonli GPS va 10 ATM suv himoyasi", "Chiroq, Garmin Pay va bildirishnomalar"]
+      }
+    },
+    {
+      "ids": ["instinct-3-amoled"],
+      "ru": {
+        "blurb": "Прочные смарт-часы, соответствующие стандарту MIL-STD-810, с AMOLED-дисплеем и точным GPS.",
+        "points": ["До 24 дней автономной работы", "Стандарт прочности MIL-STD-810", "AMOLED-дисплей и точный GPS"]
+      },
+      "uz": {
+        "blurb": "MIL-STD-810 standartiga mos, AMOLED displeyli va aniq GPS'ga ega mustahkam aqlli soat.",
+        "points": ["24 kungacha avtonom ishlaydi", "MIL-STD-810 mustahkamlik standarti", "AMOLED displey va aniq GPS"]
+      }
+    },
+    {
+      "ids": ["010-02934-50"],
+      "ru": {
+        "blurb": "Прочные 45-миллиметровые GPS-часы с солнечной зарядкой, военной прочностью и тактическими инструментами. Дисплей хорошо читается на солнце.",
+        "points": ["Солнечная линза: долгая, почти неограниченная автономность в режиме умных часов", "Корпус из армированного волокном полимера", "Водозащита 10 ATM (до 100 метров)"]
+      },
+      "uz": {
+        "blurb": "Quyoshdan zaryadlanadigan, harbiy darajadagi mustahkamlikka va taktik vositalarga ega 45 millimetrli GPS-soat. Displey quyoshda yaxshi ko'rinadi.",
+        "points": ["Quyosh linzasi: aqlli soat rejimida uzoq, deyarli cheksiz avtonomlik", "Tola bilan mustahkamlangan polimer korpus", "10 ATM suv himoyasi (100 metrgacha)"]
+      }
+    },
+    {
+      "ids": ["010-02935-50"],
+      "ru": {
+        "blurb": "Тактическая версия Instinct 3 Solar в чёрном 50-миллиметровом корпусе из армированного волокном полимера.",
+        "points": ["Солнечная зарядка продлевает работу батареи", "Режим скрытности, управление прыжками, GPS в двух форматах", "Водозащита 10 ATM (до 100 метров)"]
+      },
+      "uz": {
+        "blurb": "Instinct 3 Solar'ning taktik versiyasi — tola bilan mustahkamlangan polimerdan yasalgan qora 50 millimetrli korpusda.",
+        "points": ["Quyoshdan zaryadlash batareya ishini uzaytiradi", "Yashirin rejim, sakrashni boshqarish, ikki formatli GPS", "10 ATM suv himoyasi (100 metrgacha)"]
+      }
+    },
+    {
+      "ids": ["010-03398-01", "010-03398-00"],
+      "ru": {
+        "blurb": "Прочные гибридные GPS-смарт-часы: физические аналоговые стрелки сочетаются с ярким цветным AMOLED-дисплеем.",
+        "points": ["Чёткий AMOLED-дисплей при любом освещении", "Уведомления, управление музыкой и камерой смартфона", "Отслеживание активности"]
+      },
+      "uz": {
+        "blurb": "Mustahkam gibrid GPS aqlli soat: haqiqiy analog strelkalar yorqin rangli AMOLED displey bilan birlashgan.",
+        "points": ["Har qanday yorug'likda aniq AMOLED displey", "Bildirishnomalar, musiqa va smartfon kamerasini boshqarish", "Faollikni kuzatish"]
+      }
+    },
+    {
+      "ids": ["010-03398-02"],
+      "ru": {
+        "blurb": "Прочные гибридные GPS-смарт-часы с физическими аналоговыми стрелками, ярким цветным AMOLED-дисплеем и тактическими функциями.",
+        "points": ["Совместимость с приборами ночного видения", "Корпус 47 мм из армированного волокном полимера, сапфировое стекло", "Чёрный силиконовый ремешок"]
+      },
+      "uz": {
+        "blurb": "Haqiqiy analog strelkalar, yorqin rangli AMOLED displey va taktik funksiyalarga ega mustahkam gibrid GPS aqlli soat.",
+        "points": ["Tungi ko'rish asboblari bilan mosligi", "47 mm tola bilan mustahkamlangan polimer korpus, sapfir oyna", "Qora silikon tasma"]
+      }
+    },
+    {
+      "ids": ["forerunner-970"],
+      "ru": {
+        "blurb": "Премиальные смарт-часы для бега и триатлона с AMOLED-дисплеем, светодиодным фонариком и расширенными функциями тренировок.",
+        "points": []
+      },
+      "uz": {
+        "blurb": "Yugurish va triatlon uchun AMOLED displey, LED chiroq va kengaytirilgan mashg'ulot funksiyalariga ega premium aqlli soat.",
+        "points": []
+      }
+    },
+    {
+      "ids": ["forerunner-570"],
+      "ru": { "blurb": "Усовершенствованные смарт-часы для бега и триатлона с GPS, AMOLED-дисплеем и функциями восстановления.", "points": [] },
+      "uz": { "blurb": "Yugurish va triatlon uchun GPS, AMOLED displey va tiklanish funksiyalariga ega takomillashtirilgan aqlli soat.", "points": [] }
+    },
+    {
+      "ids": ["forerunner-265"],
+      "ru": { "blurb": "AMOLED-дисплей, точный GNSS, оценка готовности к гонке и индивидуальные планы тренировок.", "points": [] },
+      "uz": { "blurb": "AMOLED displey, aniq GNSS, poygaga tayyorlikni baholash va individual mashg'ulot rejalari.", "points": [] }
+    },
+    {
+      "ids": ["010-02863-30"],
+      "ru": { "blurb": "Лёгкие беговые часы с AMOLED-дисплеем — идеальный старт для новичков.", "points": [] },
+      "uz": { "blurb": "AMOLED displeyli yengil yugurish soati — yangi boshlovchilar uchun ajoyib start.", "points": [] }
+    },
+    {
+      "ids": ["010-03920-01", "010-03920-00"],
+      "ru": {
+        "blurb": "Лёгкие GPS-часы для бега и спорта с 1,2-дюймовым AMOLED-дисплеем и оценкой готовности к тренировкам.",
+        "points": ["До 10 дней работы в режиме умных часов", "Пульсометр Elevate V4 и барометрический высотомер", "Более 80 профилей активности и Garmin Pay"]
+      },
+      "uz": {
+        "blurb": "1,2 dyuymli AMOLED displey va mashg'ulotga tayyorlikni baholash funksiyasiga ega yugurish va sport uchun yengil GPS-soat.",
+        "points": ["Aqlli soat rejimida 10 kungacha ishlaydi", "Elevate V4 pulsometri va barometrik altimetr", "80 dan ortiq faollik profili va Garmin Pay"]
+      }
+    },
+    {
+      "ids": ["010-03920-11"],
+      "ru": {
+        "blurb": "Лёгкие GPS-часы для бега с офлайн-музыкой, 1,2-дюймовым AMOLED-дисплеем и расширенными показателями готовности к тренировкам.",
+        "points": ["Офлайн-плейлисты из поддерживаемых сервисов: музыка без телефона", "Готовность к тренировкам, вариабельность пульса и статус тренировок", "До 10 дней работы в режиме умных часов, Garmin Pay"]
+      },
+      "uz": {
+        "blurb": "Oflayn musiqa, 1,2 dyuymli AMOLED displey va mashg'ulotga tayyorlikning kengaytirilgan ko'rsatkichlariga ega yugurish uchun yengil GPS-soat.",
+        "points": ["Qo'llab-quvvatlanadigan servislardan oflayn pleylistlar: telefonsiz musiqa", "Mashg'ulotga tayyorlik, yurak ritmi o'zgaruvchanligi va mashg'ulot holati", "Aqlli soat rejimida 10 kungacha ishlaydi, Garmin Pay"]
+      }
+    },
+    {
+      "ids": ["010-04307-03"],
+      "ru": {
+        "blurb": "Умные часы для бега с GPS начального уровня и 1,2-дюймовым сенсорным AMOLED-экраном.",
+        "points": ["До 13 дней автономной работы", "Более 80 спортивных профилей, GPS с поддержкой нескольких GNSS", "Адаптивные планы Garmin Coach и ежедневные рекомендации"]
+      },
+      "uz": {
+        "blurb": "Boshlang'ich darajadagi GPS va 1,2 dyuymli sensorli AMOLED ekranli yugurish uchun aqlli soat.",
+        "points": ["13 kungacha avtonom ishlaydi", "80 dan ortiq sport profili, bir nechta GNSS'ni qo'llab-quvvatlovchi GPS", "Garmin Coach moslashuvchan rejalari va kundalik tavsiyalar"]
+      }
+    },
+    {
+      "ids": ["010-03013-00", "010-03014-01"],
+      "ru": {
+        "blurb": "Универсальные умные часы для спорта и повседневной носки в двух размерах — 41 и 45 мм.",
+        "points": ["Более 70 видов спорта", "Стресс, сон, пульс, Body Battery и тренер во время занятий", "Микрофон и динамик, водозащита до 50 метров"]
+      },
+      "uz": {
+        "blurb": "Sport va kundalik taqish uchun universal aqlli soat — ikki o'lchamda: 41 va 45 mm.",
+        "points": ["70 dan ortiq sport turi", "Stress, uyqu, puls, Body Battery va mashg'ulot paytidagi murabbiy", "Mikrofon va karnay, 50 metrgacha suv himoyasi"]
+      }
+    },
+    {
+      "ids": ["010-02980-02", "010-02980-09"],
+      "ru": {
+        "blurb": "Смарт-часы с ярким AMOLED-дисплеем, премиальным лёгким дизайном и всеми умными функциями Garmin.",
+        "points": ["Точные датчики и продвинутое отслеживание здоровья", "Встроенный GPS: маршруты и расстояния", "Пульс, уровень кислорода в крови и качество сна"]
+      },
+      "uz": {
+        "blurb": "Yorqin AMOLED displey, premium yengil dizayn va Garmin'ning barcha aqlli funksiyalariga ega aqlli soat.",
+        "points": ["Aniq datchiklar va salomatlikni ilg'or kuzatish", "O'rnatilgan GPS: marshrutlar va masofalar", "Puls, qondagi kislorod darajasi va uyqu sifati"]
+      }
+    },
+    {
+      "ids": ["vivoactive-6"],
+      "ru": { "blurb": "Умные часы для здоровья и фитнеса со встроенным GPS и более чем 80 спортивными профилями.", "points": [] },
+      "uz": { "blurb": "O'rnatilgan GPS va 80 dan ortiq sport profiliga ega salomatlik va fitnes uchun aqlli soat.", "points": [] }
+    },
+    {
+      "ids": ["lily-2-active"],
+      "ru": { "blurb": "Изящные смарт-часы с GPS, спортивными профилями и отслеживанием здоровья.", "points": [] },
+      "uz": { "blurb": "GPS, sport profillari va salomatlikni kuzatish funksiyasiga ega nafis aqlli soat.", "points": [] }
+    },
+    {
+      "ids": ["vivosmart-5"],
+      "ru": { "blurb": "Тонкий фитнес-браслет с пульсометром, SpO2 и мониторингом сна.", "points": [] },
+      "uz": { "blurb": "Pulsometr, SpO2 va uyqu monitoringiga ega ingichka fitnes-braslet.", "points": [] }
+    },
+    {
+      "ids": ["010-04675-03"],
+      "ru": {
+        "blurb": "Лаконичный смарт-браслет без экрана: никаких отвлекающих факторов, только ваши показатели — просматривайте их позже.",
+        "points": ["Круглосуточный мониторинг здоровья", "Функции для фитнеса", "Без подписки"]
+      },
+      "uz": {
+        "blurb": "Ekransiz ixcham aqlli braslet: chalg'ituvchi narsalarsiz, faqat ko'rsatkichlaringiz — ularni keyinroq ko'rib chiqing.",
+        "points": ["Sutka davomida salomatlik monitoringi", "Fitnes funksiyalari", "Obunasiz"]
+      }
+    },
+    {
+      "ids": ["010-02648-21"],
+      "ru": {
+        "blurb": "Часы премиальной линейки MARQ в корпусе из титана 5-го класса с расширенными функциями для гольфа.",
+        "points": ["Тренер по сну и тренировкам, время восстановления", "Более 50 спортивных функций, погружение до 100 метров", "GPS-навигация по спутникам"]
+      },
+      "uz": {
+        "blurb": "5-darajali titan korpusli va golf uchun kengaytirilgan funksiyalarga ega MARQ premium seriyasi soati.",
+        "points": ["Uyqu va mashg'ulot murabbiyi, tiklanish vaqti", "50 dan ortiq sport funksiyasi, 100 metrgacha sho'ng'ish", "Sun'iy yo'ldosh GPS-navigatsiyasi"]
+      }
+    },
+    {
+      "ids": ["010-02722-21"],
+      "ru": {
+        "blurb": "Роскошные часы для активного отдыха: корпус из сплавленного углеродного волокна и титана, выпуклое сапфировое стекло, AMOLED-дисплей и специальные функции для гольфа.",
+        "points": ["До 16 дней в режиме умных часов и до 42 часов в режиме GPS", "Корпус 46 мм, водозащита 100 метров (10 ATM)", "Wi-Fi и сенсорный AMOLED-экран 1,2 дюйма"]
+      },
+      "uz": {
+        "blurb": "Faol dam olish uchun hashamatli soat: qo'shma uglerod tola va titan korpus, qavariq sapfir oyna, AMOLED displey va golf uchun maxsus funksiyalar.",
+        "points": ["Aqlli soat rejimida 16 kungacha, GPS rejimida 42 soatgacha", "46 mm korpus, 100 metrgacha suv himoyasi (10 ATM)", "Wi-Fi va 1,2 dyuymli sensorli AMOLED ekran"]
+      }
+    },
+    {
+      "ids": ["010-02722-11"],
+      "ru": {
+        "blurb": "Часы премиальной линейки MARQ в корпусе из карбона для тех, кто следит за здоровьем и тренируется. В комплекте — нагрудный пульсометр.",
+        "points": ["Тренер по сну и тренировкам, время восстановления", "Более 50 спортивных функций, погружение до 100 метров", "GPS-навигация по спутникам"]
+      },
+      "uz": {
+        "blurb": "Salomatligini kuzatadigan va mashq qiladiganlar uchun karbon korpusli MARQ premium seriyasi soati. Komplektda ko'krak pulsometri bor.",
+        "points": ["Uyqu va mashg'ulot murabbiyi, tiklanish vaqti", "50 dan ortiq sport funksiyasi, 100 metrgacha sho'ng'ish", "Sun'iy yo'ldosh GPS-navigatsiyasi"]
+      }
+    },
+    {
+      "ids": ["010-02648-41"],
+      "ru": {
+        "blurb": "Ультрапремиальные часы класса люкс для высокоэффективных тренировок и спорта на открытом воздухе.",
+        "points": ["Постоянно включённый 1,2-дюймовый AMOLED-дисплей, выпуклое сапфировое стекло", "До 16 дней в режиме умных часов и до 42 часов в режиме GPS", "32 ГБ памяти, водозащита 10 ATM (до 100 метров)"]
+      },
+      "uz": {
+        "blurb": "Yuqori samarali mashg'ulotlar va ochiq havoda sport uchun o'ta premium hashamatli soat.",
+        "points": ["Doim yoniq 1,2 dyuymli AMOLED displey, qavariq sapfir oyna", "Aqlli soat rejimida 16 kungacha, GPS rejimida 42 soatgacha", "32 GB xotira, 10 ATM suv himoyasi (100 metrgacha)"]
+      }
+    },
+    {
+      "ids": ["010-02648-31", "010-03393-31"],
+      "ru": {
+        "blurb": "Часы премиальной линейки MARQ для путешествий. Корпус из титана 5-го класса, есть версия из дамасской стали.",
+        "points": ["Режим «Экспедиция»: экономит заряд и сохраняет метки GPS", "Тренер по сну и тренировкам, время восстановления", "Более 50 спортивных функций, погружение до 100 метров"]
+      },
+      "uz": {
+        "blurb": "Sayohat uchun MARQ premium seriyasi soati. 5-darajali titan korpus, Damashq po'latidan yasalgan versiyasi ham bor.",
+        "points": ["«Ekspeditsiya» rejimi: zaryadni tejaydi va GPS belgilarini saqlaydi", "Uyqu va mashg'ulot murabbiyi, tiklanish vaqti", "50 dan ortiq sport funksiyasi, 100 metrgacha sho'ng'ish"]
+      }
+    },
+    {
+      "ids": ["010-02648-01"],
+      "ru": {
+        "blurb": "Часы премиальной линейки MARQ для авиации: помощник в полёте в корпусе из титана 5-го класса.",
+        "points": ["Подключается к бортовому компьютеру самолёта Garmin", "Тренер по сну и тренировкам, время восстановления", "Более 50 спортивных функций, погружение до 100 метров"]
+      },
+      "uz": {
+        "blurb": "Aviatsiya uchun MARQ premium seriyasi soati: 5-darajali titan korpusdagi parvoz yordamchisi.",
+        "points": ["Garmin samolyot bort kompyuteriga ulanadi", "Uyqu va mashg'ulot murabbiyi, tiklanish vaqti", "50 dan ortiq sport funksiyasi, 100 metrgacha sho'ng'ish"]
+      }
+    },
+    {
+      "ids": ["010-04549-00", "010-04549-20", "010-04549-40", "010-04549-50", "010-04549-10"],
+      "ru": { "blurb": "Новая линейка MARQ (Gen 3) — скоро в наличии. Цену и сроки поступления уточняйте у менеджера.", "points": [] },
+      "uz": { "blurb": "MARQ (Gen 3) yangi seriyasi — tez orada sotuvda. Narxi va kelish muddatini menejerdan so'rang.", "points": [] }
+    },
+    {
+      "ids": ["gpsmap-67"],
+      "ru": { "blurb": "Профессиональный туристический GPS-навигатор с многодиапазонным приёмом и спутниковой связью.", "points": [] },
+      "uz": { "blurb": "Ko'p diapazonli qabul qilish va sun'iy yo'ldosh aloqasiga ega professional turistik GPS-navigator.", "points": [] }
+    },
+    {
+      "ids": ["edge-1050"],
+      "ru": { "blurb": "Премиальный велокомпьютер с солнечной зарядкой, многодиапазонным GNSS и точной навигацией.", "points": [] },
+      "uz": { "blurb": "Quyoshdan zaryadlash, ko'p diapazonli GNSS va aniq navigatsiyaga ega premium velokompyuter.", "points": [] }
+    },
+    {
+      "ids": ["010-03022-00"],
+      "ru": { "blurb": "Компактный велокомпьютер с продвинутыми тренировочными метриками и динамическими планами.", "points": [] },
+      "uz": { "blurb": "Ilg'or mashg'ulot metrikalari va dinamik rejalarga ega ixcham velokompyuter.", "points": [] }
+    },
+    {
+      "ids": ["varia-rct715"],
+      "ru": { "blurb": "Задний велосипедный радар с камерой и фонарём: фиксирует приближающийся транспорт.", "points": [] },
+      "uz": { "blurb": "Kamera va chiroqli orqa velosiped radari: yaqinlashayotgan transportni qayd etadi.", "points": [] }
+    },
+    {
+      "ids": ["010-02553-01"],
+      "ru": { "blurb": "Цветной эхолот с CHIRP-сонаром, ClearVü и SideVü для рыбалки.", "points": [] },
+      "uz": { "blurb": "Baliq ovi uchun CHIRP sonar, ClearVü va SideVü'ga ega rangli exolot.", "points": [] }
+    },
+    {
+      "ids": ["descent-mk3i"],
+      "ru": { "blurb": "Премиальный дайв-компьютер с воздушной интеграцией и AMOLED-дисплеем.", "points": [] },
+      "uz": { "blurb": "Havo integratsiyasi va AMOLED displeyga ega premium dayv-kompyuter.", "points": [] }
+    },
+    {
+      "ids": ["approach-s70"],
+      "ru": { "blurb": "Часы для гольфа с AMOLED-дисплеем, картами более 43 000 полей и Virtual Caddie.", "points": [] },
+      "uz": { "blurb": "AMOLED displey, 43 000 dan ortiq maydon xaritasi va Virtual Caddie'ga ega golf soati.", "points": [] }
+    },
+    {
+      "ids": ["HRM"],
+      "ru": { "blurb": "Нагрудный датчик пульса Garmin для точного контроля сердечного ритма во время тренировок.", "points": [] },
+      "uz": { "blurb": "Mashg'ulot paytida yurak ritmini aniq nazorat qilish uchun Garmin ko'krak puls datchigi.", "points": [] }
+    }
+  ]
+}

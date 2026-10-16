@@ -1,6 +1,6 @@
 import { Bot, InlineKeyboard, Keyboard } from 'grammy';
 import { config } from './config.js';
-import { catalog, formatPrice, getProduct, productName } from './catalog/catalog.js';
+import { catalog, getProduct, productName } from './catalog/catalog.js';
 import { LANGS, detectLang, normalizeLang, t } from './i18n.js';
 import { escapeHtml, toTelegramHtml, unescapeHtml } from './format.js';
 import { parseStartPayload } from './deeplink.js';
@@ -11,7 +11,7 @@ import { flushPendingLead, missingForHotLead } from './leads/pending.js';
 import { leadStats, recentLeads } from './leads/store.js';
 import { commandCenterEnabled, pendingForCommandCenter } from './leads/commandCenter.js';
 import { indexChannelPost, channelCatalogSize } from './channelCatalog.js';
-import { sendProductPhoto } from './media.js';
+import { sendProductCard } from './media.js';
 import { normalizePhone } from './phone.js';
 import {
   beginHandoff,
@@ -181,7 +181,7 @@ bot.command('start', async (ctx) => {
   const product = productId ? getProduct(productId) : null;
 
   const greeting = product
-    ? t(session.lang, 'welcomeProduct', productName(product, session.lang), formatPrice(product.price, session.lang))
+    ? t(session.lang, 'welcomeProduct', productName(product, session.lang))
     : t(session.lang, 'welcome');
 
   await safeSend(ctx, greeting, { reply_markup: mainKeyboard(session.lang) });
@@ -190,17 +190,54 @@ bot.command('start', async (ctx) => {
   if (product) {
     // Show the real photo right away — the customer already told us which
     // model they want by tapping through from the web app, no need to ask.
-    await sendProductPhoto(bot, session, product, session.lang);
-
-    session.history.push({
-      role: 'assistant',
-      content: `[Клиент открыл чат из веб-приложения, интересуется моделью ${product.name}]`
-    });
+    await sendProductCard(bot, session, product, session.lang);
+    notePickedProduct(session, product.name);
   } else if (productHint) {
-    session.history.push({
-      role: 'assistant',
-      content: `[Клиент открыл чат из веб-приложения, интересуется моделью «${productHint}» — её нет в каталоге бота]`
-    });
+    notePickedProduct(session, `«${productHint}» — её нет в каталоге бота`);
+  }
+});
+
+/** Tells the AI which model the customer picked, so "how much is it?" or
+ *  "do you have it in black?" right after needs no clarifying question. */
+function notePickedProduct(session, what) {
+  session.history.push({
+    role: 'assistant',
+    content: `[Клиент выбрал в веб-приложении модель ${what}]`
+  });
+}
+
+/**
+ * A product tapped inside the Mini App. Opened from the "🛍 Каталог" reply
+ * keyboard button, the web app hands the pick back with Telegram.WebApp.sendData
+ * (same `{source}__{productId}__{lang}` payload as the deep links) and closes
+ * itself; Telegram delivers it here as a service message. Unlike /start this
+ * keeps the conversation — the customer may have been chatting for a while.
+ */
+bot.on('message:web_app_data', async (ctx) => {
+  const session = getSession(ctx.chat.id);
+  const { source, productId, productHint, lang } = parseStartPayload(ctx.message.web_app_data.data);
+
+  // The web app's own language switch is an explicit choice; an English UI
+  // sends no language and the chat keeps whatever it was speaking.
+  if (lang) {
+    session.lang = lang;
+    session.langLocked = true;
+  }
+
+  const product = productId ? getProduct(productId) : null;
+  if (!product) {
+    await safeSend(ctx, t(session.lang, 'productGone'), { reply_markup: mainKeyboard(session.lang) });
+    if (productHint) notePickedProduct(session, `«${productHint}» — её нет в каталоге бота`);
+    return;
+  }
+
+  session.context = { ...session.context, productId, productHint: null, source: source ?? 'webapp' };
+  await sendProductCard(bot, session, product, session.lang);
+  notePickedProduct(session, product.name);
+
+  // A manager already talking to this customer should see what they picked.
+  if (inHandoff(session)) {
+    await relayCustomer(ctx, session, { text: `🛍 ${productName(product, 'ru')}`, note: 'Клиент выбрал товар в каталоге' });
   }
 });
 
