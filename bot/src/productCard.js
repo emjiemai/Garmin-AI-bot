@@ -60,9 +60,12 @@ export function buildProductCard(product, lang) {
     if (withPoints && points.length) parts.push(points.map((p) => `• ${escapeHtml(p)}`).join('\n'));
     if (withMore && !known) parts.push(escapeHtml(t(lang, 'cardMore')));
     parts.push(
-      product.price > 0
-        ? `💰 <b>${escapeHtml(formatPrice(product.price, lang))}</b>`
-        : `💰 ${escapeHtml(t(lang, 'cardPriceAsk'))}`
+      !(product.price > 0)
+        ? `💰 ${escapeHtml(t(lang, 'cardPriceAsk'))}`
+        : product.discount
+          ? `🔥 <b>${escapeHtml(t(lang, 'cardDiscount', product.discount))}</b>\n` +
+            `💰 <s>${escapeHtml(formatPrice(product.listPrice, lang))}</s> → <b>${escapeHtml(formatPrice(product.price, lang))}</b>`
+          : `💰 <b>${escapeHtml(formatPrice(product.price, lang))}</b>`
     );
     if (withClosing) parts.push(escapeHtml(t(lang, 'cardClosing')));
     return parts.join('\n\n');

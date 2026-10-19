@@ -8,8 +8,9 @@
 <title>Garmin Uzbekistan</title>
 <meta name="theme-color" content="#000">
 <!-- Must load on the first page Telegram opens: it saves the Mini App launch
-     params for category.html, which needs them to send a product to the bot. -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+     params for category.html, which needs them to send a product to the bot.
+     defer: a slow telegram.org must not hold up the page for Instagram visitors. -->
+<script src="https://telegram.org/js/telegram-web-app.js" defer></script>
 <link rel="preconnect" href="https://ugc.production.linktr.ee" crossorigin>
 <link rel="preload" as="image" href="img/hero.webp" fetchpriority="high">
 <style>
@@ -98,6 +99,7 @@ addEventListener("keydown",e=>{if(e.key==="Escape")shut()});
 
 const U="https://ugc.production.linktr.ee/",G="https://www.garmin.com/en-US/c/",Q="?io=true&size=thumbnail-feature-v1_0";
 const items=[
+["All products","category.html?c=all","img/all.webp"],
 ["Smartwatches","category.html?c=smart","img/smart.webp"],
 ["Health & Fitness Tracking","category.html?c=health","img/health.webp"],
 ["Sports & Fitness","category.html?c=sports","img/sports.webp"],
@@ -110,6 +112,7 @@ en:{tg:"Message us",call:"Call us",title:"Garmin Uzbekistan",tag:"Engineered on 
 uz:{tg:"Telegramda yozish",call:"Qo'ng'iroq",title:"Garmin O'zbekiston",tag:"Ichkarida muhandislik, tashqarida hayot uchun.",open:"Ochish",foot:"Cookie sozlamalari · Xabar berish · Maxfiylik"},
 ru:{tg:"Написать нам",call:"Позвонить",title:"Garmin Узбекистан",tag:"Технологии внутри — для жизни снаружи.",open:"Открыть",foot:"Настройки cookie · Пожаловаться · Конфиденциальность"}};
 const N=[
+["All products","Barcha mahsulotlar","Все товары"],
 ["Smartwatches","Smart-soatlar","Смарт-часы"],
 ["Health & Fitness Tracking","Salomatlik va fitnes treklari","Здоровье и фитнес-трекеры"],
 ["Sports & Fitness","Sport va fitnes","Спорт и фитнес"],
@@ -140,11 +143,13 @@ setLang(start);
 
 // Inside the Mini App the customer is already in the bot's chat: "Message us"
 // just closes the app and goes back to it.
-const tg=window.Telegram&&window.Telegram.WebApp;
-if(tg&&tg.platform&&tg.platform!=="unknown"){
+// The deferred Telegram script has run by DOMContentLoaded.
+addEventListener("DOMContentLoaded",()=>{
+  const tg=window.Telegram&&window.Telegram.WebApp;
+  if(!tg||!tg.platform||tg.platform==="unknown")return;
   tg.ready();tg.expand();
   document.addEventListener("click",e=>{const a=e.target.closest('a[href^="https://t.me/garminofficialuzbot"]');if(a){e.preventDefault();tg.close()}});
-}
+});
 </script>
 </body>
 </html>

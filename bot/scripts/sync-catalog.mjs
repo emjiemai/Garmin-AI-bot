@@ -6,7 +6,7 @@
  *
  * Replaces scripts/build-catalog.mjs, which read web/js/data.js — a file the
  * landing-page rewrite deleted. What it does, per live product:
- *   - already in the catalog  -> price and site id refreshed, name spacing tidied;
+ *   - already in the catalog  -> price, discount and site id refreshed, name spacing tidied;
  *                                hand-curated text and specs are kept
  *   - not in the catalog yet  -> added with the tagline/description the site has
  * Products that left the site are reported, never deleted. The branches, FAQ and
@@ -25,6 +25,12 @@ const CHECK = process.argv.includes('--check');
 const CATEGORY = { adventure: 'outdoor' };
 const categoryFor = (c) => CATEGORY[c] ?? c ?? 'outdoor';
 
+/** Same rule as the site: a whole 1-99 percent, anything else is no discount. */
+const discountOf = (v) => {
+  const n = Number(v);
+  return Number.isFinite(n) && n >= 1 && n <= 99 ? Math.round(n) : null;
+};
+
 const clean = (s) => String(s ?? '').replace(/,(?=\S)/g, ', ').replace(/\s+/g, ' ').trim();
 
 async function get(path) {
@@ -42,7 +48,7 @@ const catalog = JSON.parse(readFileSync(FILE, 'utf8'));
 const byId = new Map(catalog.products.map((p) => [p.id, p]));
 const uz = new Map(translations.filter((r) => r.lang === 'uz').map((r) => [r.product_id.trim(), r]));
 
-const report = { priced: [], added: [], missing: [] };
+const report = { priced: [], discounts: [], added: [], missing: [] };
 
 // Russian tagline -> Uzbek, learned from products that have both. Fills the gap for
 // new products the site has not translated yet (e.g. every «Премиум мультиспорт»).
@@ -57,6 +63,7 @@ for (const row of live) {
   // The site looks products up by their exact id — keep it if it has stray whitespace.
   const siteId = row.id !== id ? row.id : undefined;
   const price = Number(row.price) || 0;
+  const discount = discountOf(row.discount_percent);
   const existing = byId.get(id);
 
   if (existing) {
@@ -67,6 +74,10 @@ for (const row of live) {
       report.priced.push(`${id}: ${existing.price} -> ${price}`);
       existing.price = price;
     }
+    if ((existing.discount ?? null) !== discount) {
+      report.discounts.push(`${id}: ${existing.discount ?? 0}% -> ${discount ?? 0}%`);
+    }
+    existing.discount = discount;
     if (CYRILLIC.test(existing.tagline.uz) && uzTagline.has(existing.tagline.ru)) existing.tagline.uz = uzTagline.get(existing.tagline.ru);
     if (siteId) existing.siteId = siteId;
     else delete existing.siteId;
@@ -81,6 +92,7 @@ for (const row of live) {
     name_uz: clean(row.name),
     category: categoryFor(row.category),
     price,
+    discount,
     tagline: { ru: row.tagline ?? '', uz: t?.tagline || uzTagline.get(row.tagline) || row.tagline || '' },
     description: { ru: row.description ?? '', uz: t?.description || row.description || '' },
     specs: { battery: null, batteryDays: null, display: null, displayType: null, waterRating: null, gps: null, keyFeatures: [] },
@@ -99,6 +111,7 @@ report.missing = catalog.products.filter((p) => !liveIds.has(p.id)).map((p) => p
 
 console.log(`live products: ${live.length}, catalog products: ${catalog.products.length}`);
 console.log(`prices updated (${report.priced.length}):`, report.priced.length ? '\n  ' + report.priced.join('\n  ') : 'none');
+console.log(`discounts changed (${report.discounts.length}):`, report.discounts.length ? '\n  ' + report.discounts.join('\n  ') : 'none');
 console.log(`added (${report.added.length}):`, report.added.length ? '\n  ' + report.added.join('\n  ') : 'none');
 if (report.missing.length) console.log(`in catalog but no longer on the site (kept): ${report.missing.join(', ')}`);
 

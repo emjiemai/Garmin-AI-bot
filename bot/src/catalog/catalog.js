@@ -12,6 +12,28 @@ export const catalog = JSON.parse(
 
 export const PRODUCTS = catalog.products;
 
+/** A discount counts only when it is a whole 1-99 percent — the same rule
+ *  garmin.com.uz applies, so the bot never quotes a price the site doesn't. */
+export function validDiscount(value) {
+  const n = Number(value);
+  return Number.isFinite(n) && n >= 1 && n <= 99 ? Math.round(n) : null;
+}
+
+/** The site's own rounding for a discounted price. */
+export const discountedPrice = (price, discount) =>
+  discount ? Math.round((price * (100 - discount)) / 100) : price;
+
+// catalog.json stores the site's list price and its discount percent. Everything
+// at runtime — search, price filters, the AI, lead alerts — works with what the
+// customer actually pays, so `price` becomes that, and the list price moves to
+// `listPrice` for the strike-through. scripts/sync-catalog.mjs reads the file
+// itself and never sees this.
+for (const p of PRODUCTS) {
+  p.discount = p.price ? validDiscount(p.discount) : null;
+  p.listPrice = p.price;
+  p.price = discountedPrice(p.price, p.discount);
+}
+
 const BY_ID = new Map(PRODUCTS.map((p) => [p.id, p]));
 
 /** Prices live in the data as integers of UZS. A price of 0 means the site
@@ -20,6 +42,16 @@ export function formatPrice(uzs, lang = 'ru') {
   if (!uzs) return lang === 'uz' ? "so'rov bo'yicha" : 'по запросу';
   const num = new Intl.NumberFormat('ru-RU').format(uzs);
   return lang === 'uz' ? `${num} so'm` : `${num} сум`;
+}
+
+/** "17 510 000 сум (скидка 15%, было 20 600 000 сум)" — a product's price with its
+ *  discount spelled out, for plain-text places (AI context, alerts, captions). */
+export function formatProductPrice(p, lang = 'ru') {
+  const price = formatPrice(p.price, lang);
+  if (!p.discount) return price;
+  return lang === 'uz'
+    ? `${price} (${p.discount}% chegirma, avval ${formatPrice(p.listPrice, lang)})`
+    : `${price} (скидка ${p.discount}%, было ${formatPrice(p.listPrice, lang)})`;
 }
 
 export function productName(p, lang = 'ru') {
@@ -120,6 +152,7 @@ export function compactIndex() {
   return PRODUCTS.map(
     (p) =>
       `${p.id} | ${p.name} | ${p.category} | ${p.price ? `${new Intl.NumberFormat('ru-RU').format(p.price)} UZS` : 'цена по запросу'}` +
+      (p.discount ? ` (скидка ${p.discount}%, было ${new Intl.NumberFormat('ru-RU').format(p.listPrice)} UZS)` : '') +
       (p.tagline.ru ? ` | ${p.tagline.ru}` : '')
   ).join('\n');
 }

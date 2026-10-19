@@ -16,6 +16,7 @@ const STRINGS = {
       '👋 Здравствуйте! Это поддержка *Garmin Uzbekistan*.\n\n' +
       `Вы смотрели *${name}* — вот главное об этой модели 👇`,
     cardPriceAsk: 'Цена — по запросу, менеджер подскажет',
+    cardDiscount: (pct) => `Скидка ${pct}%`,
     cardClosing: 'Расскажу подробнее, сравню с другими моделями или помогу оформить заказ. Что вас интересует?',
     cardMore: 'Подробные характеристики — на странице модели на сайте.',
     productGone:
@@ -79,6 +80,7 @@ const STRINGS = {
       "👋 Assalomu alaykum! Bu *Garmin Uzbekistan* qo'llab-quvvatlash xizmati.\n\n" +
       `Siz *${name}* modelini ko'rdingiz — bu model haqida asosiy ma'lumot 👇`,
     cardPriceAsk: "Narxi — so'rov bo'yicha, menejer aytib beradi",
+    cardDiscount: (pct) => `${pct}% chegirma`,
     cardClosing: "Batafsil aytib beraman, boshqa modellar bilan solishtiraman yoki buyurtma rasmiylashtirishga yordam beraman. Sizni nima qiziqtiradi?",
     cardMore: "Batafsil xususiyatlar — saytdagi model sahifasida.",
     productGone:

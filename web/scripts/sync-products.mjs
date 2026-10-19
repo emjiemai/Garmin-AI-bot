@@ -85,6 +85,8 @@ await Promise.all(
         name: p.name.replace(/,(?=\S)/g, ', ').replace(/\s+/g, ' ').trim(),
         category: p.category || null,
         price: Number(p.price) || 0,
+        // Same rule as the site: a whole 1-99 percent, anything else is no discount.
+        discount: Number(p.discount_percent) >= 1 && Number(p.discount_percent) <= 99 ? Math.round(Number(p.discount_percent)) : null,
         image: 'img/p/' + file,
       };
     }

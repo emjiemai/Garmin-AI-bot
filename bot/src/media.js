@@ -5,7 +5,7 @@
  *  (ai/tools.js), since both are "a specific product just got identified"
  *  moments that should show the customer a real photo without them asking. */
 
-import { formatPrice, productName } from './catalog/catalog.js';
+import { formatProductPrice, productName } from './catalog/catalog.js';
 import { buildProductCard, CAPTION_MAX } from './productCard.js';
 
 /**
@@ -22,7 +22,7 @@ export async function sendProductPhoto(bot, session, product, lang) {
 
   try {
     await bot.api.sendPhoto(session.chatId, product.image, {
-      caption: `${productName(product, lang)} — ${formatPrice(product.price, lang)}`
+      caption: `${productName(product, lang)} — ${formatProductPrice(product, lang)}`
     });
     session.sentPhotos.add(product.id);
     return { sent: true, alreadySent };
