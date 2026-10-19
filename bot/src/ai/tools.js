@@ -3,7 +3,7 @@
  *  Executors return plain objects; the caller JSON-stringifies them back into
  *  the conversation as `role: "tool"` messages. */
 
-import { catalog, formatPrice, getProduct, searchProducts } from '../catalog/catalog.js';
+import { catalog, formatProductPrice, getProduct, searchProducts } from '../catalog/catalog.js';
 import { alertManager } from '../leads/notify.js';
 import { config } from '../config.js';
 import { hasChannelPost, searchChannelCatalog } from '../channelCatalog.js';
@@ -259,8 +259,10 @@ function publicProduct(p, lang) {
     id: p.id,
     name: p.name,
     category: p.category,
-    price: formatPrice(p.price, lang),
+    price: formatProductPrice(p, lang),
     price_uzs: p.price || null,
+    discount_percent: p.discount,
+    price_before_discount_uzs: p.discount ? p.listPrice : null,
     tagline: p.tagline[lang] || p.tagline.ru,
     description: p.description[lang] || p.description.ru,
     battery: p.specs.battery,

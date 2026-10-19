@@ -417,6 +417,10 @@ console.log('\n12. Arriving from the web app: the customer gets the product card
 
   const ru = await startFor('card__010-02905-11__ru');
   check('Russian card shows the live price', /17\s085\s000\sсум/.test(ru.photo.caption));
+  check('a discounted card shows the percent and the struck-out list price',
+    /Скидка 15%/.test(ru.photo.caption) && /<s>20\s100\s000\sсум<\/s> → <b>17\s085\s000\sсум<\/b>/.test(ru.photo.caption), ru.photo.caption.slice(-200));
+  check('the AI sees the sale price, the percent and the old price',
+    /fenix-8 \|.*15\s300\s000 UZS \(скидка 15%, было 18\s000\s000 UZS\)/.test((await import('../src/catalog/catalog.js')).compactIndex()));
   check('Russian card has the bullet points', (ru.photo.caption.match(/^• /gm) ?? []).length === 3);
 
   const soon = await startFor('card__010-04549-20__ru');

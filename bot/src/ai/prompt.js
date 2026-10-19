@@ -1,4 +1,4 @@
-import { catalog, compactIndex, formatPrice, getProduct, priceRange } from '../catalog/catalog.js';
+import { catalog, compactIndex, formatPrice, formatProductPrice, getProduct, priceRange } from '../catalog/catalog.js';
 import { describeMissing, missingForHotLead } from '../leads/pending.js';
 
 const LANG_RULES = {
@@ -38,7 +38,7 @@ export function buildSystemPrompt(session) {
   const hint = !arrived && session.context.productHint;
 
   const contextBlock = arrived
-    ? `\n## КОНТЕКСТ ВИЗИТА\nКлиент пришёл из веб-приложения, где смотрел: **${arrived.name}** — ${formatPrice(arrived.price)}.\nНачни с этой модели, но не навязывай её если клиент спрашивает о другом.\n`
+    ? `\n## КОНТЕКСТ ВИЗИТА\nКлиент пришёл из веб-приложения, где смотрел: **${arrived.name}** — ${formatProductPrice(arrived)}.\nНачни с этой модели, но не навязывай её если клиент спрашивает о другом.\n`
     : hint
       ? `\n## КОНТЕКСТ ВИЗИТА\nКлиент пришёл из веб-приложения, где смотрел модель ${quoted(hint)} — её нет в твоём каталоге. Не говори, что мы её не продаём: при интересе к покупке уточни наличие у менеджера (notify_manager с product_query).\n`
       : '';
@@ -85,6 +85,7 @@ ${LANG_RULES[lang] ?? LANG_RULES.ru}
 - Дружелюбно и по делу, на «вы». Без канцелярита и без агрессивных продаж.
 - Максимум 1–2 эмодзи на сообщение.
 - Всегда указывай цену в сумах, когда называешь модель.
+- Если у модели в каталоге есть скидка — называй цену со скидкой, процент и старую цену (например: **17 510 000 сум** вместо 20 600 000, скидка 15%). Других скидок и акций не обещай.
 - Выделяй названия моделей и цены **жирным**. НЕ используй заголовки, таблицы, вложенные списки и списки длиннее 4 пунктов.
 - Никогда не выдумывай модели, цены, характеристики, акции или сроки доставки. Если данных нет — скажи честно и предложи связать с менеджером.
 

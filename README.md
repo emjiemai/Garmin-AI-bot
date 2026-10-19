@@ -29,7 +29,13 @@ node web/scripts/sync-products.mjs     # web/products.json + web/img/p/ (480px W
 cd bot && npm run sync                 # bot/src/catalog/catalog.json (prices, new models)
 ```
 
-`sync` refreshes prices and adds models the bot doesn't have yet; it keeps the
+Both snapshots keep the site's list `price` plus its `discount` percent (the
+site's `discount_percent`, counted only when it is 1-99). The sale price is
+worked out the way the site does it, `round(price × (100 − discount) / 100)`:
+the category pages show it with the old price struck out and a "−15%" badge,
+and the bot quotes it everywhere — cards, AI answers, lead alerts.
+
+`sync` refreshes prices and discounts and adds models the bot doesn't have yet; it keeps the
 existing hand-written text. The product message the bot sends on arrival is
 written by hand per model in `bot/src/catalog/cards.json` (RU + UZ) — add an
 entry there for every new model, otherwise the bot falls back to the tagline

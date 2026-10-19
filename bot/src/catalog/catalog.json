@@ -98,7 +98,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785135116096-778tfb.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785135116096-778tfb.webp",
+      "discount": null
     },
     {
       "id": "HRM",
@@ -129,7 +130,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785568492216-b5rbh6.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785568492216-b5rbh6.webp",
+      "discount": null
     },
     {
       "id": "010-04307-03",
@@ -162,7 +164,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785824064258-dx27gk.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785824064258-dx27gk.webp",
+      "discount": null
     },
     {
       "id": "010-03920-00",
@@ -195,7 +198,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785749797741-xpm0hd.jfif"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785749797741-xpm0hd.jfif",
+      "discount": null
     },
     {
       "id": "010-03920-01",
@@ -226,7 +230,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785910319218-enqnfw.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785910319218-enqnfw.webp",
+      "discount": null
     },
     {
       "id": "010-03920-11",
@@ -257,7 +262,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785825610361-zdyumz.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785825610361-zdyumz.webp",
+      "discount": null
     },
     {
       "id": "010-02863-30",
@@ -290,7 +296,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785842650430-j8b319.jfif"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785842650430-j8b319.jfif",
+      "discount": null
     },
     {
       "id": "vivoactive-6",
@@ -323,7 +330,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://www.garmin.com.uz/assets/vivoactive-6-BILf-RKt.jpeg"
+      "image": "https://www.garmin.com.uz/assets/vivoactive-6-BILf-RKt.jpeg",
+      "discount": null
     },
     {
       "id": "lily-2-active",
@@ -356,7 +364,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://www.garmin.com.uz/assets/lily-2-active-jxOjvQCg.webp"
+      "image": "https://www.garmin.com.uz/assets/lily-2-active-jxOjvQCg.webp",
+      "discount": null
     },
     {
       "id": "varia-rct715",
@@ -387,7 +396,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785995021281-jvnku8.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785995021281-jvnku8.webp",
+      "discount": null
     },
     {
       "id": "010-03022-00",
@@ -416,7 +426,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785994593892-rxng8k.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785994593892-rxng8k.webp",
+      "discount": null
     },
     {
       "id": "instinct-3-amoled",
@@ -448,7 +459,8 @@
         "AMOLED"
       ],
       "featured": true,
-      "image": "https://www.garmin.com.uz/assets/instinct-3-CZc9Gnlt.webp"
+      "image": "https://www.garmin.com.uz/assets/instinct-3-CZc9Gnlt.webp",
+      "discount": null
     },
     {
       "id": "010-02936-03",
@@ -480,7 +492,8 @@
         "AMOLED"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785842109544-qxirf6.jfif"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785842109544-qxirf6.jfif",
+      "discount": null
     },
     {
       "id": "gpsmap-67",
@@ -509,7 +522,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1786013800524-4h1gxd.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1786013800524-4h1gxd.webp",
+      "discount": null
     },
     {
       "id": "010-03020-01",
@@ -541,7 +555,8 @@
         "AMOLED"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785842258837-xizjb1.jfif"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785842258837-xizjb1.jfif",
+      "discount": null
     },
     {
       "id": "forerunner-265",
@@ -572,7 +587,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785935061925-sx3nzv.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785935061925-sx3nzv.webp",
+      "discount": null
     },
     {
       "id": "010-02934-50",
@@ -604,7 +620,8 @@
         "Solar"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785841730196-erx9u6.jfif"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785841730196-erx9u6.jfif",
+      "discount": null
     },
     {
       "id": "forerunner-570",
@@ -638,7 +655,8 @@
         "Новинка"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785934539455-crzgs8.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785934539455-crzgs8.webp",
+      "discount": null
     },
     {
       "id": "010-02935-50",
@@ -670,7 +688,8 @@
         "Solar"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785841937594-qjuq09.jfif"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785841937594-qjuq09.jfif",
+      "discount": null
     },
     {
       "id": "010-03013-00",
@@ -701,7 +720,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785569600032-5lp5rn.jpg"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785569600032-5lp5rn.jpg",
+      "discount": null
     },
     {
       "id": "010-03014-01",
@@ -732,7 +752,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785570563199-zh450h.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785570563199-zh450h.webp",
+      "discount": null
     },
     {
       "id": "010-03398-01",
@@ -764,7 +785,8 @@
         "AMOLED"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785751861091-5phr6h.jfif"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785751861091-5phr6h.jfif",
+      "discount": null
     },
     {
       "id": "010-03398-00",
@@ -796,7 +818,8 @@
         "AMOLED"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785927812705-f18nbs.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785927812705-f18nbs.webp",
+      "discount": null
     },
     {
       "id": "010-02553-01",
@@ -829,7 +852,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1786000945503-g76q33.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1786000945503-g76q33.webp",
+      "discount": null
     },
     {
       "id": "010-03398-02",
@@ -861,7 +885,8 @@
         "AMOLED"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785915905206-gheznm.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785915905206-gheznm.webp",
+      "discount": null
     },
     {
       "id": "edge-1050",
@@ -892,7 +917,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785994238909-phc4dc.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785994238909-phc4dc.webp",
+      "discount": null
     },
     {
       "id": "forerunner-970",
@@ -927,7 +953,8 @@
         "Новинка"
       ],
       "featured": true,
-      "image": "https://www.garmin.com.uz/assets/forerunner-970-CE-zXIvQ.webp"
+      "image": "https://www.garmin.com.uz/assets/forerunner-970-CE-zXIvQ.webp",
+      "discount": null
     },
     {
       "id": "approach-s70",
@@ -956,7 +983,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://www.garmin.com.uz/assets/approach-s70-CRmv5l9H.jpeg"
+      "image": "https://www.garmin.com.uz/assets/approach-s70-CRmv5l9H.jpeg",
+      "discount": null
     },
     {
       "id": "010-02980-02",
@@ -988,7 +1016,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785910877432-bnr3vy.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785910877432-bnr3vy.webp",
+      "discount": null
     },
     {
       "id": "010-02980-09",
@@ -1019,7 +1048,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785911083627-zg12s7.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785911083627-zg12s7.webp",
+      "discount": null
     },
     {
       "id": "fenix-e",
@@ -1082,7 +1112,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785738438525-e90a1f.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785738438525-e90a1f.webp",
+      "discount": 15
     },
     {
       "id": "epix-pro",
@@ -1116,14 +1147,15 @@
         "Titanium"
       ],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785737897051-nn8upo.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785737897051-nn8upo.webp",
+      "discount": 15
     },
     {
       "id": "010-02905-00",
       "name": "fenix 8 51mm, AMOLED, Glass",
       "name_uz": "fenix 8 51mm, AMOLED, Glass",
       "category": "fitness",
-      "price": 15044964,
+      "price": 17700000,
       "tagline": {
         "ru": "Премиум мультиспорт",
         "uz": "Premium multisport"
@@ -1154,14 +1186,15 @@
         "AMOLED"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785567191310-1ni94l.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785567191310-1ni94l.webp",
+      "discount": 15
     },
     {
       "id": "010-02904-11",
       "name": "fenix 8 47mm, AMOLED, Sapphire",
       "name_uz": "fenix 8 47mm, AMOLED, Sapphire",
       "category": "fitness",
-      "price": 15130000,
+      "price": 17800000,
       "tagline": {
         "ru": "Премиум мультиспорт",
         "uz": "Mukammal multisport"
@@ -1193,7 +1226,8 @@
         "Titanium"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785565133349-rs5n67.jpg"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785565133349-rs5n67.jpg",
+      "discount": 15
     },
     {
       "id": "010-02903-21",
@@ -1231,14 +1265,15 @@
         "Titanium"
       ],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785733940709-dtpdjf.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785733940709-dtpdjf.webp",
+      "discount": 15
     },
     {
       "id": "fenix-8",
       "name": "fēnix 8 — 47 mm, Solar",
       "name_uz": "fēnix 8 — 47 mm, Solar",
       "category": "outdoor",
-      "price": 15300000,
+      "price": 18000000,
       "tagline": {
         "ru": "Премиум мультиспорт",
         "uz": "Premium multisport"
@@ -1264,14 +1299,15 @@
         "Solar"
       ],
       "featured": true,
-      "image": "https://www.garmin.com.uz/assets/fenix-8-DtcpDbh-.png"
+      "image": "https://www.garmin.com.uz/assets/fenix-8-DtcpDbh-.png",
+      "discount": 15
     },
     {
       "id": "010-02904-21",
       "name": "fenix 8 47mm, AMOLED, Sapphire",
       "name_uz": "fenix 8 47mm, AMOLED, Sapphire",
       "category": "fitness",
-      "price": 15300000,
+      "price": 18000000,
       "tagline": {
         "ru": "Премиум мультиспорт",
         "uz": "Premium multisport"
@@ -1303,14 +1339,15 @@
         "Titanium"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785566217862-d8i1n2.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785566217862-d8i1n2.webp",
+      "discount": 15
     },
     {
       "id": "010-02903-40",
       "name": "fenix 8 43mm, AMOLED, Sapphire",
       "name_uz": "fenix 8 43mm, AMOLED, Sapphire",
       "category": "fitness",
-      "price": 15810000,
+      "price": 18600000,
       "tagline": {
         "ru": "Премиум мультиспорт",
         "uz": "Premium multisport"
@@ -1342,14 +1379,15 @@
         "Titanium"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785733776326-31j6l6.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785733776326-31j6l6.webp",
+      "discount": 15
     },
     {
       "id": "010-02905-11",
       "name": "fenix 8 51mm, AMOLED, Sapphire",
       "name_uz": "fenix 8 51mm, AMOLED, Sapphire",
       "category": "fitness",
-      "price": 17085000,
+      "price": 20100000,
       "tagline": {
         "ru": "Премиум мультиспорт",
         "uz": "Premium multisport"
@@ -1381,14 +1419,15 @@
         "Titanium"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785566511434-t7h2fl.jpg"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785566511434-t7h2fl.jpg",
+      "discount": 15
     },
     {
       "id": "010-02905-21",
       "name": "fenix 8 51mm, AMOLED, Sapphire",
       "name_uz": "fenix 8 51mm, AMOLED, Sapphire",
       "category": "fitness",
-      "price": 16405000,
+      "price": 19300000,
       "tagline": {
         "ru": "Премиум мультиспорт",
         "uz": "Premium multisport"
@@ -1420,14 +1459,15 @@
         "Titanium"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785567096630-0hvnm5.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785567096630-0hvnm5.webp",
+      "discount": 15
     },
     {
       "id": "010-02907-11",
       "name": "fenix 8 51mm, Sapphire Solar",
       "name_uz": "fenix 8 51mm, Sapphire Solar",
       "category": "fitness",
-      "price": 16405000,
+      "price": 19300000,
       "tagline": {
         "ru": "Премиум мультиспорт",
         "uz": "Premium multisport"
@@ -1459,14 +1499,15 @@
         "Titanium"
       ],
       "featured": true,
-      "image": "https://www.garmin.com.uz/assets/fenix-8-DtcpDbh-.png"
+      "image": "https://www.garmin.com.uz/assets/fenix-8-DtcpDbh-.png",
+      "discount": 15
     },
     {
       "id": "010-02905-40",
       "name": "fenix 8 51mm, AMOLED, Sapphire",
       "name_uz": "fenix 8 51mm, AMOLED, Sapphire",
       "category": "fitness",
-      "price": 17085000,
+      "price": 20100000,
       "tagline": {
         "ru": "Премиум мультиспорт",
         "uz": "Premium multisport"
@@ -1498,7 +1539,8 @@
         "Titanium"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785566889755-d48iaw.jfif"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785566889755-d48iaw.jfif",
+      "discount": 15
     },
     {
       "id": "010-02904-40",
@@ -1536,7 +1578,8 @@
         "Titanium"
       ],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785569763298-x2xnca.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785569763298-x2xnca.webp",
+      "discount": 15
     },
     {
       "id": "tactix-7",
@@ -1570,7 +1613,8 @@
         "AMOLED"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785742875062-a3crpr.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785742875062-a3crpr.webp",
+      "discount": null
     },
     {
       "id": "010-03405-01",
@@ -1606,7 +1650,8 @@
         "AMOLED"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785911951792-z56aux.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785911951792-z56aux.webp",
+      "discount": null
     },
     {
       "id": "descent-mk3i",
@@ -1636,7 +1681,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1786001850918-bciph6.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1786001850918-bciph6.webp",
+      "discount": null
     },
     {
       "id": "010-03406-01",
@@ -1673,7 +1719,8 @@
         "AMOLED"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785911759646-8d2svk.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785911759646-8d2svk.webp",
+      "discount": null
     },
     {
       "id": "tactix-8",
@@ -1709,7 +1756,8 @@
         "Solar"
       ],
       "featured": true,
-      "image": "https://www.garmin.com.uz/assets/tactix-8-DIo5R6VC.webp"
+      "image": "https://www.garmin.com.uz/assets/tactix-8-DIo5R6VC.webp",
+      "discount": null
     },
     {
       "id": "010-02648-41",
@@ -1740,7 +1788,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1787564539503-47j0sr.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1787564539503-47j0sr.webp",
+      "discount": null
     },
     {
       "id": "010-02648-31",
@@ -1771,7 +1820,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1786423767618-zt7s5p.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1786423767618-zt7s5p.webp",
+      "discount": null
     },
     {
       "id": "010-02648-21",
@@ -1802,7 +1852,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785925547259-6s9hfv.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785925547259-6s9hfv.webp",
+      "discount": null
     },
     {
       "id": "010-02648-01",
@@ -1833,7 +1884,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785912372797-obpus3.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785912372797-obpus3.webp",
+      "discount": null
     },
     {
       "id": "010-02722-11",
@@ -1866,7 +1918,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785755275123-lo2amr.jpg"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785755275123-lo2amr.jpg",
+      "discount": null
     },
     {
       "id": "010-02722-21",
@@ -1896,7 +1949,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785755074939-4t4cmu.jfif"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1785755074939-4t4cmu.jfif",
+      "discount": null
     },
     {
       "id": "010-03393-31",
@@ -1927,7 +1981,8 @@
         "Хит продаж"
       ],
       "featured": true,
-      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1786423349128-2a9xem.webp"
+      "image": "https://urfcwwyrpndynvwrusku.supabase.co/storage/v1/object/public/media/products/1786423349128-2a9xem.webp",
+      "discount": null
     },
     {
       "id": "010-04675-03",
@@ -1954,7 +2009,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://api.garmin.com.uz/api/public/media/products/1789709431544-cff97cf17f37.png"
+      "image": "https://api.garmin.com.uz/api/public/media/products/1789709431544-cff97cf17f37.png",
+      "discount": null
     },
     {
       "id": "010-04549-00",
@@ -1981,7 +2037,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://api.garmin.com.uz/api/public/media/products/1791961259710-f46bb75eeb29.jpg"
+      "image": "https://api.garmin.com.uz/api/public/media/products/1791961259710-f46bb75eeb29.jpg",
+      "discount": null
     },
     {
       "id": "010-04549-20",
@@ -2008,7 +2065,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://api.garmin.com.uz/api/public/media/products/1791964188022-93da30920876.webp"
+      "image": "https://api.garmin.com.uz/api/public/media/products/1791964188022-93da30920876.webp",
+      "discount": null
     },
     {
       "id": "010-04549-40",
@@ -2035,7 +2093,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://api.garmin.com.uz/api/public/media/products/1791968345116-0b6efbb5fc0b.webp"
+      "image": "https://api.garmin.com.uz/api/public/media/products/1791968345116-0b6efbb5fc0b.webp",
+      "discount": null
     },
     {
       "id": "010-04549-50",
@@ -2062,7 +2121,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://api.garmin.com.uz/api/public/media/products/1791961595559-7be6593168a7.jpg"
+      "image": "https://api.garmin.com.uz/api/public/media/products/1791961595559-7be6593168a7.jpg",
+      "discount": null
     },
     {
       "id": "010-04549-10",
@@ -2089,7 +2149,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://api.garmin.com.uz/api/public/media/products/1791964077250-a47276245d4b.webp"
+      "image": "https://api.garmin.com.uz/api/public/media/products/1791964077250-a47276245d4b.webp",
+      "discount": null
     },
     {
       "id": "010-04336-26",
@@ -2116,7 +2177,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://api.garmin.com.uz/api/public/media/products/1791979558842-775ce6cf8972.jpg"
+      "image": "https://api.garmin.com.uz/api/public/media/products/1791979558842-775ce6cf8972.jpg",
+      "discount": null
     },
     {
       "id": "010-04763-01",
@@ -2143,7 +2205,8 @@
       },
       "tags": [],
       "featured": false,
-      "image": "https://api.garmin.com.uz/api/public/media/products/1791980315029-96a25824a01a.jpg"
+      "image": "https://api.garmin.com.uz/api/public/media/products/1791980315029-96a25824a01a.jpg",
+      "discount": null
     },
     {
       "id": "010-04336-41",
@@ -2171,7 +2234,8 @@
       "tags": [],
       "featured": false,
       "image": "https://api.garmin.com.uz/api/public/media/products/1791980710401-c210541ba80e.jpg",
-      "siteId": "010-04336-41 "
+      "siteId": "010-04336-41 ",
+      "discount": null
     },
     {
       "id": "010-04336-21",
@@ -2199,7 +2263,64 @@
       "tags": [],
       "featured": false,
       "image": "https://api.garmin.com.uz/api/public/media/products/1791981071808-5892e873bd99.jpg",
-      "siteId": "010-04336-21 "
+      "siteId": "010-04336-21 ",
+      "discount": null
+    },
+    {
+      "id": "010-02534-62",
+      "name": "Tacx, NEO Bike Plus",
+      "name_uz": "Tacx, NEO Bike Plus",
+      "category": "cycling",
+      "price": 58500000,
+      "discount": 15,
+      "tagline": {
+        "ru": "Велотренажеры",
+        "uz": "Велотренажеры"
+      },
+      "description": {
+        "ru": "",
+        "uz": ""
+      },
+      "specs": {
+        "battery": null,
+        "batteryDays": null,
+        "display": null,
+        "displayType": null,
+        "waterRating": null,
+        "gps": null,
+        "keyFeatures": []
+      },
+      "tags": [],
+      "featured": false,
+      "image": "https://api.garmin.com.uz/api/public/media/products/1792233751119-0bc8bf7ce632.webp"
+    },
+    {
+      "id": "010-04762-11",
+      "name": "fenix 9, 47mm, Carbon DLC, Black Band",
+      "name_uz": "fenix 9, 47mm, Carbon DLC, Black Band",
+      "category": "fitness",
+      "price": 16200000,
+      "discount": null,
+      "tagline": {
+        "ru": "Премиум мультиспорт",
+        "uz": "Premium multisport"
+      },
+      "description": {
+        "ru": "Эти премиальные мультиспортивные GPS-смарт-часы созданы для серьезных спортсменов и искателей приключений и помогают превратить усилия в достижения. Они оснащены улучшенным отслеживанием выносливости и физической активности, а также более удобными и интуитивно понятными картами.\nЯркий, четкий AMOLED-дисплей и титановая рамка.\nДо 16 дней работы от батареи в режиме умных часов\nРасширенные возможности для обучения и повышения производительности.\nКруглосуточные материалы о здоровье и благополучии\nЯркий светодиодный фонарик с регулировкой яркости.\nДИНАМИК И МИКРОФОН ДЛЯ ГОЛОСОВЫХ СООБЩЕНИЙ И УПРАВЛЕНИЯ",
+        "uz": "Эти премиальные мультиспортивные GPS-смарт-часы созданы для серьезных спортсменов и искателей приключений и помогают превратить усилия в достижения. Они оснащены улучшенным отслеживанием выносливости и физической активности, а также более удобными и интуитивно понятными картами.\nЯркий, четкий AMOLED-дисплей и титановая рамка.\nДо 16 дней работы от батареи в режиме умных часов\nРасширенные возможности для обучения и повышения производительности.\nКруглосуточные материалы о здоровье и благополучии\nЯркий светодиодный фонарик с регулировкой яркости.\nДИНАМИК И МИКРОФОН ДЛЯ ГОЛОСОВЫХ СООБЩЕНИЙ И УПРАВЛЕНИЯ"
+      },
+      "specs": {
+        "battery": null,
+        "batteryDays": null,
+        "display": null,
+        "displayType": null,
+        "waterRating": null,
+        "gps": null,
+        "keyFeatures": []
+      },
+      "tags": [],
+      "featured": false,
+      "image": "https://api.garmin.com.uz/api/public/media/products/1792234301994-d551fa2413c1.webp"
     }
   ],
   "flagships": [

@@ -14,7 +14,7 @@
  *  the customer's chat so the manager can jump straight in. */
 
 import { config } from '../config.js';
-import { formatPrice, getProduct } from '../catalog/catalog.js';
+import { formatProductPrice, getProduct } from '../catalog/catalog.js';
 import { escapeHtml as esc, htmlToPlainWithCode } from '../format.js';
 import { attachPhoneToLead, saveLead } from './store.js';
 
@@ -104,7 +104,7 @@ function buildAlert({
   if (product) {
     lines.push('');
     lines.push(`⌚️ <b>Товар:</b> ${esc(product.name)}`);
-    lines.push(`💰 <b>Цена:</b> ${esc(formatPrice(product.price))}`);
+    lines.push(`💰 <b>Цена:</b> ${esc(formatProductPrice(product))}`);
   } else if (productQuery) {
     // Our catalog is not the whole Garmin line-up — a customer asking about a
     // model we haven't listed is a real lead, not a dead end. Name it, so the

@@ -7,7 +7,8 @@
 <link rel="apple-touch-icon" href="favicon.png">
 <title>Garmin Uzbekistan</title>
 <meta name="theme-color" content="#000">
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- defer: a slow telegram.org must not hold up the page. -->
+<script src="https://telegram.org/js/telegram-web-app.js" defer></script>
 <link rel="preload" href="products.json" as="fetch" crossorigin>
 <style>
 *{box-sizing:border-box;margin:0}
@@ -37,6 +38,10 @@ body{font-family:Roboto,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;colo
 .info h2{overflow-wrap:anywhere;font-size:13px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:3.9em}
 .price{margin-top:8px;font-size:13px;font-weight:500;color:#d6d6d6}
 .price.ask{color:#9a9a9a}
+.price s{display:block;font-size:11.5px;font-weight:400;color:#8a8a8a}
+.price.sale{color:#fff;font-weight:700}
+.ph{position:relative}
+.off{position:absolute;top:8px;left:8px;background:#e5322d;color:#fff;font:700 11.5px Roboto,sans-serif;padding:3px 8px;border-radius:10px}
 .go{margin-top:auto;padding-top:12px;display:flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#fff}
 .go svg{width:14px;height:14px;flex:none}
 .sk{aspect-ratio:3/4.2;border-radius:22px;background:linear-gradient(100deg,#2c2c2c 30%,#3a3a3a 50%,#2c2c2c 70%) 0 0/200% 100%;animation:sh 1.2s linear infinite}
@@ -81,6 +86,7 @@ function appPayload(id){return cardPayload(id,lang==="uz"||lang==="ru"?lang:"-")
 // Each landing-page tile -> which garmin.com.uz products it shows.
 // `cats` = whole site categories, `ids` = a hand-picked list.
 const TILES={
+  all:{all:true,t:["All products","Barcha mahsulotlar","Все товары"]},
   smart:{cats:["fitness"],t:["Smartwatches","Smart-soatlar","Смарт-часы"]},
   health:{ids:["vivosmart-5","lily-2-active","vivoactive-6","010-03013-00","010-03014-01","010-02980-02","010-02980-09","HRM"],t:["Health & Fitness Tracking","Salomatlik va fitnes treklari","Здоровье и фитнес-трекеры"]},
   sports:{cats:["running","adventure"],t:["Sports & Fitness","Sport va fitnes","Спорт и фитнес"]},
@@ -100,10 +106,12 @@ if(!tile){location.replace("./")}
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=new Intl.NumberFormat("ru-RU");
+// The site's own rule: price is the list price, discount a whole 1-99 percent.
+const sale=p=>Math.round(p.price*(100-p.discount)/100);
 let lang="en",items=null,failed=false;
 
 function pick(all){
-  const list=tile.ids?tile.ids.map(id=>all.find(p=>p.id===id)).filter(Boolean):all.filter(p=>tile.cats.includes(p.category));
+  const list=tile.all?all:tile.ids?tile.ids.map(id=>all.find(p=>p.id===id)).filter(Boolean):all.filter(p=>tile.cats.includes(p.category));
   return list.filter(p=>p.price>0).concat(list.filter(p=>!p.price)); // priced first, "on request" last
 }
 function render(){
@@ -123,9 +131,9 @@ function render(){
   $("count").textContent=c+" "+t.n[form];
   g.innerHTML=items.map((p,i)=>
     `<a class="card" style="--i:${Math.min(i,10)}" href="${botLink(p.id)}" data-p="${esc(appPayload(p.id))}" target="_blank" rel="noopener">`+
-    `<div class="ph"><img src="${esc(p.image)}" alt="" width="480" height="480" decoding="async" ${i<4?(i<2?'fetchpriority="high"':""):'loading="lazy"'}></div>`+
+    `<div class="ph">${p.discount?`<span class="off">−${p.discount}%</span>`:""}<img src="${esc(p.image)}" alt="" width="480" height="480" decoding="async" ${i<4?(i<2?'fetchpriority="high"':""):'loading="lazy"'}></div>`+
     `<div class="info"><h2>${esc(p.name)}</h2>`+
-    (p.price?`<p class="price">${fmt.format(p.price)} ${t.cur}</p>`:`<p class="price ask">${t.ask}</p>`)+
+    (!p.price?`<p class="price ask">${t.ask}</p>`:p.discount?`<p class="price sale"><s>${fmt.format(p.price)} ${t.cur}</s>${fmt.format(sale(p))} ${t.cur}</p>`:`<p class="price">${fmt.format(p.price)} ${t.cur}</p>`)+
     `<span class="go"><svg viewBox="0 0 24 24"><path d="M21.6 3.2 2.5 10.6c-1.3.5-1.3 1.3-.2 1.6l4.9 1.5 1.9 5.8c.2.7.4.9.9.9.4 0 .6-.2.9-.5l2.3-2.2 4.800 3.500c.9.5 1.500.2 1.700-.8l3-14.500c.3-1.200-.4-1.800-1.100-1.500z" fill="currentColor" stroke="none"/></svg>${t.view}</span></div></a>`).join("");
 }
 // Inside the Mini App a product tap goes straight back to the chat. Opened from the
@@ -133,12 +141,13 @@ function render(){
 // pick to the bot — which answers with the photo card — and closes the app. Any other
 // launch (menu button, ?startapp link) can't sendData, so it opens the deep link.
 // Platform, not initData, says "in Telegram": keyboard-button launches get no initData.
-const tg=window.Telegram&&window.Telegram.WebApp;
-const inTg=Boolean(tg&&tg.platform&&tg.platform!=="unknown");
-if(inTg){tg.ready();tg.expand()}
+// The script is deferred: until it has run (or outside Telegram) a tap is a plain link.
+const tgApp=()=>{const tg=window.Telegram&&window.Telegram.WebApp;return tg&&tg.platform&&tg.platform!=="unknown"?tg:null};
+addEventListener("DOMContentLoaded",()=>{const tg=tgApp();if(tg){tg.ready();tg.expand()}});
 document.addEventListener("click",e=>{
   const a=e.target.closest('a[href^="https://t.me/"]');
-  if(!a||!inTg)return;
+  const tg=tgApp();
+  if(!a||!tg)return;
   e.preventDefault();
   if(a.dataset.p&&!(tg.initDataUnsafe&&tg.initDataUnsafe.query_id)){
     try{tg.sendData(a.dataset.p);return}catch(err){}
